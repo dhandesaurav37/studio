@@ -44,6 +44,7 @@ export default function ProductsPage() {
 
   const category = searchParams.get("category") || "All";
   const searchTerm = searchParams.get("search") || "";
+  const sort = searchParams.get("sort") || "newest";
 
   const handleCategoryChange = (newCategory: string) => {
     const params = new URLSearchParams(searchParams);
@@ -80,7 +81,19 @@ export default function ProductsPage() {
     )
     .filter((p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    )
+    .sort((a, b) => {
+      switch (sort) {
+        case "price-asc":
+          return a.price - b.price;
+        case "price-desc":
+          return b.price - a.price;
+        case "rating":
+          return b.rating - a.rating;
+        default: // newest
+          return parseInt(b.id) - parseInt(a.id);
+      }
+    });
 
   return (
     <div className="container py-8 md:py-12">
@@ -124,7 +137,7 @@ export default function ProductsPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Select defaultValue="newest" onValueChange={handleSortChange}>
+            <Select value={sort} onValueChange={handleSortChange}>
               <SelectTrigger className="w-full sm:w-[180px]">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
