@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -15,7 +15,8 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import React from "react";
+import React, { useState } from "react";
+import { CountdownTimer } from "@/components/countdown-timer";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 8);
@@ -23,45 +24,16 @@ export default function HomePage() {
   const oversizedTees = products.filter(
     (p) => p.category === "Oversized T-shirts"
   );
+  
+  const [selectedColor, setSelectedColor] = useState("Black");
 
-  const heroSlides = [
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "fashion model",
-      leftText: "PREMIUM COLLECTION",
-      rightText: "DISCOVER THE NEW ARRIVALS",
-    },
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "mens fashion",
-      leftText: "SUMMER STYLES",
-      rightText: "LIGHTWEIGHT & BREATHABLE",
-    },
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "stylish clothing",
-      leftText: "URBAN ESSENTIALS",
-      rightText: "SHOP THE LOOK",
-    },
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "apparel collection",
-      leftText: "CRAFTED FOR COMFORT",
-      rightText: "MADE WITH PREMIUM MATERIALS",
-    },
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "modern outfits",
-      leftText: "MINIMALIST DESIGN",
-      rightText: "TIMELESS APPAREL",
-    },
-    {
-      src: "https://placehold.co/1800x900",
-      hint: "urban style",
-      leftText: "WHITE WOLF CO.",
-      rightText: "JOIN THE PACK",
-    },
+  const colors = [
+    { name: "Navy", bgColor: "bg-blue-900" },
+    { name: "Brown", bgColor: "bg-yellow-900" },
+    { name: "Black", bgColor: "bg-black" },
   ];
+
+  const features = ["4-WAY STRETCH", "PREMIUM FABRIC", "WRINKLE RESISTANCE"];
 
   const categories = [...new Set(products.map((p) => p.category))].map(
     (category) => {
@@ -91,7 +63,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="sm:basis-1/2 md:basis-1/2 lg:basis-1/3"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -106,55 +78,96 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="relative h-[80vh] w-full">
-        <Carousel
-          className="w-full h-full"
-          plugins={[
-            Autoplay({
-              delay: 12000,
-              stopOnInteraction: true,
-            }),
-          ]}
-          opts={{
-            loop: true,
-          }}
-        >
-          <CarouselContent className="h-full">
-            {heroSlides.map((slide, index) => (
-              <CarouselItem key={index} className="h-full relative">
-                <Image
-                  src={slide.src}
-                  alt={`Hero background ${index + 1}`}
-                  fill
-                  className="object-cover object-center"
-                  priority={index === 0}
-                  data-ai-hint={slide.hint}
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
-                <div className="relative z-10 h-full flex items-center justify-between text-white p-8 md:p-16">
-                  <div className="max-w-md text-left">
-                    <h2 className="text-4xl md:text-6xl font-bold font-headline uppercase tracking-wider">
-                      {slide.leftText}
-                    </h2>
-                    <Button asChild size="lg" className="mt-8">
-                      <Link href="/products">
-                        Shop Now <ArrowRight className="ml-2 h-5 w-5" />
-                      </Link>
-                    </Button>
-                  </div>
-                  <div className="max-w-xs text-right hidden md:block">
-                     <p className="text-xl md:text-2xl font-semibold uppercase tracking-wide">
-                        {slide.rightText}
-                     </p>
+      {/* New Hero Section */}
+      <section className="w-full bg-gray-100 dark:bg-gray-800 py-8 md:py-12">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <Carousel className="w-full h-full group" opts={{ loop: true }}>
+                <CarouselContent>
+                  <CarouselItem>
+                    <div className="relative w-full h-[300px] md:h-full">
+                      <Image
+                        src="https://placehold.co/1200x800"
+                        alt="Model wearing Super Pants"
+                        fill
+                        className="object-cover rounded-lg"
+                        data-ai-hint="male model pants"
+                      />
+                       <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+                        <div className="text-center text-white">
+                          <p className="text-2xl font-light tracking-widest">NOT JUST PANTS</p>
+                          <h2 className="text-6xl font-bold">SUPER PANTS</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                  <CarouselItem>
+                     <div className="relative w-full h-[300px] md:h-full">
+                      <Image
+                        src="https://placehold.co/1200x800"
+                        alt="Model wearing Super Pants"
+                        fill
+                        className="object-cover rounded-lg"
+                        data-ai-hint="fashion model pants"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+                        <div className="text-center text-white">
+                           <p className="text-2xl font-light tracking-widest">NOT JUST PANTS</p>
+                           <h2 className="text-6xl font-bold">SUPER PANTS</h2>
+                        </div>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                </CarouselContent>
+                 <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 text-white bg-black/30 hover:bg-black/50 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
+                 <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 text-white bg-black/30 hover:bg-black/50 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
+              </Carousel>
+            </div>
+            <div className="bg-white dark:bg-card p-6 rounded-lg flex flex-col justify-between">
+              <div>
+                <div className="relative w-full aspect-[3/4] mb-6">
+                   <Image
+                      src="https://placehold.co/400x533"
+                      alt="Super Pants product image"
+                      fill
+                      className="object-contain"
+                      data-ai-hint="black pants"
+                    />
+                </div>
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-sm font-medium">Colors:</span>
+                   <div className="flex gap-2">
+                    {colors.map((color) => (
+                      <button
+                        key={color.name}
+                        onClick={() => setSelectedColor(color.name)}
+                        className={`h-6 w-6 rounded-full ${color.bgColor} border-2 ${selectedColor === color.name ? 'border-primary' : 'border-transparent'}`}
+                        aria-label={`Select ${color.name} color`}
+                      />
+                    ))}
                   </div>
                 </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-white/10 hover:bg-white/20 border-white/20" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-white/10 hover:bg-white/20 border-white/20" />
-        </Carousel>
+              </div>
+              <div className="w-full">
+                <div className="relative">
+                  <Carousel opts={{align: "start", loop: true}}>
+                    <CarouselContent>
+                      {features.map((feature, index) => (
+                        <CarouselItem key={index}>
+                          <p className="text-center font-semibold text-muted-foreground tracking-wider">{feature}</p>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute -left-10 top-1/2 -translate-y-1/2 h-8 w-8" />
+                    <CarouselNext className="absolute -right-10 top-1/2 -translate-y-1/2 h-8 w-8" />
+                  </Carousel>
+                </div>
+              </div>
+            </div>
+          </div>
+          <CountdownTimer />
+        </div>
       </section>
 
       {/* Featured Collection */}
@@ -238,7 +251,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 uppercase tracking-wider">
             Categories
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
             {categories.map((category) => (
               <Link
                 key={category.name}
