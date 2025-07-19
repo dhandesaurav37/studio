@@ -117,7 +117,7 @@ export default function ProductsPage() {
             value={category}
             onValueChange={(val) => handleFilterChange("category", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -133,7 +133,7 @@ export default function ProductsPage() {
             value={color}
             onValueChange={(val) => handleFilterChange("color", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Colors" />
             </SelectTrigger>
             <SelectContent>
@@ -149,7 +149,7 @@ export default function ProductsPage() {
             value={alphaSize}
             onValueChange={(val) => handleFilterChange("alphaSize", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Alpha Sizes" />
             </SelectTrigger>
             <SelectContent>
@@ -165,7 +165,7 @@ export default function ProductsPage() {
             value={numericSize}
             onValueChange={(val) => handleFilterChange("numericSize", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Numeric Sizes" />
             </SelectTrigger>
             <SelectContent>
@@ -179,7 +179,7 @@ export default function ProductsPage() {
           </Select>
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex-1 sm:flex-none">
+                <Button variant="outline" className="flex-grow sm:flex-grow-0">
                   <ListFilter className="mr-2 h-4 w-4" />
                   Sort
                 </Button>
