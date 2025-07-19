@@ -187,17 +187,15 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <main className="mt-12">
+      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
         {filteredProducts.length > 0 ? (
-          <div className="flex justify-center">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
+          <>
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </>
         ) : (
-          <div className="text-center py-20 border-2 border-dashed rounded-lg">
+           <div className="col-span-full text-center py-20 border-2 border-dashed rounded-lg w-full max-w-4xl mx-auto">
             <h2 className="text-2xl font-semibold">No products found</h2>
             <p className="text-muted-foreground mt-2">
               Try adjusting your search or filters.
