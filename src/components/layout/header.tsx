@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Heart, ShoppingBag, User, Menu, X, Bell, Package, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +24,22 @@ const navLinks = [
 
 export function AppHeader() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+
+  if (!isClient) {
+    return (
+      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-16 items-center">
+            {/* Render a simplified, non-responsive header on the server */}
+        </div>
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
