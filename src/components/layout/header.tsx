@@ -22,6 +22,7 @@ import {
 
 const navLinks = [
   { name: "Shop", href: "/products" },
+  { name: "Premium Products", href: "/products" },
 ];
 
 export function AppHeader() {
