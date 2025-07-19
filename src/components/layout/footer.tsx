@@ -5,8 +5,8 @@ import { Instagram } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-card text-card-foreground border-t">
-      <div className="container py-12 md:py-16 lg:py-20">
+    <footer className="bg-card text-card-foreground border-t w-full">
+      <div className="container py-12 md:py-16 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand and Socials */}
           <div className="lg:col-span-4 flex flex-col items-start">

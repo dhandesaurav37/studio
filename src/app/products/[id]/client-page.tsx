@@ -21,7 +21,7 @@ export default function ProductDetailClientPage({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
 
   return (
-    <div className="container py-8 md:py-12">
+    <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
         {/* Product Images */}
         <div className="grid grid-cols-1 gap-4">

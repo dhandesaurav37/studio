@@ -41,7 +41,7 @@ export function AppHeader() {
   if (!isMounted) {
     return (
        <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <div className="container flex h-20 items-center justify-between">
+        <div className="w-full flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
             <div className="w-1/3"></div>
             <div className="w-1/3 flex justify-center">
                  <Link href="/" className="mr-8 flex items-center gap-2">
@@ -118,7 +118,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-sm">
-      <div className="container flex h-20 items-center justify-between">
+      <div className="w-full flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* --- Desktop Header --- */}
         <div className="hidden md:flex w-full items-center">
           <Link href="/" className="mr-8 flex items-center gap-2">

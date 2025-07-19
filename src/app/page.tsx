@@ -112,8 +112,8 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-card">
-        <div className="container py-16 md:py-20">
+      <section className="bg-card w-full">
+        <div className="py-16 md:py-20 px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row justify-center items-center gap-12 text-center">
             <div className="flex flex-col items-center gap-4">
               <Archive className="h-10 w-10 text-destructive" />
@@ -153,8 +153,8 @@ export default function HomePage() {
       </section>
 
       {/* New Arrivals */}
-      <section className="py-16 md:py-20 bg-background">
-        <div className="container">
+      <section className="py-16 md:py-20 bg-background w-full">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">
               New Arrivals
@@ -173,8 +173,8 @@ export default function HomePage() {
       </section>
 
       {/* Oversize Tees Section */}
-      <section className="py-16 md:py-20 bg-card">
-        <div className="container">
+      <section className="py-16 md:py-20 bg-card w-full">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">
               Oversize Tees
