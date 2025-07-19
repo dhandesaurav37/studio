@@ -121,7 +121,7 @@ export function AppHeader() {
         </div>
         
         {/* Right Side: Action Icons */}
-        <div className="flex items-center space-x-1 md:space-x-2">
+        <div className="flex items-center space-x-0">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
