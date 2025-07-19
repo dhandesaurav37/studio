@@ -1,14 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Heart,
-  ShoppingBag,
-  User,
-  Menu,
-  ChevronDown,
-  X,
-} from "lucide-react";
+import { Heart, ShoppingBag, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -64,7 +57,7 @@ export function AppHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
-               <SheetHeader>
+              <SheetHeader>
                 <SheetTitle className="sr-only">Menu</SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 p-4 text-lg">
@@ -77,6 +70,11 @@ export function AppHeader() {
                     {link.name}
                   </Link>
                 ))}
+                 <div className="border-t pt-4">
+                  <Button asChild className="w-full">
+                    <Link href="/login">Login / Sign Up</Link>
+                  </Button>
+                </div>
               </nav>
             </SheetContent>
           </Sheet>
@@ -97,7 +95,7 @@ export function AppHeader() {
         </div>
 
         <div className="flex items-center justify-end gap-2">
-           <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
               <span className="sr-only">Cart</span>
@@ -109,42 +107,28 @@ export function AppHeader() {
               <span className="sr-only">Wishlist</span>
             </Link>
           </Button>
-
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <User className="h-5 w-5" />
-                <span className="sr-only">User Profile</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/orders">My Orders</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/notifications">Notifications</Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/login">Login</Link>
-              </DropdownMenuItem>
-               <DropdownMenuItem asChild>
-                <Link href="/signup">Sign Up</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div className="hidden md:flex">
+             <Button asChild variant="outline">
+              <Link href="/login">Login / Sign Up</Link>
+            </Button>
+          </div>
+           <Button variant="ghost" size="icon" asChild className="md:hidden">
+            <Link href="/login">
+              <User className="h-5 w-5" />
+              <span className="sr-only">Login</span>
+            </Link>
+          </Button>
         </div>
       </div>
     </header>
   );
 
   const renderServerFallback = () => (
-     <header className="sticky top-0 z-50 w-full bg-transparent">
+    <header className="sticky top-0 z-50 w-full bg-transparent">
       <div className="container flex h-20 items-center justify-between">
         <div className="flex items-center gap-6">
-          <div className="h-10 w-24"></div>
+          <div className="h-10 w-10 md:hidden"></div>
+          <div className="h-6 w-24"></div>
           <div className="hidden md:flex items-center gap-6">
             <div className="h-6 w-16"></div>
             <div className="h-6 w-24"></div>
@@ -154,7 +138,8 @@ export function AppHeader() {
         <div className="flex items-center gap-2">
           <div className="h-10 w-10"></div>
           <div className="h-10 w-10"></div>
-          <div className="h-10 w-10"></div>
+          <div className="h-10 w-28 hidden md:block"></div>
+           <div className="h-10 w-10 md:hidden"></div>
         </div>
       </div>
     </header>
