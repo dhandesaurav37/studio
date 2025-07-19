@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { ListFilter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import React from "react";
-import { ProductRowCard } from "@/components/product-row-card";
+import { ProductCard } from "@/components/product-card";
 
 const allCategories = [...new Set(products.map((p) => p.category))];
 const allColors = [...new Set(products.flatMap((p) => p.color).filter(Boolean) as string[])];
@@ -189,9 +189,9 @@ export default function ProductsPage() {
 
       <main className="mt-12">
         {filteredProducts.length > 0 ? (
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {filteredProducts.map((product) => (
-              <ProductRowCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         ) : (
