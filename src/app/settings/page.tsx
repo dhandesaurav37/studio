@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +17,7 @@ import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [theme, setTheme] = useState("light");
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -62,7 +63,6 @@ export default function SettingsPage() {
             <CardContent>
               <Label className="text-base">Theme</Label>
               <RadioGroup
-                defaultValue="light"
                 className="grid sm:grid-cols-3 gap-4 mt-4"
                 onValueChange={setTheme}
                 value={theme}
@@ -71,7 +71,7 @@ export default function SettingsPage() {
                   <RadioGroupItem value="light" id="light" className="sr-only" />
                   <Label
                     htmlFor="light"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <div className="w-full bg-background p-2 rounded-sm border mb-2">
                        <div className="h-2 w-full rounded-sm bg-primary" />
@@ -84,7 +84,7 @@ export default function SettingsPage() {
                   <RadioGroupItem value="dark" id="dark" className="sr-only" />
                   <Label
                     htmlFor="dark"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                      <div className="w-full bg-foreground p-2 rounded-sm border border-border mb-2">
                        <div className="h-2 w-full rounded-sm bg-primary-foreground" />
@@ -97,7 +97,7 @@ export default function SettingsPage() {
                   <RadioGroupItem value="system" id="system" className="sr-only" />
                   <Label
                     htmlFor="system"
-                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary"
+                    className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                      <div className="w-full bg-background p-2 rounded-sm border mb-2">
                        <div className="h-2 w-full rounded-sm bg-primary" />
