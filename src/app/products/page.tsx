@@ -101,8 +101,10 @@ export default function ProductsPage() {
           Browse our curated selection of high-quality apparel and accessories.
         </p>
       </div>
-      <div className="max-w-4xl mx-auto">
-        <div className="relative mb-4">
+
+      {/* Filters and Search Section */}
+      <div className="flex flex-col items-center gap-6">
+        <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
@@ -117,7 +119,7 @@ export default function ProductsPage() {
             value={category}
             onValueChange={(val) => handleFilterChange("category", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
+            <SelectTrigger className="w-auto min-w-[160px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -133,7 +135,7 @@ export default function ProductsPage() {
             value={color}
             onValueChange={(val) => handleFilterChange("color", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
+            <SelectTrigger className="w-auto min-w-[140px] flex-grow sm:flex-grow-0">
               <SelectValue placeholder="All Colors" />
             </SelectTrigger>
             <SelectContent>
@@ -149,8 +151,8 @@ export default function ProductsPage() {
             value={alphaSize}
             onValueChange={(val) => handleFilterChange("alphaSize", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
-              <SelectValue placeholder="All Alpha Sizes" />
+            <SelectTrigger className="w-auto min-w-[160px] flex-grow sm:flex-grow-0">
+              <SelectValue placeholder="Alpha Sizes" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Alpha Sizes</SelectItem>
@@ -165,8 +167,8 @@ export default function ProductsPage() {
             value={numericSize}
             onValueChange={(val) => handleFilterChange("numericSize", val)}
           >
-            <SelectTrigger className="min-w-[150px] flex-grow sm:flex-grow-0">
-              <SelectValue placeholder="All Numeric Sizes" />
+            <SelectTrigger className="w-auto min-w-[170px] flex-grow sm:flex-grow-0">
+              <SelectValue placeholder="Numeric Sizes" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Numeric Sizes</SelectItem>
@@ -179,7 +181,7 @@ export default function ProductsPage() {
           </Select>
            <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex-grow sm:flex-grow-0">
+                <Button variant="outline" className="w-auto flex-grow sm:flex-grow-0">
                   <ListFilter className="mr-2 h-4 w-4" />
                   Sort
                 </Button>
@@ -204,7 +206,7 @@ export default function ProductsPage() {
 
       <main className="mt-12">
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
