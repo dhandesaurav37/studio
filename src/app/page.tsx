@@ -77,7 +77,7 @@ export default function HomePage() {
 
   const ProductCarousel = ({
     products,
-    itemsToShow = 3,
+    itemsToShow = 4,
   }: {
     products: typeof featuredProducts;
     itemsToShow?: number;
@@ -93,7 +93,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/2 lg:basis-1/3"
+            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -235,7 +235,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 uppercase tracking-wider">
             Categories
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
             {categories.map((category) => (
               <Link
                 key={category.name}
@@ -261,4 +261,5 @@ export default function HomePage() {
       </section>
     </div>
   );
-}
+
+    
