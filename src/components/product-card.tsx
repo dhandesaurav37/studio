@@ -5,20 +5,28 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag, X } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
   variant?: "default" | "wishlist";
   onRemove?: (productId: string) => void;
+  className?: string;
 }
 
 export function ProductCard({
   product,
   variant = "default",
   onRemove,
+  className,
 }: ProductCardProps) {
   return (
-    <Card className="w-full overflow-hidden group border-2 border-transparent hover:border-primary transition-colors duration-300 flex flex-col h-full bg-card">
+    <Card
+      className={cn(
+        "w-full overflow-hidden group border-2 border-transparent hover:border-primary transition-colors duration-300 flex flex-col h-full bg-card",
+        className
+      )}
+    >
       <Link href={`/products/${product.id}`} className="block">
         <CardContent className="p-0">
           <div className="relative aspect-[3/4] w-full">
@@ -49,7 +57,7 @@ export function ProductCard({
         <div className="flex items-center justify-between w-full mt-4">
           <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
           {variant === "wishlist" ? (
-             <Button
+            <Button
               variant="outline"
               size="sm"
               onClick={() => onRemove?.(product.id)}

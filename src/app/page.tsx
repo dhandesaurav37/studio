@@ -4,11 +4,41 @@ import { products } from "@/lib/data";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 export default function HomePage() {
-  const featuredProducts = products.slice(0, 3);
-  const newArrivals = products.slice(3, 6);
-  const oversizedTees = products.filter(p => p.category === 'Oversized T-shirts').slice(0, 3);
+  const featuredProducts = products.slice(0, 8);
+  const newArrivals = products.slice(3, 11);
+  const oversizedTees = products.filter(
+    (p) => p.category === "Oversized T-shirts"
+  );
+
+  const ProductCarousel = ({ products }: { products: typeof featuredProducts }) => (
+     <Carousel
+      opts={{
+        align: "start",
+      }}
+      className="w-full"
+    >
+      <CarouselContent>
+        {products.map((product) => (
+          <CarouselItem key={product.id} className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+             <div className="p-1 h-full">
+              <ProductCard product={product} className="h-full" />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+      <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+    </Carousel>
+  )
 
   return (
     <div className="flex flex-col">
@@ -32,7 +62,9 @@ export default function HomePage() {
             attention to detail and designed for the modern individual.
           </p>
           <Button asChild size="lg">
-            <Link href="/products">Shop Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
+            <Link href="/products">
+              Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </section>
@@ -43,11 +75,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collection
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <ProductCarousel products={featuredProducts} />
         </div>
       </section>
 
@@ -78,7 +106,7 @@ export default function HomePage() {
               creating pieces you'll love and wear for years to come.
             </p>
             <Button asChild variant="outline">
-               <Link href="/about">Learn More</Link>
+              <Link href="/about">Learn More</Link>
             </Button>
           </div>
         </div>
@@ -90,11 +118,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             New Arrivals
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {newArrivals.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+           <ProductCarousel products={newArrivals} />
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
               <Link href="/products">View All Products</Link>
@@ -109,14 +133,12 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Oversize Tees
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {oversizedTees.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
+          <ProductCarousel products={oversizedTees} />
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
-              <Link href="/products?category=Oversized+T-shirts">Shop Oversize Tees</Link>
+              <Link href="/products?category=Oversized+T-shirts">
+                Shop Oversize Tees
+              </Link>
             </Button>
           </div>
         </div>
