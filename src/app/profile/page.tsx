@@ -10,9 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, Edit, MapPin, Trash2, Camera } from "lucide-react";
+import { User, Mail, Phone, Edit, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -20,7 +19,6 @@ const initialUser = {
   name: "John Doe",
   email: "m@example.com",
   mobile: "+1 234 567 890",
-  avatar: "https://placehold.co/100x100.png",
   address: {
     street: "123 Style Avenue",
     city: "Fashion City",
@@ -61,10 +59,6 @@ export default function ProfilePage() {
     }));
   };
 
-  const handleRemovePhoto = () => {
-    setEditedUser((prev) => ({...prev, avatar: ''}));
-  }
-
   return (
     <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto">
@@ -79,25 +73,8 @@ export default function ProfilePage() {
         )}
       </div>
       <Card className="max-w-2xl mx-auto">
-        <CardHeader className="flex flex-col items-center text-center p-6 sm:p-8">
-          <div className="relative group">
-            <Avatar className="h-24 w-24 mb-4">
-              <AvatarImage src={isEditing ? editedUser.avatar : user.avatar} alt={user.name} data-ai-hint="man portrait" />
-              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            {isEditing && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity mb-4">
-                  <Button variant="ghost" size="icon" className="text-white hover:text-white" onClick={() => document.getElementById('avatar-upload')?.click()}>
-                    <Camera className="h-6 w-6" />
-                  </Button>
-                  <Button variant="ghost" size="icon" className="text-white hover:text-destructive" onClick={handleRemovePhoto}>
-                    <Trash2 className="h-6 w-6" />
-                  </Button>
-                  <input type="file" id="avatar-upload" className="hidden" accept="image/*" />
-                </div>
-            )}
-          </div>
-          <CardTitle className="text-3xl font-headline">{user.name}</CardTitle>
+        <CardHeader className="items-center text-center p-6 sm:p-8">
+          <CardTitle className="text-3xl font-headline">{isEditing ? editedUser.name : user.name}</CardTitle>
           <CardDescription>Your personal account details.</CardDescription>
         </CardHeader>
         <CardContent className="px-6 sm:px-8 pb-4 space-y-6">
