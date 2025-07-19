@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -15,13 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const navLinks = [
-  { href: "/products", label: "All Products" },
-  { href: "/products?category=t-shirts", label: "T-Shirts" },
-  { href: "/products?category=shirts", label: "Shirts" },
-  { href: "/products?category=jeans", label: "Jeans" },
-];
-
 export function AppHeader() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -30,12 +22,22 @@ export function AppHeader() {
     setIsClient(true);
   }, []);
 
-
   if (!isClient) {
     return (
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
-            {/* Render a simplified, non-responsive header on the server */}
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-6">
+              <Link href="/" className="flex items-center space-x-2">
+                <span className="font-bold text-xl font-headline">The White Wolf</span>
+              </Link>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-10 w-10" />
+              <div className="h-10 w-10" />
+              <div className="h-10 w-10" />
+            </div>
+          </div>
         </div>
       </header>
     );
@@ -45,138 +47,50 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex w-full items-center justify-between">
-            {/* Left Side: Mobile Menu Trigger and Desktop Nav */}
-            <div className="flex items-center gap-6">
-                {/* Mobile Menu Trigger */}
-                <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                    <SheetTrigger asChild>
-                    <Button variant="ghost" size="icon" className="md:hidden">
-                        <Menu className="h-6 w-6" />
-                        <span className="sr-only">Toggle Menu</span>
-                    </Button>
-                    </SheetTrigger>
-                    <SheetContent side="left" className="p-0">
-                      <SheetHeader className="p-4 border-b">
-                        <SheetTitle className="sr-only">Menu</SheetTitle>
-                        <div className="flex items-center justify-between">
-                          <Link
-                              href="/"
-                              className="flex items-center space-x-2"
-                              onClick={() => setMobileMenuOpen(false)}
-                          >
-                              <span className="font-bold text-xl font-headline">
-                              The White Wolf
-                              </span>
-                          </Link>
-                          <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => setMobileMenuOpen(false)}
-                          >
-                              <X className="h-6 w-6" />
-                          </Button>
-                        </div>
-                      </SheetHeader>
-                    <div className="flex flex-col h-full">
-                        <div className="p-4 flex-grow">
-                        <nav className="flex flex-col space-y-4">
-                            {navLinks.map((link) => (
-                            <Link
-                                key={link.href}
-                                href={link.href}
-                                className="text-muted-foreground hover:text-foreground"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                {link.label}
-                            </Link>
-                            ))}
-                            <Link
-                                href="/#new-arrivals"
-                                className="text-muted-foreground hover:text-foreground"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                New Arrivals
-                            </Link>
-                        </nav>
-                        </div>
-                    </div>
-                    </SheetContent>
-                </Sheet>
+          {/* Left Side: Brand Name */}
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="font-bold text-xl font-headline">The White Wolf</span>
+            </Link>
+          </div>
 
-                {/* Desktop: Brand Name & Nav */}
-                <div className="hidden md:flex items-center gap-6">
-                    <Link href="/" className="flex items-center space-x-2">
-                    <span className="font-bold text-xl font-headline">The White Wolf</span>
-                    </Link>
-                    <nav className="flex items-center space-x-6 text-sm font-medium">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="text-sm font-medium p-0 h-auto">
-                            Shop
-                        </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                        {navLinks.map((link) => (
-                            <DropdownMenuItem key={link.href} asChild>
-                            <Link href={link.href}>{link.label}</Link>
-                            </DropdownMenuItem>
-                        ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    <Link
-                        href="/#new-arrivals"
-                        className="transition-colors hover:text-foreground/80"
-                    >
-                        New Arrivals
-                    </Link>
-                    </nav>
-                </div>
-            </div>
-
-            {/* Mobile: Centered Brand Name (Only shown when menu is closed) */}
-            <div className="md:hidden absolute left-1/2 -translate-x-1/2">
-                <Link href="/" className="flex items-center space-x-2">
-                    <span className="font-bold text-xl font-headline">The White Wolf</span>
-                </Link>
-            </div>
-            
-            {/* Right Side: Action Icons */}
-            <div className="flex items-center gap-2">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/cart">
-                    <ShoppingBag className="h-5 w-5" />
-                    <span className="sr-only">Cart</span>
-                    </Link>
+          {/* Right Side: Action Icons */}
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/cart">
+                <ShoppingBag className="h-5 w-5" />
+                <span className="sr-only">Cart</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <User className="h-5 w-5" />
+                  <span className="sr-only">User Profile</span>
                 </Button>
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/wishlist">
-                    <Heart className="h-5 w-5" />
-                    <span className="sr-only">Wishlist</span>
-                    </Link>
-                </Button>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                        <User className="h-5 w-5" />
-                        <span className="sr-only">User Profile</span>
-                    </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Link href="/orders"><Package className="mr-2 h-4 w-4" />Orders</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <Link href="/notifications"><Bell className="mr-2 h-4 w-4" />Notifications</Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                        <Link href="/login"><LogOut className="mr-2 h-4 w-4" />Login</Link>
-                    </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/orders"><Package className="mr-2 h-4 w-4" />Orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/notifications"><Bell className="mr-2 h-4 w-4" />Notifications</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/login"><LogOut className="mr-2 h-4 w-4" />Login</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>
