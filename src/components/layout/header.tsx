@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 
 const navLinks = [
   { name: "Shop", href: "/" },
-  { name: "Products", href: "/products" },
+  { name: "Premium product", href: "/products" },
 ];
 
 export function AppHeader() {
@@ -29,11 +29,10 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-card text-card-foreground border-b border-border">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-card text-card-foreground">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* --- Desktop Header --- */}
-        <div className="hidden md:flex items-center gap-8 w-full">
-          {/* Left Side */}
+        <div className="hidden md:flex w-full items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-2xl font-bold font-headline">
               White Wolf
@@ -43,21 +42,19 @@ export function AppHeader() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
                   {link.name}
                 </Link>
               ))}
             </nav>
           </div>
-
-          {/* Right Side */}
-          <div className="flex items-center gap-4 ml-auto">
-             <Button variant="ghost" size="icon" asChild>
-                <Link href="/wishlist">
-                    <Heart className="h-5 w-5" />
-                    <span className="sr-only">Wishlist</span>
-                </Link>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
             </Button>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart">
@@ -65,7 +62,7 @@ export function AppHeader() {
                 <span className="sr-only">Cart</span>
               </Link>
             </Button>
-            <div className="h-6 border-l border-border mx-2"></div>
+            <div className="mx-2 h-6 border-l border-border"></div>
             <Button variant="ghost" asChild>
               <Link href="/login">Login</Link>
             </Button>
@@ -76,8 +73,7 @@ export function AppHeader() {
         </div>
 
         {/* --- Mobile Header --- */}
-        <div className="flex items-center justify-between w-full md:hidden">
-          {/* Mobile Menu Trigger */}
+        <div className="flex w-full items-center justify-between md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -88,9 +84,9 @@ export function AppHeader() {
             <SheetContent side="left">
               <SheetHeader>
                 <SheetTitle>
-                   <Link href="/" className="text-2xl font-bold font-headline">
-                      White Wolf
-                    </Link>
+                  <Link href="/" className="text-2xl font-bold font-headline">
+                    White Wolf
+                  </Link>
                 </SheetTitle>
               </SheetHeader>
               <nav className="flex flex-col gap-4 p-4 text-lg">
@@ -103,23 +99,21 @@ export function AppHeader() {
                     {link.name}
                   </Link>
                 ))}
-                 <hr className="my-4"/>
-                 <Button variant="ghost" asChild>
-                    <Link href="/login">Login</Link>
+                <hr className="my-4" />
+                <Button variant="ghost" asChild>
+                  <Link href="/login">Login</Link>
                 </Button>
                 <Button asChild>
-                    <Link href="/signup">Sign Up</Link>
+                  <Link href="/signup">Sign Up</Link>
                 </Button>
               </nav>
             </SheetContent>
           </Sheet>
-          
-          {/* Mobile Logo */}
+
           <Link href="/" className="text-2xl font-bold font-headline">
-              White Wolf
+            White Wolf
           </Link>
 
-          {/* Mobile Actions */}
           <div className="flex items-center justify-end gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/wishlist">
