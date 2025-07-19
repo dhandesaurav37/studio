@@ -24,12 +24,42 @@ export default function HomePage() {
   );
 
   const heroSlides = [
-    { src: "https://placehold.co/1800x900", hint: "fashion model" },
-    { src: "https://placehold.co/1800x900", hint: "mens fashion" },
-    { src: "https://placehold.co/1800x900", hint: "stylish clothing" },
-    { src: "https://placehold.co/1800x900", hint: "apparel collection" },
-    { src: "https://placehold.co/1800x900", hint: "modern outfits" },
-    { src: "https://placehold.co/1800x900", hint: "urban style" },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "fashion model",
+      leftText: "PREMIUM COLLECTION",
+      rightText: "DISCOVER THE NEW ARRIVALS",
+    },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "mens fashion",
+      leftText: "SUMMER STYLES",
+      rightText: "LIGHTWEIGHT & BREATHABLE",
+    },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "stylish clothing",
+      leftText: "URBAN ESSENTIALS",
+      rightText: "SHOP THE LOOK",
+    },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "apparel collection",
+      leftText: "CRAFTED FOR COMFORT",
+      rightText: "MADE WITH PREMIUM MATERIALS",
+    },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "modern outfits",
+      leftText: "MINIMALIST DESIGN",
+      rightText: "TIMELESS APPAREL",
+    },
+    {
+      src: "https://placehold.co/1800x900",
+      hint: "urban style",
+      leftText: "WHITE WOLF CO.",
+      rightText: "JOIN THE PACK",
+    },
   ];
 
   const categories = [...new Set(products.map((p) => p.category))].map(
@@ -76,7 +106,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[80vh] w-full flex items-center justify-center text-center text-white">
+      <section className="relative h-[80vh] w-full">
         <Carousel
           className="w-full h-full"
           plugins={[
@@ -91,7 +121,7 @@ export default function HomePage() {
         >
           <CarouselContent className="h-full">
             {heroSlides.map((slide, index) => (
-              <CarouselItem key={index} className="h-full">
+              <CarouselItem key={index} className="h-full relative">
                 <Image
                   src={slide.src}
                   alt={`Hero background ${index + 1}`}
@@ -100,28 +130,30 @@ export default function HomePage() {
                   priority={index === 0}
                   data-ai-hint={slide.hint}
                 />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/20" />
+                <div className="relative z-10 h-full flex items-center justify-between text-white p-8 md:p-16">
+                  <div className="max-w-md text-left">
+                    <h2 className="text-4xl md:text-6xl font-bold font-headline uppercase tracking-wider">
+                      {slide.leftText}
+                    </h2>
+                    <Button asChild size="lg" className="mt-8">
+                      <Link href="/products">
+                        Shop Now <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                  </div>
+                  <div className="max-w-xs text-right hidden md:block">
+                     <p className="text-xl md:text-2xl font-semibold uppercase tracking-wide">
+                        {slide.rightText}
+                     </p>
+                  </div>
+                </div>
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white" />
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-white/10 hover:bg-white/20 border-white/20" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-white/10 hover:bg-white/20 border-white/20" />
         </Carousel>
-
-        <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex flex-col items-center p-4">
-          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
-            Timeless Style, Modern Fit
-          </h1>
-          <p className="max-w-2xl text-lg md:text-xl text-white/80 mb-8">
-            Discover our collection of premium apparel, crafted with meticulous
-            attention to detail and designed for the modern individual.
-          </p>
-          <Button asChild size="lg">
-            <Link href="/products">
-              Shop Now <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
       </section>
 
       {/* Featured Collection */}
