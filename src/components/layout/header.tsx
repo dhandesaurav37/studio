@@ -1,24 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, User, Menu, X, Bell, Package, LogOut } from "lucide-react";
+import { Heart, ShoppingBag, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetTrigger,
   SheetHeader,
   SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 export function AppHeader() {
   const [isClient, setIsClient] = useState(false);
@@ -38,7 +30,6 @@ export function AppHeader() {
             <div className="flex items-center gap-2">
               <div className="h-10 w-10" />
               <div className="h-10 w-10" />
-              <div className="h-10 w-10" />
             </div>
           </div>
         </div>
@@ -51,7 +42,6 @@ export function AppHeader() {
       <div className="container flex h-16 items-center">
         <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-6">
-            {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -63,24 +53,22 @@ export function AppHeader() {
                 <SheetHeader>
                   <SheetTitle className="sr-only">Menu</SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col space-y-4">
-                  <Link href="/products" className="text-lg font-medium">
-                    Shop
-                  </Link>
-                  <Link href="/#new-arrivals" className="text-lg font-medium">
-                    New Arrivals
-                  </Link>
+                <div className="flex flex-col space-y-4 p-4">
+                  <Button variant="outline" asChild>
+                     <Link href="/login">Login</Link>
+                  </Button>
+                  <Button asChild>
+                    <Link href="/signup">Sign Up</Link>
+                  </Button>
                 </div>
               </SheetContent>
             </Sheet>
 
-            {/* Desktop Branding */}
             <Link href="/" className="flex items-center space-x-2">
               <span className="font-bold text-xl font-headline">The White Wolf</span>
             </Link>
           </div>
 
-          {/* Right Side: Action Icons */}
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart">
@@ -94,28 +82,14 @@ export function AppHeader() {
                 <span className="sr-only">Wishlist</span>
               </Link>
             </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <User className="h-5 w-5" />
-                  <span className="sr-only">User Profile</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/orders"><Package className="mr-2 h-4 w-4" />Orders</Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/notifications"><Bell className="mr-2 h-4 w-4" />Notifications</Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/login"><LogOut className="mr-2 h-4 w-4" />Login</Link>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <div className="hidden md:flex items-center gap-2">
+               <Button variant="outline" asChild>
+                <Link href="/login">Login</Link>
+              </Button>
+              <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
