@@ -187,7 +187,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 justify-items-center">
+      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center">
         {filteredProducts.length > 0 ? (
           <>
             {filteredProducts.map((product) => (
