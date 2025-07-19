@@ -37,10 +37,8 @@ export default function HomePage() {
 
   const ProductCarousel = ({
     products,
-    itemsToShow = 4,
   }: {
     products: typeof featuredProducts;
-    itemsToShow?: number;
   }) => (
     <Carousel
       opts={{
@@ -53,7 +51,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/3"
+            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -100,26 +98,26 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-card text-card-foreground py-12">
+      <section className="bg-card text-card-foreground py-12 md:py-16">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex flex-col items-center">
               <Gem className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Exclusive Designs</h3>
+              <h3 className="text-xl font-semibold font-headline mb-2">Exclusive Designs</h3>
               <p className="text-muted-foreground">
                 Unique pieces you won't find anywhere else.
               </p>
             </div>
             <div className="flex flex-col items-center">
               <ShieldCheck className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
+              <h3 className="text-xl font-semibold font-headline mb-2">Premium Quality</h3>
               <p className="text-muted-foreground">
                 Crafted from the finest materials for lasting comfort.
               </p>
             </div>
             <div className="flex flex-col items-center">
               <Truck className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold mb-2">Fast Shipping</h3>
+              <h3 className="text-xl font-semibold font-headline mb-2">Fast Shipping</h3>
               <p className="text-muted-foreground">
                 Get your new favorite styles delivered to your door quickly.
               </p>
@@ -130,16 +128,16 @@ export default function HomePage() {
 
       {/* Featured Collection */}
       <section>
-        <div className="container py-16 md:py-24">
+        <div className="container py-16 md:py-20">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collection
           </h2>
-          <ProductCarousel products={featuredProducts} itemsToShow={3} />
+          <ProductCarousel products={featuredProducts} />
         </div>
       </section>
 
       {/* Brand Story */}
-      <section className="bg-card text-card-foreground py-16 md:py-24">
+      <section className="bg-card text-card-foreground py-16 md:py-20">
         <div className="container grid md:grid-cols-2 gap-12 items-center">
           <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden">
             <Image
@@ -172,14 +170,14 @@ export default function HomePage() {
       </section>
 
       {/* New Arrivals */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-20">
         <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             New Arrivals
           </h2>
-          <ProductCarousel products={newArrivals} itemsToShow={3} />
+          <ProductCarousel products={newArrivals} />
           <div className="text-center mt-12">
-            <Button asChild variant="secondary">
+            <Button asChild variant="secondary" size="lg">
               <Link href="/products">View All Products</Link>
             </Button>
           </div>
@@ -187,14 +185,14 @@ export default function HomePage() {
       </section>
 
       {/* Oversize Tees Section */}
-      <section className="py-16 md:py-24 bg-card text-card-foreground">
+      <section className="py-16 md:py-20 bg-card text-card-foreground">
         <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Oversize Tees
           </h2>
-          <ProductCarousel products={oversizedTees} itemsToShow={3} />
+          <ProductCarousel products={oversizedTees} />
           <div className="text-center mt-12">
-            <Button asChild variant="secondary">
+            <Button asChild variant="secondary" size="lg">
               <Link href="/products?category=Oversized+T-shirts">
                 Shop Oversize Tees
               </Link>
@@ -204,10 +202,10 @@ export default function HomePage() {
       </section>
 
       {/* Shop by Category Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-20">
         <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 uppercase tracking-wider">
-            Categories
+            Shop By Category
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {categories.map((category) => (
@@ -216,7 +214,7 @@ export default function HomePage() {
                 href={category.href}
                 className="group text-center"
               >
-                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-md bg-muted">
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-lg bg-muted">
                   <Image
                     src={category.imageSrc}
                     alt={`A model wearing a ${category.name}`}
@@ -225,7 +223,7 @@ export default function HomePage() {
                     data-ai-hint={category.dataAiHint}
                   />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                <h3 className="mt-4 text-lg font-semibold text-foreground group-hover:text-primary transition-colors capitalize">
                   {category.name.replace("-", " ")}
                 </h3>
               </Link>
