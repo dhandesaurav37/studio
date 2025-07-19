@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -10,9 +11,12 @@ export function Footer() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand and Socials */}
           <div className="lg:col-span-4 flex flex-col items-start">
-            <h3 className="text-2xl font-headline font-bold mb-4">
-              The White Wolf
-            </h3>
+             <Link href="/" className="flex items-center gap-2 mb-4">
+               <Image src="/souled-store-logo-white.svg" alt="The Souled Store" width={40} height={40} />
+              <h3 className="text-2xl font-headline font-bold">
+                The Souled Store
+              </h3>
+            </Link>
             <p className="text-primary-foreground/70 mb-6 max-w-xs leading-relaxed">
               Timeless style, uncompromising quality, and conscious
               craftsmanship for the modern individual.
@@ -171,7 +175,7 @@ export function Footer() {
         </div>
         <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">
           <p>
-            &copy; {new Date().getFullYear()} The White Wolf Co. All Rights
+            &copy; {new Date().getFullYear()} The Souled Store Co. All Rights
             Reserved.
           </p>
         </div>
