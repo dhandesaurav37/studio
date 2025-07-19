@@ -19,8 +19,10 @@ const navLinks = [
 
 export function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -34,10 +36,25 @@ export function AppHeader() {
       : "bg-transparent"
   }`;
 
+  if (!isMounted) {
+    return (
+      <header className={headerClasses}>
+        <div className="container flex h-20 items-center justify-between">
+          <div className="text-2xl font-bold font-headline">White Wolf</div>
+          <div className="flex items-center gap-2">
+            <div className="h-10 w-10" />
+            <div className="h-10 w-10" />
+            <div className="h-11 w-24" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className={headerClasses}>
-      <div className="flex h-20 items-center justify-between">
-        <div className="container flex items-center justify-between">
+      <div className="container mx-auto flex h-20 items-center px-4 sm:px-6 lg:px-8">
+        <div className="flex w-full items-center justify-between">
           <div className="flex items-center gap-6">
             <Sheet>
               <SheetTrigger asChild>
@@ -63,25 +80,26 @@ export function AppHeader() {
                 </nav>
               </SheetContent>
             </Sheet>
-            <Link href="/" className="text-2xl font-bold font-headline">
-              White Wolf
-            </Link>
-          </div>
-
-          <nav className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link.name}
+            <div className="flex items-center gap-6">
+              <Link href="/" className="text-2xl font-bold font-headline">
+                White Wolf
               </Link>
-            ))}
-          </nav>
+              <nav className="hidden md:flex items-center gap-6">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-center justify-end gap-2 pr-4 sm:pr-6 lg:pr-8">
+        <div className="flex items-center justify-end gap-2">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
@@ -94,7 +112,7 @@ export function AppHeader() {
               <span className="sr-only">Wishlist</span>
             </Link>
           </Button>
-          <Button asChild variant="outline">
+          <Button asChild>
             <Link href="/login">Login / Sign Up</Link>
           </Button>
         </div>
