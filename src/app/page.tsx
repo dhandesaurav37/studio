@@ -8,6 +8,7 @@ import Link from "next/link";
 export default function HomePage() {
   const featuredProducts = products.slice(0, 3);
   const newArrivals = products.slice(3, 6);
+  const oversizedTees = products.filter(p => p.category === 'Oversized T-shirts').slice(0, 3);
 
   return (
     <div className="flex flex-col">
@@ -97,6 +98,25 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
               <Link href="/products">View All Products</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Oversize Tees Section */}
+      <section className="py-16 md:py-24 bg-card text-card-foreground">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+            Oversize Tees
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {oversizedTees.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button asChild variant="secondary">
+              <Link href="/products?category=Oversized+T-shirts">Shop Oversize Tees</Link>
             </Button>
           </div>
         </div>
