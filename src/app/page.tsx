@@ -15,6 +15,16 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import React from "react";
+import Autoplay from "embla-carousel-autoplay";
+
+const heroImages = [
+  { src: "https://placehold.co/1600x900.png", hint: "fashion models" },
+  { src: "https://placehold.co/1600x900.png", hint: "mens fashion" },
+  { src: "https://placehold.co/1600x900.png", hint: "stylish clothing" },
+  { src: "https://placehold.co/1600x900.png", hint: "modern apparel" },
+  { src: "https://placehold.co/1600x900.png", hint: "urban fashion" },
+  { src: "https://placehold.co/1600x900.png", hint: "premium fabric" },
+];
 
 export default function HomePage() {
   const newArrivals = products.slice(0, 4);
@@ -52,17 +62,35 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] bg-background">
+        <Carousel
+          className="w-full h-full"
+          plugins={[
+            Autoplay({
+              delay: 12000,
+              stopOnInteraction: false,
+              stopOnMouseEnter: true,
+            }),
+          ]}
+          opts={{ loop: true }}
+        >
+          <CarouselContent className="h-full">
+            {heroImages.map((image, index) => (
+              <CarouselItem key={index} className="h-full">
+                <div className="relative w-full h-full">
+                  <Image
+                    src={image.src}
+                    alt={`Hero image ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={image.hint}
+                    priority={index === 0}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
         <div className="absolute inset-0 bg-black/50 z-10" />
-        <div className="w-full h-full">
-          <Image
-            src="https://placehold.co/1600x900.png"
-            alt="Hero image"
-            fill
-            className="object-cover"
-            data-ai-hint="fashion models"
-            priority
-          />
-        </div>
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4">
           <div className="flex flex-col items-center justify-center text-center">
             <h1 className="text-4xl md:text-6xl font-extrabold font-headline tracking-tight leading-tight">
