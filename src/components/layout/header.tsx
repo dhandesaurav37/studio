@@ -14,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "../ui/separator";
 
 const navLinks = [
   { href: "/products", label: "All Products" },
@@ -36,8 +35,8 @@ export function AppHeader() {
       <div className="container flex h-16 items-center">
         {isClient ? (
           <>
-            {/* Mobile Menu Trigger */}
-            <div className="flex md:hidden">
+            {/* Mobile Menu */}
+            <div className="flex items-center md:hidden">
               <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">
@@ -121,15 +120,15 @@ export function AppHeader() {
               </nav>
             </div>
 
-            {/* Mobile: Centered Brand Name */}
-            <div className="flex-1 flex justify-center md:hidden">
+            {/* Mobile: Centered Brand Name - now aligned left */}
+             <div className="flex-1 flex justify-start md:hidden pl-4">
                  <Link href="/" className="flex items-center space-x-2">
                     <span className="font-bold text-xl font-headline">The White Wolf</span>
                 </Link>
             </div>
             
             {/* Action Icons (Right side for all screens) */}
-            <div className="flex items-center justify-end space-x-1 md:space-x-2 ml-auto">
+            <div className="ml-auto flex items-center space-x-1 md:space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/cart">
                   <ShoppingBag className="h-5 w-5" />
@@ -153,14 +152,14 @@ export function AppHeader() {
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/orders"><Package className="mr-2" />Orders</Link>
+                    <Link href="/orders"><Package className="mr-2 h-4 w-4" />Orders</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                     <Link href="/notifications"><Bell className="mr-2" />Notifications</Link>
+                     <Link href="/notifications"><Bell className="mr-2 h-4 w-4" />Notifications</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                    <DropdownMenuItem asChild>
-                    <Link href="/login"><LogOut className="mr-2" />Login</Link>
+                    <Link href="/login"><LogOut className="mr-2 h-4 w-4" />Login</Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -172,7 +171,11 @@ export function AppHeader() {
             <div className="flex items-center space-x-2">
               <span className="font-bold text-xl font-headline">The White Wolf</span>
             </div>
-            <div className="w-6 h-6"></div>
+            <div className="flex items-center space-x-2">
+                <div className="w-8 h-8"/>
+                <div className="w-8 h-8"/>
+                <div className="w-8 h-8"/>
+            </div>
           </div>
         )}
       </div>
