@@ -36,21 +36,6 @@ export function AppHeader() {
       : "bg-transparent"
   }`;
 
-  if (!isMounted) {
-    return (
-      <header className={headerClasses}>
-        <div className="container flex h-20 items-center justify-between">
-          <div className="text-2xl font-bold font-headline">White Wolf</div>
-          <div className="flex items-center gap-2">
-            <div className="h-10 w-10" />
-            <div className="h-10 w-10" />
-            <div className="h-11 w-24" />
-          </div>
-        </div>
-      </header>
-    );
-  }
-
   return (
     <header className={headerClasses}>
       <div className="container mx-auto flex h-20 items-center px-4 sm:px-6 lg:px-8">
@@ -98,24 +83,32 @@ export function AppHeader() {
             </div>
           </div>
         </div>
-
-        <div className="flex items-center justify-end gap-2">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/wishlist">
-              <Heart className="h-5 w-5" />
-              <span className="sr-only">Wishlist</span>
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="/login">Login / Sign Up</Link>
-          </Button>
-        </div>
+        
+        {isMounted ? (
+          <div className="flex items-center justify-end gap-2">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/cart">
+                <ShoppingBag className="h-5 w-5" />
+                <span className="sr-only">Cart</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/login">Login / Sign Up</Link>
+            </Button>
+          </div>
+        ) : (
+          <div className="flex items-center justify-end gap-2">
+            <div className="h-10 w-10" />
+            <div className="h-10 w-10" />
+            <div className="h-11 w-24" />
+          </div>
+        )}
       </div>
     </header>
   );
