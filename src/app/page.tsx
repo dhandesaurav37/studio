@@ -76,10 +76,10 @@ export default function HomePage() {
           data-ai-hint="fashion model"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
-        <div className="relative z-10 h-full flex items-center">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"></div>
+        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
           <div className="container text-white">
-            <div className="max-w-xl">
+            <div className="max-w-2xl mx-auto">
               <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
                 Define Your Style
               </h1>
