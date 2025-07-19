@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -157,9 +158,9 @@ export default function HomePage() {
       </section>
 
       {/* Featured Collection */}
-      <section className="pt-16 md:pt-24 pb-16 md:pb-24">
+      <section className="py-16 md:py-24 bg-card -mt-20 relative z-10">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 text-card-foreground">
             Featured Collection
           </h2>
           <ProductCarousel products={featuredProducts} />
