@@ -22,7 +22,7 @@ import {
 
 const navLinks = [
   { name: "Home", href: "/" },
-  { name: "Products", href: "/products" },
+  { name: "Shop", href: "/products" },
 ];
 
 export function AppHeader() {
