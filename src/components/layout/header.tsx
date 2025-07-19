@@ -11,11 +11,32 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
   { name: "Premium Products", href: "/products?category=Jackets" },
 ];
+
+const HeaderSkeleton = () => (
+   <header className="sticky top-0 z-50 w-full bg-transparent">
+    <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+      <div className="flex items-center gap-6">
+        <Skeleton className="h-6 w-6 md:hidden" />
+        <Skeleton className="h-7 w-28" />
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <div className="hidden md:flex items-center gap-6 mr-4">
+            <Skeleton className="h-5 w-12" />
+            <Skeleton className="h-5 w-28" />
+        </div>
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="h-11 w-28" />
+      </div>
+    </div>
+  </header>
+)
 
 export function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,25 +58,7 @@ export function AppHeader() {
   }`;
 
   if (!isMounted) {
-     return (
-      <header className="sticky top-0 z-50 w-full bg-transparent">
-        <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-6">
-            <div className="h-6 w-6 md:hidden" />
-            <div className="h-7 w-28 bg-muted rounded-md" />
-          </div>
-          <div className="flex items-center justify-end gap-2">
-            <div className="hidden md:flex items-center gap-6 mr-4">
-               <div className="h-5 w-12 bg-muted rounded-md" />
-               <div className="h-5 w-28 bg-muted rounded-md" />
-            </div>
-            <div className="h-10 w-10 bg-muted rounded-full" />
-            <div className="h-10 w-10 bg-muted rounded-full" />
-            <div className="h-11 w-28 bg-muted rounded-md" />
-          </div>
-        </div>
-      </header>
-    );
+    return <HeaderSkeleton />;
   }
 
   return (
