@@ -26,6 +26,17 @@ export default function CartPage() {
     setCartItems(cartItems.filter((item) => item.product.id !== productId));
   };
 
+  const handleQuantityChange = (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    setCartItems(
+      cartItems.map((item) =>
+        item.product.id === productId
+          ? { ...item, quantity: newQuantity }
+          : item
+      )
+    );
+  };
+
   const subtotal = cartItems.reduce(
     (acc, item) => acc + item.product.price * item.quantity,
     0
@@ -72,13 +83,33 @@ export default function CartPage() {
                           ${item.product.price.toFixed(2)}
                         </p>
                         <div className="flex items-center border rounded-md mt-2 w-fit">
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleQuantityChange(
+                                item.product.id,
+                                item.quantity - 1
+                              )
+                            }
+                          >
                             <Minus className="h-4 w-4" />
                           </Button>
                           <span className="w-8 text-center text-sm">
                             {item.quantity}
                           </span>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() =>
+                              handleQuantityChange(
+                                item.product.id,
+                                item.quantity + 1
+                              )
+                            }
+                          >
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
