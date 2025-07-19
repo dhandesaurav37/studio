@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,10 +14,60 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
+  const [isMounted, setIsMounted] = useState(false);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return (
+      <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto">
+          <Skeleton className="h-10 w-1/4 mb-8" />
+          <div className="space-y-8">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-4 w-2/3 mt-2" />
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center justify-between space-x-4 rounded-lg border p-4">
+                  <div className="space-y-1.5">
+                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="h-4 w-48" />
+                  </div>
+                  <Skeleton className="h-6 w-11" />
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-1/3" />
+                <Skeleton className="h-4 w-2/3 mt-2" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-5 w-16 mb-4" />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                  <Skeleton className="h-28 w-full" />
+                </div>
+              </CardContent>
+            </Card>
+            <div className="flex justify-end">
+              <Skeleton className="h-10 w-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -68,14 +118,18 @@ export default function SettingsPage() {
                 value={theme}
               >
                 <div>
-                  <RadioGroupItem value="light" id="light" className="sr-only" />
+                  <RadioGroupItem
+                    value="light"
+                    id="light"
+                    className="sr-only"
+                  />
                   <Label
                     htmlFor="light"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
                     <div className="w-full bg-background p-2 rounded-sm border mb-2">
-                       <div className="h-2 w-full rounded-sm bg-primary" />
-                       <div className="h-2 w-1/2 rounded-sm bg-primary/50 mt-1" />
+                      <div className="h-2 w-full rounded-sm bg-primary" />
+                      <div className="h-2 w-1/2 rounded-sm bg-primary/50 mt-1" />
                     </div>
                     Light
                   </Label>
@@ -86,22 +140,26 @@ export default function SettingsPage() {
                     htmlFor="dark"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
-                     <div className="w-full bg-foreground p-2 rounded-sm border border-border mb-2">
-                       <div className="h-2 w-full rounded-sm bg-primary-foreground" />
-                       <div className="h-2 w-1/2 rounded-sm bg-primary-foreground/50 mt-1" />
+                    <div className="w-full bg-foreground p-2 rounded-sm border border-border mb-2">
+                      <div className="h-2 w-full rounded-sm bg-primary-foreground" />
+                      <div className="h-2 w-1/2 rounded-sm bg-primary-foreground/50 mt-1" />
                     </div>
                     Dark
                   </Label>
                 </div>
                 <div>
-                  <RadioGroupItem value="system" id="system" className="sr-only" />
+                  <RadioGroupItem
+                    value="system"
+                    id="system"
+                    className="sr-only"
+                  />
                   <Label
                     htmlFor="system"
                     className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                   >
-                     <div className="w-full bg-background p-2 rounded-sm border mb-2">
-                       <div className="h-2 w-full rounded-sm bg-primary" />
-                       <div className="h-2 w-1/2 rounded-sm bg-primary/50 mt-1" />
+                    <div className="w-full bg-background p-2 rounded-sm border mb-2">
+                      <div className="h-2 w-full rounded-sm bg-primary" />
+                      <div className="h-2 w-1/2 rounded-sm bg-primary/50 mt-1" />
                     </div>
                     System
                   </Label>
