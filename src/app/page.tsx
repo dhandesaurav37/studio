@@ -29,6 +29,7 @@ const heroImages = [
 export default function HomePage() {
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
+  const premiumCollection = products.filter(p => ["Belts", "Bags", "Wallets"].includes(p.category));
 
 
   const ProductCarousel = ({
@@ -187,6 +188,26 @@ export default function HomePage() {
            <div className="text-center mt-12">
             <Button asChild variant="outline" size="lg">
               <Link href="/products?category=Oversized+T-shirts">View All Oversize Tees</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Premium Collection Section */}
+      <section className="py-16 md:py-20 bg-background w-full">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">
+              Our Premium Collection
+            </h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Elevate your style with our premium accessories, crafted with the finest materials.
+            </p>
+          </div>
+          <ProductCarousel products={premiumCollection} />
+           <div className="text-center mt-12">
+            <Button asChild variant="outline" size="lg">
+              <Link href="/products">View All Accessories</Link>
             </Button>
           </div>
         </div>
