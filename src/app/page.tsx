@@ -38,38 +38,38 @@ export default function HomePage() {
 
   const heroSlides = [
     {
-      title: "Summer Styles",
-      subtitle: "URBAN ESSENTIALS",
+      title: "Exquisite Craftsmanship",
+      subtitle: "UNPARALLELED QUALITY",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "male fashion model",
     },
     {
-      title: "New Arrivals",
-      subtitle: "FRESH & BOLD",
+      title: "The Art of Style",
+      subtitle: "MODERN ELEGANCE",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "female fashion model",
     },
     {
-      title: "Timeless Classics",
-      subtitle: "CRAFTED FOR YOU",
+      title: "Signature Collection",
+      subtitle: "CURATED FOR CONNOISSEURS",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "clothing rack",
     },
     {
-      title: "Premium Quality",
-      subtitle: "UNMATCHED COMFORT",
+      title: "Luxury Essentials",
+      subtitle: "DEFINITIVE COMFORT",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "fabric texture",
     },
     {
-      title: "The Perfect Fit",
-      subtitle: "TAILORED ELEGANCE",
+      title: "Impeccable Fit",
+      subtitle: "TAILORED TO PERFECTION",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "person wearing suit",
     },
     {
-      title: "Explore The Collection",
-      subtitle: "DEFINE YOUR STYLE",
+      title: "Discover Your Aesthetic",
+      subtitle: "ELEVATE YOUR WARDROBE",
       image: "https://placehold.co/1200x800.png",
       dataAiHint: "stylish outfit",
     },
@@ -131,7 +131,7 @@ export default function HomePage() {
                     data-ai-hint={slide.dataAiHint}
                     priority={index === 0}
                   />
-                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
                     <h1 className="text-sm font-light uppercase tracking-[0.3em] mb-2">
                       {slide.title}
@@ -155,7 +155,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Collection */}
-      <section className="bg-background">
+      <section>
         <div className="container py-16 md:py-24">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collection
@@ -261,4 +261,6 @@ export default function HomePage() {
       </section>
     </div>
   );
+    
+
     
