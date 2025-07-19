@@ -19,8 +19,24 @@ export default function HomePage() {
     (p) => p.category === "Oversized T-shirts"
   );
 
-  const ProductCarousel = ({ products }: { products: typeof featuredProducts }) => (
-     <Carousel
+  const categories = [
+    ...new Set(products.map((p) => p.category)),
+  ].map((category) => {
+    const product = products.find((p) => p.category === category)!;
+    return {
+      name: category,
+      href: `/products?category=${encodeURIComponent(category)}`,
+      imageSrc: product.images[0],
+      dataAiHint: product.dataAiHint,
+    };
+  });
+
+  const ProductCarousel = ({
+    products,
+  }: {
+    products: typeof featuredProducts;
+  }) => (
+    <Carousel
       opts={{
         align: "start",
       }}
@@ -28,8 +44,11 @@ export default function HomePage() {
     >
       <CarouselContent>
         {products.map((product) => (
-          <CarouselItem key={product.id} className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
-             <div className="p-1 h-full">
+          <CarouselItem
+            key={product.id}
+            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+          >
+            <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
             </div>
           </CarouselItem>
@@ -38,7 +57,7 @@ export default function HomePage() {
       <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
       <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
     </Carousel>
-  )
+  );
 
   return (
     <div className="flex flex-col">
@@ -118,7 +137,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             New Arrivals
           </h2>
-           <ProductCarousel products={newArrivals} />
+          <ProductCarousel products={newArrivals} />
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
               <Link href="/products">View All Products</Link>
@@ -140,6 +159,38 @@ export default function HomePage() {
                 Shop Oversize Tees
               </Link>
             </Button>
+          </div>
+        </div>
+      </section>
+      
+      {/* Shop by Category Section */}
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+            Shop by Category
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            {categories.map((category) => (
+              <Link
+                key={category.name}
+                href={category.href}
+                className="group relative flex flex-col items-center justify-end text-center rounded-lg overflow-hidden p-4 h-48 md:h-64"
+              >
+                <Image
+                  src={category.imageSrc}
+                  alt={`A model wearing a ${category.name}`}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  data-ai-hint={category.dataAiHint}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                <div className="relative z-10">
+                  <h3 className="text-lg font-semibold text-white group-hover:underline">
+                    {category.name.replace("-", " ")}
+                  </h3>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
