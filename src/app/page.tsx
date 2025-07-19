@@ -114,36 +114,36 @@ export default function HomePage() {
       {/* Features Section */}
       <section className="bg-card">
         <div className="container py-16 md:py-20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-12 text-center">
+            <div className="flex flex-col items-center gap-4">
               <Archive className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
                   Exclusive Designs
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground max-w-xs">
                   Curated pieces you won&apos;t find anywhere else.
                 </p>
               </div>
             </div>
-            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
+            <div className="flex flex-col items-center gap-4">
               <Shirt className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
                   Premium Quality
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground max-w-xs">
                   Crafted from the finest materials for lasting comfort.
                 </p>
               </div>
             </div>
-            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
+            <div className="flex flex-col items-center gap-4">
               <Truck className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
                   Fast Shipping
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="text-muted-foreground max-w-xs">
                   Get your new look delivered to your door in days.
                 </p>
               </div>
