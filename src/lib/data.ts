@@ -1,3 +1,4 @@
+
 export interface Product {
   id: string;
   name: string;
@@ -228,6 +229,57 @@ export const products: Product[] = [
     rating: 4.8,
     reviews: 115,
     dataAiHint: "black track pants",
+  },
+  {
+    id: "13",
+    name: "Classic Leather Belt",
+    price: 89.99,
+    description: "A timeless belt crafted from genuine full-grain leather, finished with a classic silver-tone buckle. An essential accessory for any wardrobe.",
+    images: [
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+    ],
+    category: "Belts",
+    sizes: ["30", "32", "34", "36", "38"],
+    color: "Brown",
+    rating: 4.9,
+    reviews: 150,
+    dataAiHint: "leather belt",
+  },
+  {
+    id: "14",
+    name: "Canvas Messenger Bag",
+    price: 179.99,
+    description: "A durable and stylish messenger bag made from heavy-duty canvas with leather accents. Features a padded laptop sleeve and multiple pockets for organization.",
+    images: [
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+    ],
+    category: "Bags",
+    sizes: ["One Size"],
+    color: "Olive",
+    rating: 4.7,
+    reviews: 88,
+    dataAiHint: "messenger bag",
+  },
+  {
+    id: "15",
+    name: "Minimalist Card Holder",
+    price: 59.99,
+    description: "A slim and modern card holder wallet, handcrafted from premium leather. Designed to hold your essential cards and a few folded bills without the bulk.",
+    images: [
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+    ],
+    category: "Wallets",
+    sizes: ["One Size"],
+    color: "Black",
+    rating: 4.8,
+    reviews: 112,
+    dataAiHint: "leather wallet",
   },
 ];
 
