@@ -1,147 +1,103 @@
-"use client";
-
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
+import { Button } from "@/components/ui/button";
+import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/data";
-import { ChevronRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const heroFeatures = [
-  "4-WAY STRETCH",
-  "PREMIUM FABRIC",
-  "WRINKLE RESISTANCE",
-];
-
-const innovationLabItems = [
-  {
-    title: "Craft meets complexity",
-    description: "Every pattern is engineered on a loom, not stamped by machines",
-    image: "https://placehold.co/800x600",
-    dataAiHint: "fabric loom",
-  },
-  {
-    title: "Woven, not printed",
-    description: "Jacquard fabrics tell their story thread by thread",
-    image: "https://placehold.co/800x600",
-    dataAiHint: "textile weaving",
-  },
-  {
-    title: "Timeless texture",
-    description:
-      "Jacquard fabrics bring depth, dimension, and heritage to every garment",
-    image: "https://placehold.co/800x600",
-    dataAiHint: "red fabric",
-  },
-];
-
-export default function Home() {
-  const heroProducts = products.filter((p) => p.category === "pants");
+export default function HomePage() {
+  const featuredProducts = products.slice(0, 3);
+  const newArrivals = products.slice(3, 6);
 
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="w-full">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <div className="lg:col-span-2">
-              <Carousel
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-                className="w-full"
-              >
-                <CarouselContent>
-                  {heroProducts.map((product, index) => (
-                    <CarouselItem key={product.id}>
-                      <div className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center">
-                        <Image
-                          src={product.images[index % product.images.length]}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                          data-ai-hint={product.dataAiHint}
-                          priority={index === 0}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-                        <div className="relative z-10 flex flex-col items-start p-8 md:p-12 text-white self-center text-left">
-                          <h2 className="text-4xl md:text-6xl font-light tracking-wider">
-                            NOT JUST PANTS
-                          </h2>
-                          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-                            SUPER PANTS
-                          </h1>
-                        </div>
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 text-white" />
-                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 text-white" />
-              </Carousel>
-            </div>
+      <section className="relative h-[80vh] w-full flex items-center justify-center text-center">
+        <Image
+          src="https://placehold.co/1800x900"
+          alt="Hero background"
+          fill
+          className="object-cover object-center"
+          priority
+          data-ai-hint="fashion model"
+        />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative z-10 flex flex-col items-center text-white p-4">
+          <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
+            Timeless Style, Modern Fit
+          </h1>
+          <p className="max-w-2xl text-lg md:text-xl text-white/80 mb-8">
+            Discover our collection of premium apparel, crafted with meticulous
+            attention to detail and designed for the modern individual.
+          </p>
+          <Button asChild size="lg">
+            <Link href="/products">Shop Now <ArrowRight className="ml-2 h-5 w-5" /></Link>
+          </Button>
+        </div>
+      </section>
 
-            <div className="hidden lg:flex flex-col items-center justify-center p-8 bg-secondary">
-              <div className="relative w-full aspect-[3/4]">
-                <Image
-                  src="https://placehold.co/600x800"
-                  alt="Super Pants"
-                  fill
-                  className="object-contain"
-                  data-ai-hint="black pants"
-                />
-              </div>
-              <div className="flex space-x-2 mt-4">
-                <div className="w-6 h-6 rounded-full bg-gray-800 border-2 border-primary"></div>
-                <div className="w-6 h-6 rounded-full bg-amber-900"></div>
-                <div className="w-6 h-6 rounded-full bg-black"></div>
-              </div>
-              <div className="mt-8 space-y-6 self-start w-full">
-                {heroFeatures.map((feature, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm font-semibold tracking-wider">
-                      {feature}
-                    </span>
-                    <ChevronRight className="h-5 w-5" />
-                  </div>
-                ))}
-              </div>
-            </div>
+      {/* Featured Collection */}
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+            Featured Collection
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Innovation Lab Section */}
-      <section className="py-12 md:py-20 bg-background">
-        <div className="container mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            INNOVATION LAB
+      {/* Brand Story */}
+      <section className="bg-card text-card-foreground py-16 md:py-24">
+        <div className="container grid md:grid-cols-2 gap-12 items-center">
+          <div className="relative w-full aspect-square md:aspect-[4/5] rounded-lg overflow-hidden">
+            <Image
+              src="https://placehold.co/600x750"
+              alt="Brand story"
+              fill
+              className="object-cover"
+              data-ai-hint="clothing designer"
+            />
+          </div>
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold font-headline mb-6">
+              Our Philosophy
+            </h2>
+            <p className="text-lg text-muted-foreground mb-4">
+              At White Wolf, we believe in clothing that lasts. We focus on
+              timeless design, the finest materials, and impeccable
+              craftsmanship.
+            </p>
+            <p className="text-muted-foreground mb-8">
+              Our collections are designed to be versatile, comfortable, and
+              effortlessly stylish. We're not about chasing trends; we're about
+              creating pieces you'll love and wear for years to come.
+            </p>
+            <Button asChild variant="outline">
+               <Link href="/about">Learn More</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* New Arrivals */}
+      <section className="py-16 md:py-24">
+        <div className="container">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+            New Arrivals
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-            {innovationLabItems.map((item, index) => (
-              <Link href="#" key={index}>
-                <div className="relative group h-80 overflow-hidden rounded-lg">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    data-ai-hint={item.dataAiHint}
-                  />
-                  <div className="absolute inset-0 bg-black/50" />
-                  <div className="absolute inset-0 flex flex-col items-start justify-end text-white p-6 text-left">
-                    <h3 className="text-xl font-bold">{item.title}</h3>
-                    <p className="text-sm mt-1">{item.description}</p>
-                  </div>
-                </div>
-              </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {newArrivals.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
+          </div>
+          <div className="text-center mt-12">
+            <Button asChild variant="secondary">
+              <Link href="/products">View All Products</Link>
+            </Button>
           </div>
         </div>
       </section>

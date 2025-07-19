@@ -5,8 +5,8 @@ import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "The Souled Store",
-  description: "Premium apparel for men and women.",
+  title: "White Wolf",
+  description: "Premium apparel for the modern individual.",
   manifest: "/manifest.json",
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -25,20 +25,20 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
           rel="stylesheet"
         />
         <link
-          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="application-name" content="The Souled Store" />
+        <meta name="application-name" content="White Wolf" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="The Souled Store" />
+        <meta name="apple-mobile-web-app-title" content="White Wolf" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#FFFFFF" />
+        <meta name="theme-color" content="#F0F0F0" />
       </head>
       <body className="font-body antialiased">
         <div className="flex flex-col min-h-screen">

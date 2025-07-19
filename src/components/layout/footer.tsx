@@ -2,22 +2,20 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Twitter, Youtube } from "lucide-react";
-import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="bg-primary text-primary-foreground">
+    <footer className="bg-card text-card-foreground border-t">
       <div className="container py-12 md:py-16 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Brand and Socials */}
           <div className="lg:col-span-4 flex flex-col items-start">
-             <Link href="/" className="flex items-center gap-2 mb-4">
-               <Image src="/souled-store-logo-white.svg" alt="The Souled Store" width={40} height={40} />
+            <Link href="/" className="flex items-center gap-2 mb-4">
               <h3 className="text-2xl font-headline font-bold">
-                The Souled Store
+                White Wolf
               </h3>
             </Link>
-            <p className="text-primary-foreground/70 mb-6 max-w-xs leading-relaxed">
+            <p className="text-muted-foreground mb-6 max-w-xs leading-relaxed">
               Timeless style, uncompromising quality, and conscious
               craftsmanship for the modern individual.
             </p>
@@ -25,30 +23,30 @@ export function Footer() {
               <Link
                 href="#"
                 aria-label="Instagram"
-                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Instagram className="h-6 w-6" />
+                <Instagram className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
                 aria-label="Facebook"
-                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Facebook className="h-6 w-6" />
+                <Facebook className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
                 aria-label="Twitter"
-                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Twitter className="h-6 w-6" />
+                <Twitter className="h-5 w-5" />
               </Link>
               <Link
                 href="#"
                 aria-label="Youtube"
-                className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Youtube className="h-6 w-6" />
+                <Youtube className="h-5 w-5" />
               </Link>
             </div>
           </div>
@@ -61,7 +59,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/products"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     All Products
                   </Link>
@@ -69,7 +67,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/#new-arrivals"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     New Arrivals
                   </Link>
@@ -77,7 +75,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/products?category=t-shirts"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     T-Shirts
                   </Link>
@@ -85,7 +83,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/products?category=jeans"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Jeans
                   </Link>
@@ -98,7 +96,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/#our-story"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Our Story
                   </Link>
@@ -106,7 +104,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/contact"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Contact Us
                   </Link>
@@ -114,7 +112,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     FAQs
                   </Link>
@@ -127,7 +125,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="#"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Shipping & Returns
                   </Link>
@@ -135,7 +133,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="#"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Size Guide
                   </Link>
@@ -143,7 +141,7 @@ export function Footer() {
                 <li>
                   <Link
                     href="#"
-                    className="text-primary-foreground/70 hover:text-primary-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Privacy Policy
                   </Link>
@@ -157,14 +155,14 @@ export function Footer() {
             <h4 className="font-semibold mb-4 tracking-wider uppercase text-sm">
               Join The Pack
             </h4>
-            <p className="text-sm text-primary-foreground/70 mb-4">
+            <p className="text-sm text-muted-foreground mb-4">
               Subscribe for exclusive updates, new arrivals, and special offers.
             </p>
-            <form className="flex w-full items-center">
+            <form className="flex w-full max-w-sm items-center">
               <Input
                 type="email"
                 placeholder="Enter your email"
-                className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50 rounded-r-none h-11 flex-1"
+                className="bg-background border-border rounded-r-none h-11 flex-1"
                 aria-label="Email for newsletter"
               />
               <Button type="submit" variant="secondary" className="rounded-l-none h-11">
@@ -173,9 +171,9 @@ export function Footer() {
             </form>
           </div>
         </div>
-        <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">
+        <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} The Souled Store Co. All Rights
+            &copy; {new Date().getFullYear()} White Wolf Co. All Rights
             Reserved.
           </p>
         </div>
