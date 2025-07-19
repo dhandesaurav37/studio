@@ -21,9 +21,9 @@ export const products: Product[] = [
     description:
       "A classic crew-neck t-shirt made from premium Peruvian Pima cotton. Ultra-soft, durable, and perfect for any occasion.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL"],
@@ -39,9 +39,9 @@ export const products: Product[] = [
     description:
       "Elevate your basics with our V-neck tee. Made from a unique blend of cotton and modal for a silky smooth feel and a flattering drape.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL", "XXL"],
@@ -57,9 +57,9 @@ export const products: Product[] = [
     description:
       "A timeless Oxford shirt in a deep midnight blue. Expertly tailored for a modern fit, featuring a button-down collar and mother-of-pearl buttons.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL"],
@@ -75,9 +75,9 @@ export const products: Product[] = [
     description:
       "The quintessential white dress shirt. Woven from 2-ply Egyptian cotton for a crisp, smooth finish that resists wrinkling.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL"],
@@ -93,9 +93,9 @@ export const products: Product[] = [
     description:
       "Our signature slim-fit jeans in a versatile dark wash. Crafted from premium Japanese selvedge denim with a touch of stretch for comfort.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Jeans",
     sizes: ["30", "32", "34", "36", "38"],
@@ -111,9 +111,9 @@ export const products: Product[] = [
     description:
       "A nod to classic Americana, these straight-leg jeans are made from rigid 14oz denim that will break in beautifully over time.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Jeans",
     sizes: ["30", "32", "34", "36"],
@@ -129,9 +129,9 @@ export const products: Product[] = [
     description:
       "A sophisticated take on the classic Henley. Features a three-button placket and is crafted from a soft, textured slub cotton.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL"],
@@ -147,9 +147,9 @@ export const products: Product[] = [
     description:
       "Stay cool and stylish in our lightweight linen shirt. Perfect for warm weather, it offers a relaxed fit and exceptional breathability.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL", "XXL"],
@@ -165,9 +165,9 @@ export const products: Product[] = [
     description:
       "A modern sweater knitted from a technical merino wool blend. It's temperature-regulating, soft, and has a clean, minimalist design.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Sweater",
     sizes: ["S", "M", "L", "XL"],
@@ -183,9 +183,9 @@ export const products: Product[] = [
     description:
       "An iconic investment piece. This jacket is crafted from full-grain lambskin leather that gets better with every wear.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Jackets",
     sizes: ["S", "M", "L", "XL"],
@@ -201,9 +201,9 @@ export const products: Product[] = [
     description:
       "Make a statement with this oversized t-shirt featuring a vintage-inspired wolf graphic. Made from heavyweight cotton for a structured drape.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Oversized T-shirts",
     sizes: ["S", "M", "L", "XL"],
@@ -219,9 +219,9 @@ export const products: Product[] = [
     description:
       "Engineered for movement, these track pants are made from a water-repellent, four-way stretch fabric. Perfect for the gym or the street.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Track Pants",
     sizes: ["S", "M", "L", "XL"],
@@ -236,9 +236,9 @@ export const products: Product[] = [
     price: 89.99,
     description: "A timeless belt crafted from genuine full-grain leather, finished with a classic silver-tone buckle. An essential accessory for any wardrobe.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Belts",
     sizes: ["30", "32", "34", "36", "38"],
@@ -253,9 +253,9 @@ export const products: Product[] = [
     price: 179.99,
     description: "A durable and stylish messenger bag made from heavy-duty canvas with leather accents. Features a padded laptop sleeve and multiple pockets for organization.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Bags",
     sizes: ["One Size"],
@@ -270,9 +270,9 @@ export const products: Product[] = [
     price: 59.99,
     description: "A slim and modern card holder wallet, handcrafted from premium leather. Designed to hold your essential cards and a few folded bills without the bulk.",
     images: [
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
-      "https://placehold.co/600x800",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
     ],
     category: "Wallets",
     sizes: ["One Size"],

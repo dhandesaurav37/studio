@@ -40,37 +40,37 @@ export default function HomePage() {
     {
       title: "Summer Styles",
       subtitle: "URBAN ESSENTIALS",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "male fashion model",
     },
     {
       title: "New Arrivals",
       subtitle: "FRESH & BOLD",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "female fashion model",
     },
     {
       title: "Timeless Classics",
       subtitle: "CRAFTED FOR YOU",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "clothing rack",
     },
     {
       title: "Premium Quality",
       subtitle: "UNMATCHED COMFORT",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "fabric texture",
     },
     {
       title: "The Perfect Fit",
       subtitle: "TAILORED ELEGANCE",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "person wearing suit",
     },
     {
       title: "Explore The Collection",
       subtitle: "DEFINE YOUR STYLE",
-      image: "https://placehold.co/1600x900",
+      image: "https://placehold.co/1200x800.png",
       dataAiHint: "stylish outfit",
     },
   ];
@@ -169,7 +169,7 @@ export default function HomePage() {
         <div className="container grid md:grid-cols-2 gap-12 items-center">
           <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden">
             <Image
-              src="https://placehold.co/600x750"
+              src="https://placehold.co/600x750.png"
               alt="Brand story"
               fill
               className="object-cover"
@@ -261,5 +261,4 @@ export default function HomePage() {
       </section>
     </div>
   );
-
     
