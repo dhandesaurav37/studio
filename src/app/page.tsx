@@ -15,8 +15,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import React, { useState } from "react";
-import { CountdownTimer } from "@/components/countdown-timer";
+import React from "react";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 8);
@@ -24,16 +23,6 @@ export default function HomePage() {
   const oversizedTees = products.filter(
     (p) => p.category === "Oversized T-shirts"
   );
-  
-  const [selectedColor, setSelectedColor] = useState("Black");
-
-  const colors = [
-    { name: "Navy", bgColor: "bg-blue-900" },
-    { name: "Brown", bgColor: "bg-yellow-900" },
-    { name: "Black", bgColor: "bg-black" },
-  ];
-
-  const features = ["4-WAY STRETCH", "PREMIUM FABRIC", "WRINKLE RESISTANCE"];
 
   const categories = [...new Set(products.map((p) => p.category))].map(
     (category) => {
@@ -47,10 +36,51 @@ export default function HomePage() {
     }
   );
 
+  const heroSlides = [
+    {
+      title: "Summer Styles",
+      subtitle: "URBAN ESSENTIALS",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "male fashion model",
+    },
+    {
+      title: "New Arrivals",
+      subtitle: "FRESH & BOLD",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "female fashion model",
+    },
+    {
+      title: "Timeless Classics",
+      subtitle: "CRAFTED FOR YOU",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "clothing rack",
+    },
+    {
+      title: "Premium Quality",
+      subtitle: "UNMATCHED COMFORT",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "fabric texture",
+    },
+    {
+      title: "The Perfect Fit",
+      subtitle: "TAILORED ELEGANCE",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "person wearing suit",
+    },
+    {
+      title: "Explore The Collection",
+      subtitle: "DEFINE YOUR STYLE",
+      image: "https://placehold.co/1600x900",
+      dataAiHint: "stylish outfit",
+    },
+  ];
+
   const ProductCarousel = ({
     products,
+    itemsToShow = 3,
   }: {
     products: typeof featuredProducts;
+    itemsToShow?: number;
   }) => (
     <Carousel
       opts={{
@@ -78,96 +108,50 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col">
-      {/* New Hero Section */}
-      <section className="w-full bg-gray-100 dark:bg-gray-800 py-8 md:py-12">
-        <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <Carousel className="w-full h-full group" opts={{ loop: true }}>
-                <CarouselContent>
-                  <CarouselItem>
-                    <div className="relative w-full h-[300px] md:h-full">
-                      <Image
-                        src="https://placehold.co/1200x800"
-                        alt="Model wearing Super Pants"
-                        fill
-                        className="object-cover rounded-lg"
-                        data-ai-hint="male model pants"
-                      />
-                       <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
-                        <div className="text-center text-white">
-                          <p className="text-2xl font-light tracking-widest">NOT JUST PANTS</p>
-                          <h2 className="text-6xl font-bold">SUPER PANTS</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                  <CarouselItem>
-                     <div className="relative w-full h-[300px] md:h-full">
-                      <Image
-                        src="https://placehold.co/1200x800"
-                        alt="Model wearing Super Pants"
-                        fill
-                        className="object-cover rounded-lg"
-                        data-ai-hint="fashion model pants"
-                      />
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
-                        <div className="text-center text-white">
-                           <p className="text-2xl font-light tracking-widest">NOT JUST PANTS</p>
-                           <h2 className="text-6xl font-bold">SUPER PANTS</h2>
-                        </div>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                </CarouselContent>
-                 <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 text-white bg-black/30 hover:bg-black/50 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
-                 <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-10 w-10 text-white bg-black/30 hover:bg-black/50 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Carousel>
-            </div>
-            <div className="bg-white dark:bg-card p-6 rounded-lg flex flex-col justify-between">
-              <div>
-                <div className="relative w-full aspect-[3/4] mb-6">
-                   <Image
-                      src="https://placehold.co/400x533"
-                      alt="Super Pants product image"
-                      fill
-                      className="object-contain"
-                      data-ai-hint="black pants"
-                    />
-                </div>
-                <div className="flex items-center gap-4 mb-6">
-                  <span className="text-sm font-medium">Colors:</span>
-                   <div className="flex gap-2">
-                    {colors.map((color) => (
-                      <button
-                        key={color.name}
-                        onClick={() => setSelectedColor(color.name)}
-                        className={`h-6 w-6 rounded-full ${color.bgColor} border-2 ${selectedColor === color.name ? 'border-primary' : 'border-transparent'}`}
-                        aria-label={`Select ${color.name} color`}
-                      />
-                    ))}
+      {/* Hero Section */}
+      <section className="relative w-full h-[80vh] overflow-hidden group">
+        <Carousel
+          className="w-full h-full"
+          plugins={[
+            Autoplay({
+              delay: 12000,
+            }),
+          ]}
+          opts={{ loop: true }}
+        >
+          <CarouselContent>
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative w-full h-full">
+                  <Image
+                    src={slide.image}
+                    alt={slide.title}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={slide.dataAiHint}
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
+                    <h1 className="text-sm font-light uppercase tracking-[0.3em] mb-2">
+                      {slide.title}
+                    </h1>
+                    <p className="text-4xl md:text-6xl font-bold font-headline">
+                      {slide.subtitle}
+                    </p>
+                    <Button asChild className="mt-8">
+                      <Link href="/products">
+                        Shop Now <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
                   </div>
                 </div>
-              </div>
-              <div className="w-full">
-                <div className="relative">
-                  <Carousel opts={{align: "start", loop: true}}>
-                    <CarouselContent>
-                      {features.map((feature, index) => (
-                        <CarouselItem key={index}>
-                          <p className="text-center font-semibold text-muted-foreground tracking-wider">{feature}</p>
-                        </CarouselItem>
-                      ))}
-                    </CarouselContent>
-                    <CarouselPrevious className="absolute -left-10 top-1/2 -translate-y-1/2 h-8 w-8" />
-                    <CarouselNext className="absolute -right-10 top-1/2 -translate-y-1/2 h-8 w-8" />
-                  </Carousel>
-                </div>
-              </div>
-            </div>
-          </div>
-          <CountdownTimer />
-        </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-black/20 hover:bg-black/40 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-black/20 hover:bg-black/40 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
+        </Carousel>
       </section>
 
       {/* Featured Collection */}
