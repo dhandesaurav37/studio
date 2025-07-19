@@ -11,63 +11,31 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-import { Skeleton } from "../ui/skeleton";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
   { name: "Premium Products", href: "/products?category=Jackets" },
 ];
 
-const HeaderSkeleton = () => (
-   <header className="sticky top-0 z-50 w-full bg-transparent">
-    <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-      <div className="flex items-center gap-6">
-        <Skeleton className="h-6 w-6 md:hidden" />
-        <Skeleton className="h-7 w-28" />
-      </div>
-      <div className="flex items-center justify-end gap-2">
-        <div className="hidden md:flex items-center gap-6 mr-4">
-            <Skeleton className="h-5 w-12" />
-            <Skeleton className="h-5 w-28" />
-        </div>
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <Skeleton className="h-11 w-28" />
-      </div>
-    </div>
-  </header>
-)
-
 export function AppHeader() {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
-  const headerClasses = `sticky top-0 z-50 w-full transition-all duration-300 ${
-    isScrolled
-      ? "bg-background/80 backdrop-blur-sm border-b"
-      : "bg-transparent"
-  }`;
-  
+
   if (!isMounted) {
-    return <HeaderSkeleton />;
+    return null;
   }
 
   return (
-    <header className={headerClasses}>
+    <header className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-6">
+        {/* --- Mobile Header --- */}
+        <div className="flex items-center gap-6 md:hidden">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
+              <Button variant="ghost" size="icon">
                 <Menu className="h-6 w-6" />
                 <span className="sr-only">Open menu</span>
               </Button>
@@ -89,40 +57,61 @@ export function AppHeader() {
               </nav>
             </SheetContent>
           </Sheet>
-          <Link href="/" className="text-2xl font-bold font-headline">
-            White Wolf
-          </Link>
+        </div>
+        <div className="md:hidden">
+             <Link href="/" className="text-2xl font-bold font-headline">
+                White Wolf
+            </Link>
+        </div>
+        <div className="flex items-center justify-end gap-2 md:hidden">
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/cart">
+                    <ShoppingBag className="h-5 w-5" />
+                    <span className="sr-only">Cart</span>
+                </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/wishlist">
+                    <Heart className="h-5 w-5" />
+                    <span className="sr-only">Wishlist</span>
+                </Link>
+            </Button>
         </div>
 
-        <div className="flex items-center justify-end gap-2">
-            <>
-              <nav className="hidden md:flex items-center gap-6 mr-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.href}
-                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </nav>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/cart">
-                  <ShoppingBag className="h-5 w-5" />
-                  <span className="sr-only">Cart</span>
-                </Link>
-              </Button>
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/wishlist">
-                  <Heart className="h-5 w-5" />
-                  <span className="sr-only">Wishlist</span>
-                </Link>
-              </Button>
-              <Button asChild>
+        {/* --- Desktop Header --- */}
+        <div className="hidden md:flex items-center justify-start gap-2">
+            <Button asChild>
                 <Link href="/login">Login / Sign Up</Link>
-              </Button>
-            </>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/wishlist">
+                    <Heart className="h-5 w-5" />
+                    <span className="sr-only">Wishlist</span>
+                </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
+                <Link href="/cart">
+                    <ShoppingBag className="h-5 w-5" />
+                    <span className="sr-only">Cart</span>
+                </Link>
+            </Button>
+        </div>
+
+        <div className="hidden md:flex items-center justify-end gap-6">
+            <nav className="flex items-center gap-6">
+            {navLinks.map((link) => (
+                <Link
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                >
+                {link.name}
+                </Link>
+            ))}
+            </nav>
+            <Link href="/" className="text-2xl font-bold font-headline">
+                White Wolf
+            </Link>
         </div>
       </div>
     </header>
