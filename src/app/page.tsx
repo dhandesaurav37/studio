@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/data";
-import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, Gem, ShieldCheck, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,7 +14,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import Autoplay from "embla-carousel-autoplay";
 import React from "react";
 
 export default function HomePage() {
@@ -36,45 +35,6 @@ export default function HomePage() {
     }
   );
 
-  const heroSlides = [
-    {
-      title: "Exquisite Craftsmanship",
-      subtitle: "UNPARALLELED QUALITY",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "male fashion model",
-    },
-    {
-      title: "The Art of Style",
-      subtitle: "MODERN ELEGANCE",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "female fashion model",
-    },
-    {
-      title: "Signature Collection",
-      subtitle: "CURATED FOR CONNOISSEURS",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "clothing rack",
-    },
-    {
-      title: "Luxury Essentials",
-      subtitle: "DEFINITIVE COMFORT",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "fabric texture",
-    },
-    {
-      title: "Impeccable Fit",
-      subtitle: "TAILORED TO PERFECTION",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "person wearing suit",
-    },
-    {
-      title: "Discover Your Aesthetic",
-      subtitle: "ELEVATE YOUR WARDROBE",
-      image: "https://placehold.co/1200x800.png",
-      dataAiHint: "stylish outfit",
-    },
-  ];
-
   const ProductCarousel = ({
     products,
     itemsToShow = 4,
@@ -93,7 +53,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="sm:basis-1/2 md:basis-1/3"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -109,49 +69,63 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative w-full h-[80vh] overflow-hidden group">
-        <Carousel
-          className="w-full h-full"
-          plugins={[
-            Autoplay({
-              delay: 12000,
-            }),
-          ]}
-          opts={{ loop: true }}
-        >
-          <CarouselContent>
-            {heroSlides.map((slide, index) => (
-              <CarouselItem key={index}>
-                <div className="relative w-full h-full">
-                  <Image
-                    src={slide.image}
-                    alt={slide.title}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={slide.dataAiHint}
-                    priority={index === 0}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white p-4">
-                    <h1 className="text-sm font-light uppercase tracking-[0.3em] mb-2">
-                      {slide.title}
-                    </h1>
-                    <p className="text-4xl md:text-6xl font-bold font-headline">
-                      {slide.subtitle}
-                    </p>
-                    <Button asChild className="mt-8">
-                      <Link href="/products">
-                        Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-black/20 hover:bg-black/40 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 text-white bg-black/20 hover:bg-black/40 border-none opacity-0 group-hover:opacity-100 transition-opacity" />
-        </Carousel>
+      <section className="relative w-full h-[70vh] bg-cover bg-center bg-no-repeat">
+        <Image
+          src="https://placehold.co/1600x900.png"
+          alt="Model wearing premium apparel"
+          fill
+          className="object-cover"
+          data-ai-hint="fashion model"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent"></div>
+        <div className="relative z-10 h-full flex items-center">
+          <div className="container text-white">
+            <div className="max-w-xl">
+              <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
+                Define Your Style
+              </h1>
+              <p className="text-lg md:text-xl text-white/80 mb-8">
+                Discover our curated collection of premium apparel, crafted with
+                uncompromising quality and timeless design.
+              </p>
+              <Button size="lg" asChild className="bg-destructive hover:bg-destructive/80 text-destructive-foreground">
+                <Link href="/products">
+                  Shop New Arrivals <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="bg-card text-card-foreground py-12">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="flex flex-col items-center">
+              <Gem className="h-10 w-10 mb-4 text-primary" />
+              <h3 className="text-xl font-semibold mb-2">Exclusive Designs</h3>
+              <p className="text-muted-foreground">
+                Unique pieces you won't find anywhere else.
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <ShieldCheck className="h-10 w-10 mb-4 text-primary" />
+              <h3 className="text-xl font-semibold mb-2">Premium Quality</h3>
+              <p className="text-muted-foreground">
+                Crafted from the finest materials for lasting comfort.
+              </p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Truck className="h-10 w-10 mb-4 text-primary" />
+              <h3 className="text-xl font-semibold mb-2">Fast Shipping</h3>
+              <p className="text-muted-foreground">
+                Get your new favorite styles delivered to your door quickly.
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Featured Collection */}
@@ -160,7 +134,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collection
           </h2>
-          <ProductCarousel products={featuredProducts} />
+          <ProductCarousel products={featuredProducts} itemsToShow={3} />
         </div>
       </section>
 
@@ -203,7 +177,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             New Arrivals
           </h2>
-          <ProductCarousel products={newArrivals} />
+          <ProductCarousel products={newArrivals} itemsToShow={3} />
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
               <Link href="/products">View All Products</Link>
@@ -218,7 +192,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Oversize Tees
           </h2>
-          <ProductCarousel products={oversizedTees} />
+          <ProductCarousel products={oversizedTees} itemsToShow={3} />
           <div className="text-center mt-12">
             <Button asChild variant="secondary">
               <Link href="/products?category=Oversized+T-shirts">
@@ -235,7 +209,7 @@ export default function HomePage() {
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 uppercase tracking-wider">
             Categories
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {categories.map((category) => (
               <Link
                 key={category.name}
@@ -261,6 +235,4 @@ export default function HomePage() {
       </section>
     </div>
   );
-    
-
-    
+}
