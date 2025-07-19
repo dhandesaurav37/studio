@@ -27,98 +27,101 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center">
-        {/* Mobile Menu Trigger */}
-        <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle Menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0">
-            <div className="flex flex-col h-full">
-              <div className="flex items-center justify-between p-4 border-b">
-                <Link
-                  href="/"
-                  className="flex items-center space-x-2"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <span className="font-bold text-xl font-headline">
-                    The White Wolf
-                  </span>
-                </Link>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <X className="h-6 w-6" />
-                </Button>
+      <div className="container flex h-16 items-center justify-between">
+        {/* Left Side: Mobile Menu Trigger and Desktop Nav */}
+        <div className="flex items-center gap-6">
+          {/* Mobile Menu Trigger */}
+          <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="h-6 w-6" />
+                <span className="sr-only">Toggle Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="p-0">
+              <div className="flex flex-col h-full">
+                <div className="flex items-center justify-between p-4 border-b">
+                  <Link
+                    href="/"
+                    className="flex items-center space-x-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className="font-bold text-xl font-headline">
+                      The White Wolf
+                    </span>
+                  </Link>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <X className="h-6 w-6" />
+                  </Button>
+                </div>
+                <div className="p-4 flex-grow">
+                  <nav className="flex flex-col space-y-4">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {link.label}
+                      </Link>
+                    ))}
+                     <Link
+                        href="/#new-arrivals"
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        New Arrivals
+                      </Link>
+                  </nav>
+                </div>
               </div>
-              <div className="p-4 flex-grow">
-                <nav className="flex flex-col space-y-4">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                   <Link
-                      href="/#new-arrivals"
-                      className="text-muted-foreground hover:text-foreground"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      New Arrivals
-                    </Link>
-                </nav>
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
 
-        {/* Desktop: Brand Name & Nav */}
-        <div className="hidden md:flex items-center gap-6">
-           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl font-headline">The White Wolf</span>
-          </Link>
-          <nav className="flex items-center space-x-6 text-sm font-medium">
-             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="text-sm font-medium p-0 h-auto">
-                  Shop
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                {navLinks.map((link) => (
-                  <DropdownMenuItem key={link.href} asChild>
-                    <Link href={link.href}>{link.label}</Link>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Link
-              href="/#new-arrivals"
-              className="transition-colors hover:text-foreground/80"
-            >
-              New Arrivals
+          {/* Desktop: Brand Name & Nav */}
+          <div className="hidden md:flex items-center gap-6">
+             <Link href="/" className="flex items-center space-x-2">
+              <span className="font-bold text-xl font-headline">The White Wolf</span>
             </Link>
-          </nav>
+            <nav className="flex items-center space-x-6 text-sm font-medium">
+               <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="text-sm font-medium p-0 h-auto">
+                    Shop
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {navLinks.map((link) => (
+                    <DropdownMenuItem key={link.href} asChild>
+                      <Link href={link.href}>{link.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Link
+                href="/#new-arrivals"
+                className="transition-colors hover:text-foreground/80"
+              >
+                New Arrivals
+              </Link>
+            </nav>
+          </div>
         </div>
 
-        {/* Mobile: Centered Brand Name */}
+        {/* Mobile: Centered Brand Name (Only shown when menu is closed) */}
          <div className="flex-1 flex justify-center md:hidden">
              <Link href="/" className="flex items-center space-x-2">
                 <span className="font-bold text-xl font-headline">The White Wolf</span>
             </Link>
         </div>
         
-        {/* Action Icons */}
-        <div className="flex items-center space-x-1 md:space-x-2 ml-auto">
+        {/* Right Side: Action Icons */}
+        <div className="flex items-center space-x-1 md:space-x-2">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
