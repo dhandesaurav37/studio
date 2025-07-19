@@ -11,14 +11,6 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
@@ -28,10 +20,8 @@ const navLinks = [
 
 export function AppHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
@@ -45,10 +35,11 @@ export function AppHeader() {
       : "bg-transparent"
   }`;
 
-  const renderContent = () => (
+  return (
     <header className={headerClasses}>
-      <div className="container flex h-20 items-center justify-between">
-        <div className="flex items-center gap-6">
+      <div className="flex h-20 items-center justify-between">
+        <div className="container flex items-center gap-6">
+          {/* Mobile Menu and Logo */}
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -57,9 +48,9 @@ export function AppHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left">
-              <SheetHeader>
-                <SheetTitle className="sr-only">Menu</SheetTitle>
-              </SheetHeader>
+               <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+                </SheetHeader>
               <nav className="flex flex-col gap-4 p-4 text-lg">
                 {navLinks.map((link) => (
                   <Link
@@ -81,6 +72,7 @@ export function AppHeader() {
           <Link href="/" className="text-2xl font-bold font-headline">
             White Wolf
           </Link>
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
@@ -94,7 +86,8 @@ export function AppHeader() {
           </nav>
         </div>
 
-        <div className="flex items-center justify-end gap-2">
+        {/* Action Icons */}
+        <div className="flex items-center justify-end gap-2 pr-4 sm:pr-6 lg:pr-8">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
@@ -122,28 +115,4 @@ export function AppHeader() {
       </div>
     </header>
   );
-
-  const renderServerFallback = () => (
-    <header className="sticky top-0 z-50 w-full bg-transparent">
-      <div className="container flex h-20 items-center justify-between">
-        <div className="flex items-center gap-6">
-          <div className="h-10 w-10 md:hidden"></div>
-          <div className="h-6 w-24"></div>
-          <div className="hidden md:flex items-center gap-6">
-            <div className="h-6 w-16"></div>
-            <div className="h-6 w-24"></div>
-            <div className="h-6 w-16"></div>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="h-10 w-10"></div>
-          <div className="h-10 w-10"></div>
-          <div className="h-10 w-28 hidden md:block"></div>
-           <div className="h-10 w-10 md:hidden"></div>
-        </div>
-      </div>
-    </header>
-  );
-
-  return isClient ? renderContent() : renderServerFallback();
 }
