@@ -58,18 +58,6 @@ export default function ProductsPage() {
     }
     router.push(`${pathname}?${params.toString()}`);
   };
-  
-  const getMinSizeIndex = (sizes: string[]) => {
-    let minIndex = Infinity;
-    const sizeOrder = [...alphaSizes, ...numericSizes];
-    for (const size of sizes) {
-      const index = sizeOrder.indexOf(size);
-      if (index !== -1 && index < minIndex) {
-        minIndex = index;
-      }
-    }
-    return minIndex;
-  }
 
   const filteredProducts = products
     .filter((p: Product) => (category !== "All" ? p.category === category : true))
@@ -83,8 +71,6 @@ export default function ProductsPage() {
           return b.price - a.price;
         case "rating":
           return b.rating - a.rating;
-        case "size":
-            return getMinSizeIndex(a.sizes) - getMinSizeIndex(b.sizes);
         case "price-asc":
         default:
           return a.price - b.price;
@@ -195,9 +181,6 @@ export default function ProductsPage() {
                 </DropdownMenuItem>
                  <DropdownMenuItem onSelect={() => handleFilterChange("sort", "rating")}>
                   Top Rated
-                </DropdownMenuItem>
-                 <DropdownMenuItem onSelect={() => handleFilterChange("sort", "size")}>
-                  Size
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
