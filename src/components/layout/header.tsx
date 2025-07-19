@@ -50,13 +50,13 @@ export function AppHeader() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
+  
   const headerClasses = `sticky top-0 z-50 w-full transition-all duration-300 ${
     isScrolled
       ? "bg-background/80 backdrop-blur-sm border-b"
       : "bg-transparent"
   }`;
-
+  
   if (!isMounted) {
     return <HeaderSkeleton />;
   }
@@ -95,32 +95,34 @@ export function AppHeader() {
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <nav className="hidden md:flex items-center gap-6 mr-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link.name}
-              </Link>
-            ))}
-          </nav>
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
-              <ShoppingBag className="h-5 w-5" />
-              <span className="sr-only">Cart</span>
-            </Link>
-          </Button>
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/wishlist">
-              <Heart className="h-5 w-5" />
-              <span className="sr-only">Wishlist</span>
-            </Link>
-          </Button>
-          <Button asChild>
-            <Link href="/login">Login / Sign Up</Link>
-          </Button>
+            <>
+              <nav className="hidden md:flex items-center gap-6 mr-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </nav>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/cart">
+                  <ShoppingBag className="h-5 w-5" />
+                  <span className="sr-only">Cart</span>
+                </Link>
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <Link href="/wishlist">
+                  <Heart className="h-5 w-5" />
+                  <span className="sr-only">Wishlist</span>
+                </Link>
+              </Button>
+              <Button asChild>
+                <Link href="/login">Login / Sign Up</Link>
+              </Button>
+            </>
         </div>
       </div>
     </header>
