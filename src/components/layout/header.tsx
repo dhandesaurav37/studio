@@ -52,13 +52,20 @@ export function AppHeader() {
           </div>
 
           {/* Right Side */}
-          <div className="flex items-center gap-6 ml-auto">
+          <div className="flex items-center gap-4 ml-auto">
+             <Button variant="ghost" size="icon" asChild>
+                <Link href="/wishlist">
+                    <Heart className="h-5 w-5" />
+                    <span className="sr-only">Wishlist</span>
+                </Link>
+            </Button>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart">
                 <ShoppingBag className="h-5 w-5" />
                 <span className="sr-only">Cart</span>
               </Link>
             </Button>
+            <div className="h-6 border-l border-border mx-2"></div>
             <Button variant="ghost" asChild>
               <Link href="/login">Login</Link>
             </Button>
@@ -115,16 +122,16 @@ export function AppHeader() {
           {/* Mobile Actions */}
           <div className="flex items-center justify-end gap-2">
             <Button variant="ghost" size="icon" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" asChild>
               <Link href="/cart">
                 <ShoppingBag className="h-5 w-5" />
                 <span className="sr-only">Cart</span>
               </Link>
-            </Button>
-             <Button variant="ghost" size="icon" asChild>
-                <Link href="/wishlist">
-                    <Heart className="h-5 w-5" />
-                    <span className="sr-only">Wishlist</span>
-                </Link>
             </Button>
           </div>
         </div>
