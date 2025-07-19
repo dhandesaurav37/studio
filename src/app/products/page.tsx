@@ -17,7 +17,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 const categories = [
   "All",
@@ -42,6 +43,7 @@ export default function ProductsPage() {
   const pathname = usePathname();
 
   const category = searchParams.get("category") || "All";
+  const searchTerm = searchParams.get("search") || "";
 
   const handleCategoryChange = (newCategory: string) => {
     const params = new URLSearchParams(searchParams);
@@ -52,19 +54,33 @@ export default function ProductsPage() {
     }
     router.push(`${pathname}?${params.toString()}`);
   };
-  
+
   const handleSortChange = (sortValue: string) => {
     const params = new URLSearchParams(searchParams);
     params.set("sort", sortValue);
     router.push(`${pathname}?${params.toString()}`);
-  }
+  };
 
-  const filteredProducts =
-    category !== "All"
-      ? products.filter(
-          (p) => p.category.toLowerCase().replace(" ", "-") === category
-        )
-      : products;
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const params = new URLSearchParams(searchParams);
+    const term = event.target.value;
+    if (term) {
+      params.set("search", term);
+    } else {
+      params.delete("search");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  const filteredProducts = products
+    .filter((p) =>
+      category !== "All"
+        ? p.category.toLowerCase().replace(" ", "-") === category
+        : true
+    )
+    .filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
   return (
     <div className="container py-8 md:py-12">
@@ -72,37 +88,54 @@ export default function ProductsPage() {
         <h1 className="text-3xl md:text-4xl font-bold font-headline capitalize">
           {category === "All" ? "All Products" : category.replace("-", " ")}
         </h1>
-        <div className="flex items-center gap-4 self-stretch md:self-auto w-full md:w-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="flex-1 md:flex-none">
-                Categories <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 max-h-96 overflow-y-auto">
-              {categories.map((cat) => (
-                <DropdownMenuItem
-                  key={cat}
-                  onSelect={() => handleCategoryChange(cat)}
-                  className={category.toLowerCase().replace(" ", "-") === cat.toLowerCase().replace(" ", "-") ? "font-bold bg-accent" : ""}
-                >
-                  {cat}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <div className="flex flex-col sm:flex-row items-center gap-4 self-stretch md:self-auto w-full md:w-auto">
+          <div className="relative w-full sm:w-auto flex-grow">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Search products..."
+              className="pl-10 w-full"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+          </div>
+          <div className="flex items-center gap-4 w-full sm:w-auto">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="w-full sm:w-auto">
+                  Categories <ChevronDown className="ml-2 h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 max-h-96 overflow-y-auto">
+                {categories.map((cat) => (
+                  <DropdownMenuItem
+                    key={cat}
+                    onSelect={() => handleCategoryChange(cat)}
+                    className={
+                      category.toLowerCase().replace(" ", "-") ===
+                      cat.toLowerCase().replace(" ", "-")
+                        ? "font-bold bg-accent"
+                        : ""
+                    }
+                  >
+                    {cat}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          <Select defaultValue="newest" onValueChange={handleSortChange}>
-            <SelectTrigger className="w-full flex-1 md:w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="price-asc">Price: Low to High</SelectItem>
-              <SelectItem value="price-desc">Price: High to Low</SelectItem>
-              <SelectItem value="rating">Top Rated</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select defaultValue="newest" onValueChange={handleSortChange}>
+              <SelectTrigger className="w-full sm:w-[180px]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Newest</SelectItem>
+                <SelectItem value="price-asc">Price: Low to High</SelectItem>
+                <SelectItem value="price-desc">Price: High to Low</SelectItem>
+                <SelectItem value="rating">Top Rated</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
 
@@ -117,7 +150,7 @@ export default function ProductsPage() {
           <div className="text-center py-20 border-2 border-dashed rounded-lg">
             <h2 className="text-2xl font-semibold">No products found</h2>
             <p className="text-muted-foreground mt-2">
-              Try adjusting your filters.
+              Try adjusting your search or filters.
             </p>
           </div>
         )}
