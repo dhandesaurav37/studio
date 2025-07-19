@@ -82,7 +82,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/3 xl:basis-1/4"
+            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -151,8 +151,8 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-card text-card-foreground py-16 md:py-20">
-        <div className="container">
+      <section className="bg-card text-card-foreground">
+        <div className="container py-16 md:py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 md:gap-x-12">
             <div className="flex items-start gap-4">
               <Gem className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
@@ -202,8 +202,8 @@ export default function HomePage() {
       </section>
 
       {/* Brand Story */}
-      <section className="bg-card text-card-foreground py-16 md:py-20">
-        <div className="container grid md:grid-cols-2 gap-12 items-center">
+      <section className="bg-card text-card-foreground">
+        <div className="container py-16 md:py-20 grid md:grid-cols-2 gap-12 items-center">
           <div className="relative w-full aspect-[4/5] rounded-lg overflow-hidden">
             <Image
               src="https://placehold.co/600x750.png"
