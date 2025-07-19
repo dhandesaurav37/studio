@@ -29,60 +29,57 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         {/* Mobile Menu Trigger */}
-        <div className="md:hidden">
-          <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="h-6 w-6" />
-                <span className="sr-only">Toggle Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="p-0">
-              <div className="flex flex-col h-full">
-                <div className="flex items-center justify-between p-4 border-b">
-                  <Link
-                    href="/"
-                    className="flex items-center space-x-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <span className="font-bold text-xl font-headline">
-                      The White Wolf
-                    </span>
-                  </Link>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <X className="h-6 w-6" />
-                  </Button>
-                </div>
-                <div className="p-4 flex-grow">
-                  <nav className="flex flex-col space-y-4">
-                    <h3 className="font-semibold text-lg mb-2">Shop</h3>
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {link.label}
-                      </Link>
-                    ))}
-                     <Link
-                        href="/#new-arrivals"
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        New Arrivals
-                      </Link>
-                  </nav>
-                </div>
+        <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-6 w-6" />
+              <span className="sr-only">Toggle Menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0">
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between p-4 border-b">
+                <Link
+                  href="/"
+                  className="flex items-center space-x-2"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <span className="font-bold text-xl font-headline">
+                    The White Wolf
+                  </span>
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <X className="h-6 w-6" />
+                </Button>
               </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+              <div className="p-4 flex-grow">
+                <nav className="flex flex-col space-y-4">
+                  {navLinks.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  ))}
+                   <Link
+                      href="/#new-arrivals"
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      New Arrivals
+                    </Link>
+                </nav>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         {/* Desktop: Brand Name & Nav */}
         <div className="hidden md:flex items-center gap-6">
@@ -120,8 +117,8 @@ export function AppHeader() {
             </Link>
         </div>
         
-        {/* Action Icons (Right side for all screens) */}
-        <div className="flex items-center space-x-1 md:space-x-2">
+        {/* Action Icons */}
+        <div className="flex items-center space-x-1 md:space-x-2 ml-auto">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/cart">
               <ShoppingBag className="h-5 w-5" />
