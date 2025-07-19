@@ -78,7 +78,7 @@ export default function ProductsPage() {
     });
 
   return (
-    <div className="container py-8 md:py-12 pl-6 sm:pl-8 lg:pl-12 pr-0">
+    <div className="container py-8 md:py-12 pl-8 sm:pl-10 lg:pl-16 pr-0">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline">
           Our Collection
