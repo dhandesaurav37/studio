@@ -2,7 +2,7 @@
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/data";
+import { products, Product } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -17,27 +17,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, Search } from "lucide-react";
+import { ListFilter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import React from "react";
 
-const categories = [
-  "All",
-  "T-Shirts",
-  "Oversized T-shirts",
-  "Shirts",
-  "Jeans",
-  "Trousers",
-  "Sweater",
-  "SweatShirts",
-  "Track Pants",
-  "Boxers",
-  "Jackets",
-  "Sock's",
-  "Shoes",
-  "Bags",
-];
-
-const sizeOrder = ["S", "M", "L", "XL", "XXL"];
+const allCategories = [...new Set(products.map((p) => p.category))];
+const allColors = [...new Set(products.map((p) => p.color))];
+const alphaSizes = ["S", "M", "L", "XL", "XXL"];
+const numericSizes = ["30", "32", "34", "36", "38"];
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -45,22 +32,19 @@ export default function ProductsPage() {
   const pathname = usePathname();
 
   const category = searchParams.get("category") || "All";
+  const color = searchParams.get("color") || "All";
+  const alphaSize = searchParams.get("alphaSize") || "All";
+  const numericSize = searchParams.get("numericSize") || "All";
   const searchTerm = searchParams.get("search") || "";
   const sort = searchParams.get("sort") || "price-asc";
 
-  const handleCategoryChange = (newCategory: string) => {
-    const params = new URLSearchParams(searchParams);
-    if (newCategory === "All") {
-      params.delete("category");
+  const handleFilterChange = (filterType: string, value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (value === "All") {
+      params.delete(filterType);
     } else {
-      params.set("category", newCategory.toLowerCase().replace(" ", "-"));
+      params.set(filterType, value);
     }
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  const handleSortChange = (sortValue: string) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("sort", sortValue);
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -74,9 +58,10 @@ export default function ProductsPage() {
     }
     router.push(`${pathname}?${params.toString()}`);
   };
-
+  
   const getMinSizeIndex = (sizes: string[]) => {
     let minIndex = Infinity;
+    const sizeOrder = [...alphaSizes, ...numericSizes];
     for (const size of sizes) {
       const index = sizeOrder.indexOf(size);
       if (index !== -1 && index < minIndex) {
@@ -87,14 +72,11 @@ export default function ProductsPage() {
   }
 
   const filteredProducts = products
-    .filter((p) =>
-      category !== "All"
-        ? p.category.toLowerCase().replace(" ", "-") === category
-        : true
-    )
-    .filter((p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    .filter((p: Product) => (category !== "All" ? p.category === category : true))
+    .filter((p: Product) => (color !== "All" ? p.color === color : true))
+    .filter((p: Product) => (alphaSize !== "All" ? p.sizes.includes(alphaSize) : true))
+    .filter((p: Product) => (numericSize !== "All" ? p.sizes.includes(numericSize) : true))
+    .filter((p: Product) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
       switch (sort) {
         case "price-desc":
@@ -111,62 +93,116 @@ export default function ProductsPage() {
 
   return (
     <div className="container py-8 md:py-12">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-        <h1 className="text-3xl md:text-4xl font-bold font-headline capitalize">
-          {category === "All" ? "All Products" : category.replace("-", " ")}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold font-headline">
+          Our Collection
         </h1>
-        <div className="flex flex-col sm:flex-row items-center gap-4 self-stretch md:self-auto w-full md:w-auto">
-          <div className="relative w-full sm:w-auto flex-grow">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search products..."
-              className="pl-10 w-full"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-          </div>
-          <div className="flex items-center gap-4 w-full sm:w-auto">
-            <DropdownMenu>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          Browse our curated selection of high-quality apparel and accessories.
+        </p>
+      </div>
+      <div className="max-w-4xl mx-auto">
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search products..."
+            className="pl-10 w-full h-12 text-base"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+        </div>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          <Select
+            value={category}
+            onValueChange={(val) => handleFilterChange("category", val)}
+          >
+            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Categories</SelectItem>
+              {allCategories.map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+           <Select
+            value={color}
+            onValueChange={(val) => handleFilterChange("color", val)}
+          >
+            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+              <SelectValue placeholder="All Colors" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Colors</SelectItem>
+              {allColors.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={alphaSize}
+            onValueChange={(val) => handleFilterChange("alphaSize", val)}
+          >
+            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+              <SelectValue placeholder="All Alpha Sizes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Alpha Sizes</SelectItem>
+              {alphaSizes.map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+           <Select
+            value={numericSize}
+            onValueChange={(val) => handleFilterChange("numericSize", val)}
+          >
+            <SelectTrigger className="min-w-[150px] flex-1 sm:flex-none">
+              <SelectValue placeholder="All Numeric Sizes" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Numeric Sizes</SelectItem>
+              {numericSizes.map((size) => (
+                <SelectItem key={size} value={size}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+           <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-full sm:w-auto">
-                  Categories <ChevronDown className="ml-2 h-4 w-4" />
+                <Button variant="outline" className="flex-1 sm:flex-none">
+                  <ListFilter className="mr-2 h-4 w-4" />
+                  Sort
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 max-h-96 overflow-y-auto">
-                {categories.map((cat) => (
-                  <DropdownMenuItem
-                    key={cat}
-                    onSelect={() => handleCategoryChange(cat)}
-                    className={
-                      category.toLowerCase().replace(" ", "-") ===
-                      cat.toLowerCase().replace(" ", "-")
-                        ? "font-bold bg-accent"
-                        : ""
-                    }
-                  >
-                    {cat}
-                  </DropdownMenuItem>
-                ))}
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onSelect={() => handleFilterChange("sort", "price-asc")}>
+                  Price: Low to High
+                </DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => handleFilterChange("sort", "price-desc")}>
+                  Price: High to Low
+                </DropdownMenuItem>
+                 <DropdownMenuItem onSelect={() => handleFilterChange("sort", "rating")}>
+                  Top Rated
+                </DropdownMenuItem>
+                 <DropdownMenuItem onSelect={() => handleFilterChange("sort", "size")}>
+                  Size
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
-            <Select value={sort} onValueChange={handleSortChange}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Top Rated</SelectItem>
-                <SelectItem value="size">Size</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </div>
 
-      <main>
+      <main className="mt-12">
         {filteredProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {filteredProducts.map((product) => (

@@ -6,6 +6,7 @@ export interface Product {
   images: string[];
   category: string;
   sizes: string[];
+  color: string;
   rating: number;
   reviews: number;
   dataAiHint: string;
@@ -25,6 +26,7 @@ export const products: Product[] = [
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL"],
+    color: "Charcoal",
     rating: 4.8,
     reviews: 120,
     dataAiHint: "mens t-shirt",
@@ -42,6 +44,7 @@ export const products: Product[] = [
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL", "XXL"],
+    color: "Grey",
     rating: 4.9,
     reviews: 98,
     dataAiHint: "grey v-neck",
@@ -59,6 +62,7 @@ export const products: Product[] = [
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL"],
+    color: "Blue",
     rating: 5.0,
     reviews: 210,
     dataAiHint: "blue shirt",
@@ -76,6 +80,7 @@ export const products: Product[] = [
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL"],
+    color: "White",
     rating: 4.7,
     reviews: 154,
     dataAiHint: "white shirt",
@@ -93,6 +98,7 @@ export const products: Product[] = [
     ],
     category: "Jeans",
     sizes: ["30", "32", "34", "36", "38"],
+    color: "Blue",
     rating: 4.8,
     reviews: 302,
     dataAiHint: "mens jeans",
@@ -110,6 +116,7 @@ export const products: Product[] = [
     ],
     category: "Jeans",
     sizes: ["30", "32", "34", "36"],
+    color: "Light Wash",
     rating: 4.9,
     reviews: 250,
     dataAiHint: "blue jeans",
@@ -127,6 +134,7 @@ export const products: Product[] = [
     ],
     category: "T-Shirts",
     sizes: ["S", "M", "L", "XL"],
+    color: "Graphite",
     rating: 4.8,
     reviews: 85,
     dataAiHint: "henley shirt",
@@ -144,6 +152,7 @@ export const products: Product[] = [
     ],
     category: "Shirts",
     sizes: ["S", "M", "L", "XL", "XXL"],
+    color: "Beige",
     rating: 4.9,
     reviews: 112,
     dataAiHint: "linen shirt",
@@ -161,6 +170,7 @@ export const products: Product[] = [
     ],
     category: "Sweater",
     sizes: ["S", "M", "L", "XL"],
+    color: "Black",
     rating: 4.9,
     reviews: 75,
     dataAiHint: "black sweater",
@@ -178,6 +188,7 @@ export const products: Product[] = [
     ],
     category: "Jackets",
     sizes: ["S", "M", "L", "XL"],
+    color: "Black",
     rating: 5.0,
     reviews: 130,
     dataAiHint: "leather jacket",
@@ -195,6 +206,7 @@ export const products: Product[] = [
     ],
     category: "Oversized T-shirts",
     sizes: ["S", "M", "L", "XL"],
+    color: "Off-White",
     rating: 4.7,
     reviews: 92,
     dataAiHint: "graphic t-shirt",
@@ -212,6 +224,7 @@ export const products: Product[] = [
     ],
     category: "Track Pants",
     sizes: ["S", "M", "L", "XL"],
+    color: "Black",
     rating: 4.8,
     reviews: 115,
     dataAiHint: "black track pants",
