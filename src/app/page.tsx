@@ -158,7 +158,7 @@ export default function HomePage() {
       </section>
 
       {/* Featured Collection */}
-      <section className="py-16 md:py-24 bg-card -mt-20 relative z-10">
+      <section className="py-16 md:py-24 bg-card">
         <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 text-card-foreground">
             Featured Collection
