@@ -61,7 +61,7 @@ export default function NotificationsPage() {
                 <p className="text-sm text-muted-foreground">
                   {notification.description}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-muted-foreground mt-2">
                   {notification.time}
                 </p>
               </div>

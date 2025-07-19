@@ -45,9 +45,9 @@ export default function Home() {
       </section>
 
       {/* New Arrivals Section */}
-      <section id="new-arrivals" className="py-12 md:py-16 bg-background">
+      <section id="new-arrivals" className="py-12 md:py-20 bg-background">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             New Arrivals
           </h2>
           <Carousel
@@ -76,9 +76,9 @@ export default function Home() {
       </section>
 
       {/* Featured Collections Section */}
-      <section className="py-12 md:py-16">
+      <section className="py-12 md:py-20">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-10">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collections
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
@@ -123,20 +123,20 @@ export default function Home() {
       </section>
 
       {/* Brand Story Section */}
-      <section id="our-story" className="py-12 md:py-16 bg-primary text-primary-foreground">
+      <section id="our-story" className="py-12 md:py-20 bg-primary text-primary-foreground">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
                 The White Wolf Way
               </h2>
-              <p className="mb-4 text-primary-foreground/80">
+              <p className="mb-4 text-primary-foreground/80 leading-relaxed">
                 White Wolf was founded on the principle that clothing should be
                 more than just functional; it should be an extension of your
                 identity. We believe in timeless style, uncompromising quality,
                 and conscious craftsmanship.
               </p>
-              <p className="text-primary-foreground/80">
+              <p className="text-primary-foreground/80 leading-relaxed">
                 Each piece in our collection is thoughtfully designed and
                 meticulously constructed using only the finest materials. We
                 are for those who lead, not follow—the lone wolves who carve

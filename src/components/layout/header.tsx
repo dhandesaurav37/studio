@@ -3,7 +3,13 @@
 import Link from "next/link";
 import { Heart, ShoppingBag, User, Menu, X, Bell, Package, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
 import {
   DropdownMenu,
@@ -15,7 +21,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function AppHeader() {
-  const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -27,11 +32,9 @@ export function AppHeader() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
           <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-6">
-              <Link href="/" className="flex items-center space-x-2">
-                <span className="font-bold text-xl font-headline">The White Wolf</span>
-              </Link>
-            </div>
+            <Link href="/" className="flex items-center space-x-2">
+              <span className="font-bold text-xl font-headline">The White Wolf</span>
+            </Link>
             <div className="flex items-center gap-2">
               <div className="h-10 w-10" />
               <div className="h-10 w-10" />
@@ -47,8 +50,31 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center">
         <div className="flex w-full items-center justify-between">
-          {/* Left Side: Brand Name */}
           <div className="flex items-center gap-6">
+            {/* Mobile Menu */}
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-6 w-6" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left">
+                <SheetHeader>
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+                </SheetHeader>
+                <div className="flex flex-col space-y-4">
+                  <Link href="/products" className="text-lg font-medium">
+                    Shop
+                  </Link>
+                  <Link href="/#new-arrivals" className="text-lg font-medium">
+                    New Arrivals
+                  </Link>
+                </div>
+              </SheetContent>
+            </Sheet>
+
+            {/* Desktop Branding */}
             <Link href="/" className="flex items-center space-x-2">
               <span className="font-bold text-xl font-headline">The White Wolf</span>
             </Link>

@@ -39,7 +39,7 @@ export default function CartPage() {
                   {cartItems.map((item) => (
                     <li
                       key={item.product.id}
-                      className="flex items-center p-4 sm:p-6 gap-6"
+                      className="flex items-center p-4 sm:p-6 gap-4 sm:gap-6"
                     >
                       <div className="relative h-24 w-24 sm:h-32 sm:w-32 rounded-md overflow-hidden flex-shrink-0">
                         <Image

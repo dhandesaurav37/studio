@@ -86,16 +86,17 @@ export function Footer() {
             <p className="text-sm text-primary-foreground/80 mb-3">
               Subscribe to our newsletter for the latest updates.
             </p>
-            <div className="flex w-full max-w-sm items-center space-x-2">
+            <form className="flex w-full max-w-sm items-center space-x-2">
               <Input
                 type="email"
                 placeholder="Email"
                 className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground placeholder:text-primary-foreground/50"
+                aria-label="Email for newsletter"
               />
               <Button type="submit" variant="secondary">
                 Subscribe
               </Button>
-            </div>
+            </form>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-primary-foreground/20 text-center text-sm text-primary-foreground/60">

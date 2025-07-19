@@ -33,8 +33,8 @@ export default function ProductsPage() {
   return (
     <div className="container py-8 md:py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
-        <h1 className="text-4xl font-bold font-headline">
-          {category.replace("-", " ")}
+        <h1 className="text-3xl md:text-4xl font-bold font-headline capitalize">
+          {category === "All" ? "All Products" : category.replace("-", " ")}
         </h1>
         <div className="flex items-center gap-4 self-stretch md:self-auto">
           <span className="text-sm font-medium text-muted-foreground hidden sm:inline">Sort by:</span>
@@ -52,12 +52,12 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
         <aside className="hidden md:block">
           <h2 className="text-lg font-semibold font-headline mb-4">
             Categories
           </h2>
-          <ul className="space-y-2">
+          <ul className="space-y-3">
             {categories.map((cat) => (
               <li key={cat}>
                 <Link

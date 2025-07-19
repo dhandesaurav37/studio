@@ -41,7 +41,7 @@ export default function OrdersPage() {
         <div className="space-y-6">
           {orders.map((order) => (
             <Card key={order.id}>
-              <CardHeader className="flex flex-row items-start justify-between">
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <CardTitle className="font-headline">
                     Order #{order.id}
@@ -56,6 +56,7 @@ export default function OrdersPage() {
                       ? "destructive"
                       : "secondary"
                   }
+                  className="self-start sm:self-center"
                 >
                   {order.status}
                 </Badge>

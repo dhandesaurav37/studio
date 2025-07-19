@@ -25,7 +25,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   return (
     <div className="container py-8 md:py-12">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
         {/* Product Images */}
         <div className="grid grid-cols-1 gap-4">
           <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
@@ -79,7 +79,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </span>
           </div>
           <p className="text-3xl font-bold mt-4">${product.price.toFixed(2)}</p>
-          <p className="text-muted-foreground mt-6">{product.description}</p>
+          <p className="text-muted-foreground mt-6 leading-relaxed">{product.description}</p>
 
           <Separator className="my-8" />
 
@@ -122,7 +122,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             <Button size="lg" className="flex-1 w-full">
               <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
             </Button>
-            <Button variant="outline" size="icon" className="h-11 w-11">
+            <Button variant="outline" size="icon" className="h-11 w-11 flex-shrink-0">
               <Heart className="h-5 w-5" />
               <span className="sr-only">Wishlist</span>
             </Button>
