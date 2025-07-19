@@ -21,7 +21,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navLinks = [
-  { name: "Home", href: "/" },
   { name: "Shop", href: "/products" },
 ];
 
