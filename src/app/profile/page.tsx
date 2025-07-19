@@ -1,3 +1,4 @@
+
 import {
   Card,
   CardContent,
@@ -7,13 +8,19 @@ import {
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, Edit } from "lucide-react";
+import { User, Mail, Phone, Edit, MapPin } from "lucide-react";
 
 const user = {
   name: "John Doe",
   email: "m@example.com",
   mobile: "+1 234 567 890",
   avatar: "https://placehold.co/100x100.png",
+  address: {
+    street: "123 Style Avenue",
+    city: "Fashion City",
+    state: "Trends",
+    pincode: "12345",
+  },
 };
 
 export default function ProfilePage() {
@@ -57,6 +64,14 @@ export default function ProfilePage() {
             <div>
               <p className="text-sm text-muted-foreground">Mobile Number</p>
               <p className="font-semibold">{user.mobile}</p>
+            </div>
+          </div>
+           <div className="flex items-start gap-4">
+            <MapPin className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
+            <div>
+              <p className="text-sm text-muted-foreground">Address</p>
+              <p className="font-semibold">{user.address.street}</p>
+              <p className="font-semibold">{user.address.city}, {user.address.state} - {user.address.pincode}</p>
             </div>
           </div>
         </CardContent>
