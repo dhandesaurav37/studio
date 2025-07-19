@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/data";
+import { products, Product } from "@/lib/data";
 import { Archive, Shirt, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,16 +28,18 @@ const heroImages = [
 
 export default function HomePage() {
   const newArrivals = products.slice(0, 4);
+  const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
+
 
   const ProductCarousel = ({
     products,
   }: {
-    products: typeof newArrivals;
+    products: Product[];
   }) => (
     <Carousel
       opts={{
         align: "start",
-        loop: true,
+        loop: products.length > 4, // Only loop if there are more products than can be shown
       }}
       className="w-full"
     >
@@ -158,13 +160,33 @@ export default function HomePage() {
               New Arrivals
             </h2>
             <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
-              Fresh threads, just landed. Check out the latest additions to the Acoof collection.
+              Fresh threads, just landed. Check out the latest additions to the White Wolf collection.
             </p>
           </div>
           <ProductCarousel products={newArrivals} />
           <div className="text-center mt-12">
             <Button asChild variant="outline" size="lg">
               <Link href="/products">View All Products</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Oversize Tees Section */}
+      <section className="py-16 md:py-20 bg-card">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">
+              Oversize Tees
+            </h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Discover our collection of relaxed, comfortable, and stylish oversized t-shirts.
+            </p>
+          </div>
+          <ProductCarousel products={oversizeTees} />
+           <div className="text-center mt-12">
+            <Button asChild variant="outline" size="lg">
+              <Link href="/products?category=Oversized+T-shirts">View All Oversize Tees</Link>
             </Button>
           </div>
         </div>
