@@ -37,6 +37,8 @@ const categories = [
   "Bags",
 ];
 
+const sizeOrder = ["S", "M", "L", "XL", "XXL"];
+
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -73,6 +75,17 @@ export default function ProductsPage() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
+  const getMinSizeIndex = (sizes: string[]) => {
+    let minIndex = Infinity;
+    for (const size of sizes) {
+      const index = sizeOrder.indexOf(size);
+      if (index !== -1 && index < minIndex) {
+        minIndex = index;
+      }
+    }
+    return minIndex;
+  }
+
   const filteredProducts = products
     .filter((p) =>
       category !== "All"
@@ -90,6 +103,8 @@ export default function ProductsPage() {
           return b.price - a.price;
         case "rating":
           return b.rating - a.rating;
+        case "size":
+            return getMinSizeIndex(a.sizes) - getMinSizeIndex(b.sizes);
         default: // newest
           return parseInt(b.id) - parseInt(a.id);
       }
@@ -146,6 +161,7 @@ export default function ProductsPage() {
                 <SelectItem value="price-asc">Price: Low to High</SelectItem>
                 <SelectItem value="price-desc">Price: High to Low</SelectItem>
                 <SelectItem value="rating">Top Rated</SelectItem>
+                <SelectItem value="size">Size</SelectItem>
               </SelectContent>
             </Select>
           </div>
