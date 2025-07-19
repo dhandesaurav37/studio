@@ -1,5 +1,6 @@
+
 "use client";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/data";
 import {
@@ -9,25 +10,60 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
-import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ChevronDown } from "lucide-react";
 
-const categories = ["All", "T-Shirts", "Shirts", "Jeans"];
+const categories = [
+  "All",
+  "T-Shirts",
+  "Oversized T-shirts",
+  "Shirts",
+  "Jeans",
+  "Trousers",
+  "Sweater",
+  "SweatShirts",
+  "Track Pants",
+  "Boxers",
+  "Jackets",
+  "Sock's",
+  "Shoes",
+  "Bags",
+];
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
-  const rawCategory = searchParams.get("category");
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const category =
-    rawCategory === "t-shirts"
-      ? "T-Shirts"
-      : rawCategory
-      ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
-      : "All";
+  const category = searchParams.get("category") || "All";
+
+  const handleCategoryChange = (newCategory: string) => {
+    const params = new URLSearchParams(searchParams);
+    if (newCategory === "All") {
+      params.delete("category");
+    } else {
+      params.set("category", newCategory.toLowerCase().replace(" ", "-"));
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
+  
+  const handleSortChange = (sortValue: string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("sort", sortValue);
+    router.push(`${pathname}?${params.toString()}`);
+  }
 
   const filteredProducts =
     category !== "All"
-      ? products.filter((p) => p.category.toLowerCase() === category.toLowerCase())
+      ? products.filter(
+          (p) => p.category.toLowerCase().replace(" ", "-") === category
+        )
       : products;
 
   return (
@@ -36,10 +72,28 @@ export default function ProductsPage() {
         <h1 className="text-3xl md:text-4xl font-bold font-headline capitalize">
           {category === "All" ? "All Products" : category.replace("-", " ")}
         </h1>
-        <div className="flex items-center gap-4 self-stretch md:self-auto">
-          <span className="text-sm font-medium text-muted-foreground hidden sm:inline">Sort by:</span>
-          <Select defaultValue="newest">
-            <SelectTrigger className="w-full sm:w-[180px]">
+        <div className="flex items-center gap-4 self-stretch md:self-auto w-full md:w-auto">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex-1 md:flex-none">
+                Categories <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56 max-h-96 overflow-y-auto">
+              {categories.map((cat) => (
+                <DropdownMenuItem
+                  key={cat}
+                  onSelect={() => handleCategoryChange(cat)}
+                  className={category.toLowerCase().replace(" ", "-") === cat.toLowerCase().replace(" ", "-") ? "font-bold bg-accent" : ""}
+                >
+                  {cat}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Select defaultValue="newest" onValueChange={handleSortChange}>
+            <SelectTrigger className="w-full flex-1 md:w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -52,52 +106,22 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12">
-        <aside className="hidden md:block">
-          <h2 className="text-lg font-semibold font-headline mb-4">
-            Categories
-          </h2>
-          <ul className="space-y-3">
-            {categories.map((cat) => (
-              <li key={cat}>
-                <Link
-                  href={
-                    cat === "All"
-                      ? "/products"
-                      : `/products?category=${cat.toLowerCase()}`
-                  }
-                  className={`text-muted-foreground hover:text-foreground transition-colors ${
-                    category === cat
-                      ? "font-bold text-foreground"
-                      : ""
-                  }`}
-                >
-                  {cat}
-                </Link>
-              </li>
+      <main>
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
-          </ul>
-          <Separator className="my-6" />
-          {/* Add more filters here like size, color, price range */}
-        </aside>
-
-        <main className="md:col-span-3">
-          {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-20 border-2 border-dashed rounded-lg">
-              <h2 className="text-2xl font-semibold">No products found</h2>
-              <p className="text-muted-foreground mt-2">
-                Try adjusting your filters.
-              </p>
-            </div>
-          )}
-        </main>
-      </div>
+          </div>
+        ) : (
+          <div className="text-center py-20 border-2 border-dashed rounded-lg">
+            <h2 className="text-2xl font-semibold">No products found</h2>
+            <p className="text-muted-foreground mt-2">
+              Try adjusting your filters.
+            </p>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

@@ -49,8 +49,8 @@ export function ProductCard({
         <div className="flex items-center justify-between w-full mt-4">
           <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
           {variant === "wishlist" ? (
-            <Button
-              variant="destructive"
+             <Button
+              variant="outline"
               size="sm"
               onClick={() => onRemove?.(product.id)}
             >
