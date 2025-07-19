@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
-  { name: "New Arrivals", href: "/products?sort=newest" },
+  { name: "Premium Products", href: "/products?category=Jackets" },
 ];
 
 export function AppHeader() {
