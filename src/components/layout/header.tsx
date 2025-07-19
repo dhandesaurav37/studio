@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -11,6 +11,14 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { useState, useEffect } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -19,13 +27,92 @@ const navLinks = [
 
 export function AppHeader() {
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
 
   useEffect(() => {
     setIsMounted(true);
+    // In a real app, you'd check for a token or session here
+    // For now, we'll just simulate a logged-in user after a delay
+    const timer = setTimeout(() => setIsLoggedIn(true), 2000);
+    return () => clearTimeout(timer);
   }, []);
 
   if (!isMounted) {
-    return null;
+    return (
+       <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-sm">
+        <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+            <div className="w-1/3"></div>
+            <div className="w-1/3 flex justify-center">
+                 <Link href="/" className="mr-8 flex items-center gap-2">
+                    <span className="text-2xl font-bold font-headline tracking-wider">
+                    White Wolf
+                    </span>
+                </Link>
+            </div>
+            <div className="w-1/3"></div>
+        </div>
+      </header>
+    );
+  }
+
+  const renderAuthButtons = () => {
+    if (isLoggedIn) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+              <span className="sr-only">User Menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/notifications">Notifications</Link></DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>Log Out</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+    return (
+      <>
+        <Button variant="ghost" asChild>
+          <Link href="/login">Login</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/signup">Sign Up</Link>
+        </Button>
+      </>
+    );
+  };
+  
+  const renderMobileAuthButtons = () => {
+     if (isLoggedIn) {
+      return (
+         <>
+          <hr className="my-4" />
+          <Link href="/orders" className="font-medium text-foreground hover:text-destructive">Orders</Link>
+          <Link href="/wishlist" className="font-medium text-foreground hover:text-destructive">Wishlist</Link>
+          <Link href="/notifications" className="font-medium text-foreground hover:text-destructive">Notifications</Link>
+          <hr className="my-4" />
+          <Button variant="ghost" onClick={() => setIsLoggedIn(false)}>Log Out</Button>
+        </>
+      )
+     }
+     return (
+        <>
+            <hr className="my-4" />
+            <Button variant="ghost" asChild>
+              <Link href="/login">Login</Link>
+            </Button>
+            <Button asChild>
+              <Link href="/signup">Sign Up</Link>
+            </Button>
+        </>
+     )
   }
 
   return (
@@ -34,20 +121,28 @@ export function AppHeader() {
         {/* --- Desktop Header --- */}
         <div className="hidden md:flex w-full items-center">
           <Link href="/" className="mr-8 flex items-center gap-2">
-            <span className="inline-block text-xl font-bold uppercase tracking-wider bg-destructive text-destructive-foreground p-2 rounded-md">ACOOF</span>
+            <span className="text-2xl font-bold font-headline tracking-wider">
+              White Wolf
+            </span>
           </Link>
           <nav className="flex items-center gap-6">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-destructive"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
                 {link.name}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-2 ml-auto">
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/wishlist">
+                <Heart className="h-5 w-5" />
+                <span className="sr-only">Wishlist</span>
+              </Link>
+            </Button>
             <Button variant="ghost" size="icon" asChild>
               <Link href="/cart">
                 <ShoppingBag className="h-5 w-5" />
@@ -55,19 +150,14 @@ export function AppHeader() {
               </Link>
             </Button>
             <div className="mx-2 h-6 border-l border-border"></div>
-            <Button variant="ghost" asChild>
-              <Link href="/login">Login</Link>
-            </Button>
-            <Button asChild variant="destructive">
-              <Link href="/signup">Sign Up</Link>
-            </Button>
+            {renderAuthButtons()}
           </div>
         </div>
 
         {/* --- Mobile Header --- */}
         <div className="flex w-full items-center justify-between md:hidden">
-           <Link href="/" className="text-xl font-bold uppercase tracking-wider bg-destructive text-destructive-foreground p-2 rounded-md">
-            ACOOF
+          <Link href="/" className="text-xl font-bold font-headline">
+            White Wolf
           </Link>
 
           <div className="flex items-center">
@@ -88,7 +178,7 @@ export function AppHeader() {
                 <SheetHeader>
                   <SheetTitle>
                     <Link href="/" className="text-2xl font-bold font-headline">
-                      ACOOF
+                      White Wolf
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
@@ -102,13 +192,7 @@ export function AppHeader() {
                       {link.name}
                     </Link>
                   ))}
-                  <hr className="my-4" />
-                  <Button variant="ghost" asChild>
-                    <Link href="/login">Login</Link>
-                  </Button>
-                  <Button asChild variant="destructive">
-                    <Link href="/signup">Sign Up</Link>
-                  </Button>
+                  {renderMobileAuthButtons()}
                 </nav>
               </SheetContent>
             </Sheet>

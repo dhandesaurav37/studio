@@ -52,6 +52,7 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] bg-background">
+        <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="w-full h-full">
           <Image
             src="https://placehold.co/1600x900.png"
@@ -62,13 +63,27 @@ export default function HomePage() {
             priority
           />
         </div>
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4">
+          <div className="flex flex-col items-center justify-center text-center">
+            <h1 className="text-4xl md:text-6xl font-extrabold font-headline tracking-tight leading-tight">
+              Define Your Style
+            </h1>
+            <p className="mt-4 max-w-2xl text-lg md:text-xl text-primary-foreground/90">
+              Timeless style, uncompromising quality, and conscious craftsmanship
+              for the modern individual.
+            </p>
+            <Button asChild size="lg" className="mt-8 bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+              <Link href="/products">Shop New Arrivals</Link>
+            </Button>
+          </div>
+        </div>
       </section>
 
       {/* Features Section */}
-      <section className="bg-background">
+      <section className="bg-card">
         <div className="container py-16 md:py-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-card p-8 rounded-lg flex flex-col items-center text-center gap-4">
+            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
               <Archive className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
@@ -79,7 +94,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            <div className="bg-card p-8 rounded-lg flex flex-col items-center text-center gap-4">
+            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
               <Shirt className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
@@ -90,7 +105,7 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-            <div className="bg-card p-8 rounded-lg flex flex-col items-center text-center gap-4">
+            <div className="p-8 rounded-lg flex flex-col items-start text-left gap-4">
               <Truck className="h-10 w-10 text-destructive" />
               <div>
                 <h3 className="text-xl font-semibold font-headline mb-2">
