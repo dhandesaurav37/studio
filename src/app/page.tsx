@@ -1,9 +1,5 @@
-import { ProductCard } from "@/components/product-card";
-import { Button } from "@/components/ui/button";
-import { products } from "@/lib/data";
-import { ArrowRight } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+"use client";
+
 import {
   Carousel,
   CarouselContent,
@@ -11,147 +7,141 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { products } from "@/lib/data";
+import { ChevronRight } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+
+const heroFeatures = [
+  "4-WAY STRETCH",
+  "PREMIUM FABRIC",
+  "WRINKLE RESISTANCE",
+];
+
+const innovationLabItems = [
+  {
+    title: "Craft meets complexity",
+    description: "Every pattern is engineered on a loom, not stamped by machines",
+    image: "https://placehold.co/800x600",
+    dataAiHint: "fabric loom",
+  },
+  {
+    title: "Woven, not printed",
+    description: "Jacquard fabrics tell their story thread by thread",
+    image: "https://placehold.co/800x600",
+    dataAiHint: "textile weaving",
+  },
+  {
+    title: "Timeless texture",
+    description:
+      "Jacquard fabrics bring depth, dimension, and heritage to every garment",
+    image: "https://placehold.co/800x600",
+    dataAiHint: "red fabric",
+  },
+];
 
 export default function Home() {
-  const newArrivals = products.slice(0, 6);
+  const heroProducts = products.filter((p) => p.category === "pants");
 
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center text-white">
-        <Image
-          src="https://placehold.co/1920x1080"
-          alt="Model wearing White Wolf apparel"
-          fill
-          className="object-cover z-0"
-          data-ai-hint="mens fashion"
-          priority
-        />
-        <div className="absolute inset-0 bg-black/50 z-10" />
-        <div className="relative z-20 flex flex-col items-center p-4">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold font-headline mb-4 tracking-tight">
-            Style Redefined.
-          </h1>
-          <p className="text-lg md:text-xl max-w-2xl mb-8">
-            Discover premium menswear, crafted with purpose and precision for
-            the modern individual.
-          </p>
-          <Button size="lg" asChild>
-            <Link href="/products">
-              Shop Collection <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-        </div>
-      </section>
-
-      {/* New Arrivals Section */}
-      <section id="new-arrivals" className="py-12 md:py-20 bg-background">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
-            New Arrivals
-          </h2>
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-            }}
-            className="w-full"
-          >
-            <CarouselContent>
-              {newArrivals.map((product) => (
-                <CarouselItem
-                  key={product.id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <div className="p-1">
-                    <ProductCard product={product} />
-                  </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
-          </Carousel>
-        </div>
-      </section>
-
-      {/* Featured Collections Section */}
-      <section className="py-12 md:py-20">
-        <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
-            Featured Collections
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            <div className="relative group h-96 overflow-hidden rounded-lg">
-              <Image
-                src="https://placehold.co/800x600"
-                alt="T-Shirt Collection"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                data-ai-hint="t-shirts"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
-                <h3 className="text-3xl font-bold font-headline">
-                  The Tee Collection
-                </h3>
-                <Button variant="secondary" className="mt-4" asChild>
-                  <Link href="/products?category=t-shirts">Shop Now</Link>
-                </Button>
-              </div>
+      <section className="w-full">
+        <div className="container mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="lg:col-span-2">
+              <Carousel
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+                className="w-full"
+              >
+                <CarouselContent>
+                  {heroProducts.map((product, index) => (
+                    <CarouselItem key={product.id}>
+                      <div className="relative h-[60vh] md:h-[80vh] w-full flex items-center justify-center text-center">
+                        <Image
+                          src={product.images[index % product.images.length]}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                          data-ai-hint={product.dataAiHint}
+                          priority={index === 0}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+                        <div className="relative z-10 flex flex-col items-start p-8 md:p-12 text-white self-center text-left">
+                          <h2 className="text-4xl md:text-6xl font-light tracking-wider">
+                            NOT JUST PANTS
+                          </h2>
+                          <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
+                            SUPER PANTS
+                          </h1>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 text-white" />
+                <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 text-white" />
+              </Carousel>
             </div>
-            <div className="relative group h-96 overflow-hidden rounded-lg">
-              <Image
-                src="https://placehold.co/800x600"
-                alt="Denim Collection"
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                data-ai-hint="denim"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
-                <h3 className="text-3xl font-bold font-headline">
-                  The Denim Edit
-                </h3>
-                <Button variant="secondary" className="mt-4" asChild>
-                  <Link href="/products?category=jeans">Shop Now</Link>
-                </Button>
+
+            <div className="hidden lg:flex flex-col items-center justify-center p-8 bg-secondary">
+              <div className="relative w-full aspect-[3/4]">
+                <Image
+                  src="https://placehold.co/600x800"
+                  alt="Super Pants"
+                  fill
+                  className="object-contain"
+                  data-ai-hint="black pants"
+                />
+              </div>
+              <div className="flex space-x-2 mt-4">
+                <div className="w-6 h-6 rounded-full bg-gray-800 border-2 border-primary"></div>
+                <div className="w-6 h-6 rounded-full bg-amber-900"></div>
+                <div className="w-6 h-6 rounded-full bg-black"></div>
+              </div>
+              <div className="mt-8 space-y-6 self-start w-full">
+                {heroFeatures.map((feature, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-sm font-semibold tracking-wider">
+                      {feature}
+                    </span>
+                    <ChevronRight className="h-5 w-5" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Brand Story Section */}
-      <section id="our-story" className="py-12 md:py-20 bg-primary text-primary-foreground">
-        <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-bold font-headline mb-4">
-                The White Wolf Way
-              </h2>
-              <p className="mb-4 text-primary-foreground/80 leading-relaxed">
-                White Wolf was founded on the principle that clothing should be
-                more than just functional; it should be an extension of your
-                identity. We believe in timeless style, uncompromising quality,
-                and conscious craftsmanship.
-              </p>
-              <p className="text-primary-foreground/80 leading-relaxed">
-                Each piece in our collection is thoughtfully designed and
-                meticulously constructed using only the finest materials. We
-                are for those who lead, not follow—the lone wolves who carve
-                their own path.
-              </p>
-            </div>
-            <div className="relative h-80 rounded-lg overflow-hidden">
-              <Image
-                src="https://placehold.co/800x600"
-                alt="Craftsmanship"
-                fill
-                className="object-cover"
-                data-ai-hint="fabric tailor"
-              />
-            </div>
+      {/* Innovation Lab Section */}
+      <section className="py-12 md:py-20 bg-background">
+        <div className="container mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
+            INNOVATION LAB
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {innovationLabItems.map((item, index) => (
+              <Link href="#" key={index}>
+                <div className="relative group h-80 overflow-hidden rounded-lg">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    data-ai-hint={item.dataAiHint}
+                  />
+                  <div className="absolute inset-0 bg-black/50" />
+                  <div className="absolute inset-0 flex flex-col items-start justify-end text-white p-6 text-left">
+                    <h3 className="text-xl font-bold">{item.title}</h3>
+                    <p className="text-sm mt-1">{item.description}</p>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

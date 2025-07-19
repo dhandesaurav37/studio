@@ -5,8 +5,8 @@ import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: "White Wolf",
-  description: "Premium men's clothing brand.",
+  title: "The Souled Store",
+  description: "Premium apparel for men and women.",
   manifest: "/manifest.json",
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
@@ -38,7 +38,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="White Wolf" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#0a0a0a" />
+        <meta name="theme-color" content="#FFFFFF" />
       </head>
       <body className="font-body antialiased">
         <div className="flex flex-col min-h-screen">

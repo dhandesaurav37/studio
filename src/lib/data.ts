@@ -148,6 +148,38 @@ export const products: Product[] = [
     reviews: 112,
     dataAiHint: "linen shirt",
   },
+  {
+    id: "9",
+    name: "Men's Super Pants",
+    price: 189.99,
+    description:
+      "Not just pants, Super Pants. Engineered for maximum comfort and style with 4-way stretch, premium fabric, and wrinkle resistance.",
+    images: [
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+    ],
+    category: "pants",
+    sizes: ["S", "M", "L", "XL"],
+    rating: 4.9,
+    reviews: 178,
+    dataAiHint: "man black pants",
+  },
+  {
+    id: "10",
+    name: "Men's Modern Trousers",
+    price: 179.99,
+    description:
+      "A modern take on classic trousers. Perfect for the office or a night out. Features a sleek design and premium materials.",
+    images: [
+      "https://placehold.co/600x800",
+      "https://placehold.co/600x800",
+    ],
+    category: "pants",
+    sizes: ["30", "32", "34", "36"],
+    rating: 4.8,
+    reviews: 150,
+    dataAiHint: "man modern trousers",
+  },
 ];
 
 export const getProductById = (id: string) => products.find((p) => p.id === id);
