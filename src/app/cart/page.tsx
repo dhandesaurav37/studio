@@ -12,21 +12,29 @@ import { products } from "@/lib/data";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
-const cartItems = [
+const initialCartItems = [
   { product: products[0], quantity: 1, size: "M" },
   { product: products[2], quantity: 1, size: "L" },
 ];
-const subtotal = cartItems.reduce(
-  (acc, item) => acc + item.product.price * item.quantity,
-  0
-);
-const shipping = 5.0;
-const total = subtotal + shipping;
 
 export default function CartPage() {
+  const [cartItems, setCartItems] = useState(initialCartItems);
+
+  const handleRemoveItem = (productId: string) => {
+    setCartItems(cartItems.filter((item) => item.product.id !== productId));
+  };
+
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.product.price * item.quantity,
+    0
+  );
+  const shipping = cartItems.length > 0 ? 5.0 : 0;
+  const total = subtotal + shipping;
+
   return (
-    <div className="container py-8 md:py-12">
+    <div className="container py-12 md:py-16">
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
         Your Cart
       </h1>
@@ -83,10 +91,21 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="text-muted-foreground hover:text-destructive"
+                          onClick={() => handleRemoveItem(item.product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Remove item</span>
                         </Button>
                       </div>
+                       <Button
+                          variant="ghost"
+                          size="icon"
+                          className="sm:hidden text-muted-foreground hover:text-destructive absolute top-2 right-2"
+                          onClick={() => handleRemoveItem(item.product.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          <span className="sr-only">Remove item</span>
+                        </Button>
                     </li>
                   ))}
                 </ul>
