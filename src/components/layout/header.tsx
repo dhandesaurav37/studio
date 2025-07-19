@@ -36,6 +36,28 @@ export function AppHeader() {
       : "bg-transparent"
   }`;
 
+  if (!isMounted) {
+     return (
+      <header className="sticky top-0 z-50 w-full bg-transparent">
+        <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-6">
+            <div className="h-6 w-6 md:hidden" />
+            <div className="h-7 w-28 bg-muted rounded-md" />
+          </div>
+          <div className="flex items-center justify-end gap-2">
+            <div className="hidden md:flex items-center gap-6 mr-4">
+               <div className="h-5 w-12 bg-muted rounded-md" />
+               <div className="h-5 w-28 bg-muted rounded-md" />
+            </div>
+            <div className="h-10 w-10 bg-muted rounded-full" />
+            <div className="h-10 w-10 bg-muted rounded-full" />
+            <div className="h-11 w-28 bg-muted rounded-md" />
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className={headerClasses}>
       <div className="container mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -69,48 +91,34 @@ export function AppHeader() {
           </Link>
         </div>
 
-        {isMounted ? (
-          <div className="flex items-center justify-end gap-2">
-            <nav className="hidden md:flex items-center gap-6 mr-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </nav>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/cart">
-                <ShoppingBag className="h-5 w-5" />
-                <span className="sr-only">Cart</span>
+        <div className="flex items-center justify-end gap-2">
+          <nav className="hidden md:flex items-center gap-6 mr-4">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {link.name}
               </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/wishlist">
-                <Heart className="h-5 w-5" />
-                <span className="sr-only">Wishlist</span>
-              </Link>
-            </Button>
-            <Button asChild>
-              <Link href="/login">Login / Sign Up</Link>
-            </Button>
-          </div>
-        ) : (
-          <div className="flex items-center justify-end gap-2">
-            {/* Placeholder for nav links */}
-            <div className="hidden md:flex items-center gap-6 mr-4">
-               <div className="h-5 w-12 bg-muted rounded-md" />
-               <div className="h-5 w-28 bg-muted rounded-md" />
-            </div>
-            {/* Placeholders for action buttons */}
-            <div className="h-10 w-10 bg-muted rounded-full" />
-            <div className="h-10 w-10 bg-muted rounded-full" />
-            <div className="h-11 w-28 bg-muted rounded-md" />
-          </div>
-        )}
+            ))}
+          </nav>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/cart">
+              <ShoppingBag className="h-5 w-5" />
+              <span className="sr-only">Cart</span>
+            </Link>
+          </Button>
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/wishlist">
+              <Heart className="h-5 w-5" />
+              <span className="sr-only">Wishlist</span>
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href="/login">Login / Sign Up</Link>
+          </Button>
+        </div>
       </div>
     </header>
   );
