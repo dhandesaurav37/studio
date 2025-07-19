@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 
 const allCategories = [...new Set(products.map((p) => p.category))];
-const allColors = [...new Set(products.map((p) => p.color))];
+const allColors = [...new Set(products.flatMap((p) => p.color).filter(Boolean) as string[])];
 const alphaSizes = ["S", "M", "L", "XL", "XXL"];
 const numericSizes = ["30", "32", "34", "36", "38"];
 
