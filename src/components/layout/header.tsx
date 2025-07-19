@@ -69,9 +69,11 @@ export function AppHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>My Account</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/notifications">Notifications</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>Log Out</DropdownMenuItem>
           </DropdownMenuContent>
@@ -95,9 +97,11 @@ export function AppHeader() {
       return (
          <>
           <hr className="my-4" />
+          <Link href="/profile" className="font-medium text-foreground hover:text-destructive">Profile</Link>
           <Link href="/orders" className="font-medium text-foreground hover:text-destructive">Orders</Link>
           <Link href="/wishlist" className="font-medium text-foreground hover:text-destructive">Wishlist</Link>
           <Link href="/notifications" className="font-medium text-foreground hover:text-destructive">Notifications</Link>
+          <Link href="/settings" className="font-medium text-foreground hover:text-destructive">Settings</Link>
           <hr className="my-4" />
           <Button variant="ghost" onClick={() => setIsLoggedIn(false)}>Log Out</Button>
         </>
