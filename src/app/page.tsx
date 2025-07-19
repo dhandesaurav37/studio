@@ -166,29 +166,28 @@ export default function HomePage() {
       {/* Shop by Category Section */}
       <section className="py-16 md:py-24">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
-            Shop by Category
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12 uppercase tracking-wider">
+            Categories
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10">
             {categories.map((category) => (
               <Link
                 key={category.name}
                 href={category.href}
-                className="group relative flex flex-col items-center justify-end text-center rounded-lg overflow-hidden p-4 h-48 md:h-64"
+                className="group text-center"
               >
-                <Image
-                  src={category.imageSrc}
-                  alt={`A model wearing a ${category.name}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  data-ai-hint={category.dataAiHint}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                <div className="relative z-10">
-                  <h3 className="text-lg font-semibold text-white group-hover:underline">
-                    {category.name.replace("-", " ")}
-                  </h3>
+                <div className="relative aspect-[4/5] w-full overflow-hidden rounded-md bg-muted">
+                  <Image
+                    src={category.imageSrc}
+                    alt={`A model wearing a ${category.name}`}
+                    fill
+                    className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                    data-ai-hint={category.dataAiHint}
+                  />
                 </div>
+                <h3 className="mt-4 text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+                  {category.name.replace("-", " ")}
+                </h3>
               </Link>
             ))}
           </div>
