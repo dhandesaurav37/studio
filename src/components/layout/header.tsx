@@ -44,7 +44,7 @@ export function AppHeader() {
                     <span className="sr-only">Toggle Menu</span>
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left">
+                <SheetContent side="left" className="p-0">
                   <div className="flex flex-col h-full">
                     <div className="flex items-center justify-between p-4 border-b">
                       <Link
@@ -61,17 +61,17 @@ export function AppHeader() {
                         size="icon"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <X className="h-5 w-5" />
+                        <X className="h-6 w-6" />
                       </Button>
                     </div>
                     <div className="p-4 flex-grow">
                       <nav className="flex flex-col space-y-4">
-                        <h3 className="font-semibold">Shop</h3>
+                        <h3 className="font-semibold text-lg mb-2">Shop</h3>
                         {navLinks.map((link) => (
                           <Link
                             key={link.href}
                             href={link.href}
-                            className="text-lg font-medium text-muted-foreground"
+                            className="text-muted-foreground hover:text-foreground"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             {link.label}
@@ -79,7 +79,7 @@ export function AppHeader() {
                         ))}
                          <Link
                             href="/#new-arrivals"
-                            className="text-lg font-medium"
+                            className="text-muted-foreground hover:text-foreground"
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             New Arrivals
@@ -99,7 +99,7 @@ export function AppHeader() {
               <nav className="flex items-center space-x-6 text-sm font-medium">
                  <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-sm font-medium p-0">
+                    <Button variant="ghost" className="text-sm font-medium p-0 h-auto">
                       Shop
                     </Button>
                   </DropdownMenuTrigger>
@@ -120,15 +120,15 @@ export function AppHeader() {
               </nav>
             </div>
 
-            {/* Mobile: Centered Brand Name - now aligned left */}
-             <div className="flex-1 flex justify-start md:hidden pl-4">
+            {/* Mobile: Centered Brand Name */}
+             <div className="flex-1 flex justify-center md:hidden">
                  <Link href="/" className="flex items-center space-x-2">
                     <span className="font-bold text-xl font-headline">The White Wolf</span>
                 </Link>
             </div>
             
             {/* Action Icons (Right side for all screens) */}
-            <div className="ml-auto flex items-center space-x-1 md:space-x-2">
+            <div className="flex items-center space-x-1 md:space-x-2">
               <Button variant="ghost" size="icon" asChild>
                 <Link href="/cart">
                   <ShoppingBag className="h-5 w-5" />
@@ -168,13 +168,21 @@ export function AppHeader() {
         ) : (
           // Fallback for SSR to prevent hydration mismatch
           <div className="flex justify-between items-center w-full">
-            <div className="flex items-center space-x-2">
-              <span className="font-bold text-xl font-headline">The White Wolf</span>
+            <div className="flex items-center gap-6">
+                <div className="h-6 w-6 md:hidden" />
+                <span className="font-bold text-xl font-headline">The White Wolf</span>
+                <nav className="hidden md:flex items-center space-x-6 text-sm font-medium">
+                    <div className="w-10 h-5" />
+                    <div className="w-20 h-5" />
+                </nav>
             </div>
-            <div className="flex items-center space-x-2">
-                <div className="w-8 h-8"/>
-                <div className="w-8 h-8"/>
-                <div className="w-8 h-8"/>
+            <div className="flex-1 flex justify-center md:hidden">
+                <span className="font-bold text-xl font-headline">The White Wolf</span>
+            </div>
+            <div className="flex items-center space-x-1 md:space-x-2">
+                <div className="w-10 h-10" />
+                <div className="w-10 h-10" />
+                <div className="w-10 h-10" />
             </div>
           </div>
         )}
