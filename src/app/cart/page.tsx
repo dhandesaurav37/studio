@@ -39,14 +39,14 @@ export default function CartPage() {
                   {cartItems.map((item) => (
                     <li
                       key={item.product.id}
-                      className="flex items-center p-4 sm:p-6 gap-4"
+                      className="flex items-center p-4 sm:p-6 gap-6"
                     >
-                      <div className="relative h-24 w-24 sm:h-32 sm:w-32 rounded-md overflow-hidden">
+                      <div className="relative h-24 w-24 sm:h-32 sm:w-32 rounded-md overflow-hidden flex-shrink-0">
                         <Image
                           src={item.product.images[0]}
                           alt={item.product.name}
-                          layout="fill"
-                          objectFit="cover"
+                          fill
+                          className="object-cover"
                           data-ai-hint={item.product.dataAiHint}
                         />
                       </div>
@@ -75,14 +75,14 @@ export default function CartPage() {
                           </Button>
                         </div>
                       </div>
-                      <div className="hidden sm:block text-right">
+                      <div className="hidden sm:flex flex-col items-end gap-2">
                         <p className="font-bold text-lg">
                           ${(item.product.price * item.quantity).toFixed(2)}
                         </p>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-muted-foreground hover:text-destructive mt-2"
+                          className="text-muted-foreground hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

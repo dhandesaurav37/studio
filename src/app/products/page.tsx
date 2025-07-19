@@ -10,29 +10,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 const categories = ["All", "T-Shirts", "Shirts", "Jeans"];
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+  const rawCategory = searchParams.get("category");
 
-  const filteredProducts = category
-    ? products.filter((p) => p.category === category)
-    : products;
+  const category =
+    rawCategory === "t-shirts"
+      ? "T-Shirts"
+      : rawCategory
+      ? rawCategory.charAt(0).toUpperCase() + rawCategory.slice(1)
+      : "All";
+
+  const filteredProducts =
+    category !== "All"
+      ? products.filter((p) => p.category.toLowerCase() === category.toLowerCase())
+      : products;
 
   return (
-    <div className="container py-8">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8">
-        <h1 className="text-4xl font-bold font-headline mb-4 md:mb-0">
-          {category
-            ? category.charAt(0).toUpperCase() + category.slice(1).replace("-", " ")
-            : "All Products"}
+    <div className="container py-8 md:py-12">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+        <h1 className="text-4xl font-bold font-headline">
+          {category.replace("-", " ")}
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm font-medium">Sort by:</span>
+        <div className="flex items-center gap-4 self-stretch md:self-auto">
+          <span className="text-sm font-medium text-muted-foreground hidden sm:inline">Sort by:</span>
           <Select defaultValue="newest">
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-full sm:w-[180px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -53,21 +60,20 @@ export default function ProductsPage() {
           <ul className="space-y-2">
             {categories.map((cat) => (
               <li key={cat}>
-                <a
+                <Link
                   href={
                     cat === "All"
                       ? "/products"
                       : `/products?category=${cat.toLowerCase()}`
                   }
-                  className={`text-muted-foreground hover:text-foreground ${
-                    category === cat.toLowerCase() ||
-                    (!category && cat === "All")
+                  className={`text-muted-foreground hover:text-foreground transition-colors ${
+                    category === cat
                       ? "font-bold text-foreground"
                       : ""
                   }`}
                 >
                   {cat}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -77,13 +83,13 @@ export default function ProductsPage() {
 
         <main className="md:col-span-3">
           {filteredProducts.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
               {filteredProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="text-center py-20">
+            <div className="text-center py-20 border-2 border-dashed rounded-lg">
               <h2 className="text-2xl font-semibold">No products found</h2>
               <p className="text-muted-foreground mt-2">
                 Try adjusting your filters.

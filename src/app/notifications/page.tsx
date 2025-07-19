@@ -38,12 +38,12 @@ export default function NotificationsPage() {
         <Button variant="ghost">Mark all as read</Button>
       </div>
 
-      <div className="bg-card rounded-lg border">
+      <div className="bg-card rounded-lg border max-w-4xl mx-auto">
         <ul className="divide-y">
           {notifications.map((notification) => (
             <li
               key={notification.id}
-              className={`flex items-start gap-4 p-4 ${
+              className={`flex items-start gap-4 p-4 sm:p-6 ${
                 !notification.read ? "bg-accent/10" : ""
               }`}
             >
@@ -66,7 +66,7 @@ export default function NotificationsPage() {
                 </p>
               </div>
               {!notification.read && (
-                <div className="mt-1 h-2.5 w-2.5 rounded-full bg-accent"></div>
+                <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-accent flex-shrink-0"></div>
               )}
             </li>
           ))}

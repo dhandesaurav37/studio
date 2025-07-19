@@ -22,10 +22,10 @@ export default function Home() {
         <Image
           src="https://placehold.co/1920x1080"
           alt="Model wearing White Wolf apparel"
-          layout="fill"
-          objectFit="cover"
-          className="z-0"
+          fill
+          className="object-cover z-0"
           data-ai-hint="mens fashion"
+          priority
         />
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 flex flex-col items-center p-4">
@@ -45,9 +45,9 @@ export default function Home() {
       </section>
 
       {/* New Arrivals Section */}
-      <section id="new-arrivals" className="py-16 md:py-24 bg-background">
+      <section id="new-arrivals" className="py-12 md:py-16 bg-background">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-10">
             New Arrivals
           </h2>
           <Carousel
@@ -76,23 +76,22 @@ export default function Home() {
       </section>
 
       {/* Featured Collections Section */}
-      <section className="py-16 md:py-24">
+      <section className="py-12 md:py-16">
         <div className="container">
-          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-10">
             Featured Collections
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
             <div className="relative group h-96 overflow-hidden rounded-lg">
               <Image
                 src="https://placehold.co/800x600"
                 alt="T-Shirt Collection"
-                layout="fill"
-                objectFit="cover"
-                className="group-hover:scale-105 transition-transform duration-500"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
                 data-ai-hint="t-shirts"
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
                 <h3 className="text-3xl font-bold font-headline">
                   The Tee Collection
                 </h3>
@@ -105,13 +104,12 @@ export default function Home() {
               <Image
                 src="https://placehold.co/800x600"
                 alt="Denim Collection"
-                layout="fill"
-                objectFit="cover"
-                className="group-hover:scale-105 transition-transform duration-500"
+                fill
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
                 data-ai-hint="denim"
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4 text-center">
                 <h3 className="text-3xl font-bold font-headline">
                   The Denim Edit
                 </h3>
@@ -125,7 +123,7 @@ export default function Home() {
       </section>
 
       {/* Brand Story Section */}
-      <section id="our-story" className="py-16 md:py-24 bg-primary text-primary-foreground">
+      <section id="our-story" className="py-12 md:py-16 bg-primary text-primary-foreground">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div>
@@ -149,8 +147,8 @@ export default function Home() {
               <Image
                 src="https://placehold.co/800x600"
                 alt="Craftsmanship"
-                layout="fill"
-                objectFit="cover"
+                fill
+                className="object-cover"
                 data-ai-hint="fabric tailor"
               />
             </div>

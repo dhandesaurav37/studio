@@ -25,20 +25,21 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
 
   return (
     <div className="container py-8 md:py-12">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
         {/* Product Images */}
         <div className="grid grid-cols-1 gap-4">
           <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
             <Image
               src={product.images[0]}
               alt={product.name}
-              layout="fill"
-              objectFit="cover"
+              fill
+              className="object-cover"
               data-ai-hint={product.dataAiHint}
+              priority
             />
           </div>
           <div className="grid grid-cols-3 gap-4">
-            {product.images.slice(1).map((img, index) => (
+            {product.images.slice(1, 4).map((img, index) => (
               <div
                 key={index}
                 className="relative aspect-square w-full h-auto rounded-lg overflow-hidden"
@@ -46,8 +47,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 <Image
                   src={img}
                   alt={`${product.name} ${index + 2}`}
-                  layout="fill"
-                  objectFit="cover"
+                  fill
+                  className="object-cover"
                   data-ai-hint={product.dataAiHint}
                 />
               </div>
@@ -68,7 +69,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   className={`h-5 w-5 ${
                     i < Math.round(product.rating)
                       ? "text-amber-400 fill-amber-400"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground/50"
                   }`}
                 />
               ))}
@@ -91,6 +92,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
                   onClick={() => setSelectedSize(size)}
+                  className="w-16"
                 >
                   {size}
                 </Button>
@@ -99,7 +101,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
           </div>
 
           {/* Quantity and Actions */}
-          <div className="flex items-center gap-4 mt-8">
+          <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
             <div className="flex items-center border rounded-md">
               <Button
                 variant="ghost"
@@ -117,23 +119,24 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <Button size="lg" className="flex-1">
+            <Button size="lg" className="flex-1 w-full">
               <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
             </Button>
-            <Button variant="outline" size="lg">
-              <Heart className="mr-2 h-5 w-5" /> Wishlist
+            <Button variant="outline" size="icon" className="h-11 w-11">
+              <Heart className="h-5 w-5" />
+              <span className="sr-only">Wishlist</span>
             </Button>
           </div>
         </div>
       </div>
 
       {/* Customer Reviews Section */}
-      <div className="mt-16">
+      <div className="mt-16 md:mt-20">
         <h2 className="text-2xl font-bold font-headline mb-6">
           Customer Reviews
         </h2>
         {/* Review items would go here */}
-        <div className="border rounded-lg p-6 text-center bg-card">
+        <div className="border rounded-lg p-8 text-center bg-card">
           <p className="text-muted-foreground">
             No reviews yet. Be the first to review this product!
           </p>
@@ -141,11 +144,11 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       </div>
 
       {/* Related Products */}
-      <div className="mt-16">
+      <div className="mt-16 md:mt-20">
         <h2 className="text-2xl font-bold font-headline mb-6">
           You Might Also Like
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {relatedProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}

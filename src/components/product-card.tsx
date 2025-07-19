@@ -12,10 +12,10 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   return (
-    <Card className="w-full overflow-hidden group border-2 border-transparent hover:border-primary transition-colors duration-300">
+    <Card className="w-full overflow-hidden group border-2 border-transparent hover:border-primary transition-colors duration-300 flex flex-col h-full">
       <Link href={`/products/${product.id}`} className="block">
         <CardContent className="p-0">
-          <div className="relative h-96 w-full">
+          <div className="relative aspect-[3/4] w-full">
             <Image
               src={product.images[0]}
               alt={product.name}
@@ -23,6 +23,7 @@ export function ProductCard({ product }: ProductCardProps) {
               style={{ objectFit: "cover" }}
               className="group-hover:scale-105 transition-transform duration-500"
               data-ai-hint={product.dataAiHint}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <Badge variant="secondary" className="absolute top-3 right-3">
               New
@@ -30,16 +31,16 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         </CardContent>
       </Link>
-      <CardFooter className="p-4 flex flex-col items-start bg-card">
+      <CardFooter className="p-4 flex flex-col items-start bg-card mt-auto">
         <Link href={`/products/${product.id}`} className="w-full">
           <h3 className="font-semibold text-lg truncate">{product.name}</h3>
         </Link>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground text-sm capitalize">
           {product.category.replace("-", " ")}
         </p>
         <div className="flex items-center justify-between w-full mt-4">
           <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
