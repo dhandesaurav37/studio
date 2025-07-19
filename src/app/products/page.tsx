@@ -46,7 +46,7 @@ export default function ProductsPage() {
 
   const category = searchParams.get("category") || "All";
   const searchTerm = searchParams.get("search") || "";
-  const sort = searchParams.get("sort") || "newest";
+  const sort = searchParams.get("sort") || "price-asc";
 
   const handleCategoryChange = (newCategory: string) => {
     const params = new URLSearchParams(searchParams);
@@ -97,16 +97,15 @@ export default function ProductsPage() {
     )
     .sort((a, b) => {
       switch (sort) {
-        case "price-asc":
-          return a.price - b.price;
         case "price-desc":
           return b.price - a.price;
         case "rating":
           return b.rating - a.rating;
         case "size":
             return getMinSizeIndex(a.sizes) - getMinSizeIndex(b.sizes);
-        default: // newest
-          return parseInt(b.id) - parseInt(a.id);
+        case "price-asc":
+        default:
+          return a.price - b.price;
       }
     });
 
@@ -157,7 +156,6 @@ export default function ProductsPage() {
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest</SelectItem>
                 <SelectItem value="price-asc">Price: Low to High</SelectItem>
                 <SelectItem value="price-desc">Price: High to Low</SelectItem>
                 <SelectItem value="rating">Top Rated</SelectItem>
