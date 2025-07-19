@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/data";
@@ -11,6 +13,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
+import React from "react";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 8);
@@ -19,17 +23,26 @@ export default function HomePage() {
     (p) => p.category === "Oversized T-shirts"
   );
 
-  const categories = [
-    ...new Set(products.map((p) => p.category)),
-  ].map((category) => {
-    const product = products.find((p) => p.category === category)!;
-    return {
-      name: category,
-      href: `/products?category=${encodeURIComponent(category)}`,
-      imageSrc: product.images[0],
-      dataAiHint: product.dataAiHint,
-    };
-  });
+  const heroSlides = [
+    { src: "https://placehold.co/1800x900", hint: "fashion model" },
+    { src: "https://placehold.co/1800x900", hint: "mens fashion" },
+    { src: "https://placehold.co/1800x900", hint: "stylish clothing" },
+    { src: "https://placehold.co/1800x900", hint: "apparel collection" },
+    { src: "https://placehold.co/1800x900", hint: "modern outfits" },
+    { src: "https://placehold.co/1800x900", hint: "urban style" },
+  ];
+
+  const categories = [...new Set(products.map((p) => p.category))].map(
+    (category) => {
+      const product = products.find((p) => p.category === category)!;
+      return {
+        name: category,
+        href: `/products?category=${encodeURIComponent(category)}`,
+        imageSrc: product.images[0],
+        dataAiHint: product.dataAiHint,
+      };
+    }
+  );
 
   const ProductCarousel = ({
     products,
@@ -39,6 +52,7 @@ export default function HomePage() {
     <Carousel
       opts={{
         align: "start",
+        loop: true,
       }}
       className="w-full"
     >
@@ -62,17 +76,39 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative h-[80vh] w-full flex items-center justify-center text-center">
-        <Image
-          src="https://placehold.co/1800x900"
-          alt="Hero background"
-          fill
-          className="object-cover object-center"
-          priority
-          data-ai-hint="fashion model"
-        />
+      <section className="relative h-[80vh] w-full flex items-center justify-center text-center text-white">
+        <Carousel
+          className="w-full h-full"
+          plugins={[
+            Autoplay({
+              delay: 12000,
+              stopOnInteraction: true,
+            }),
+          ]}
+          opts={{
+            loop: true,
+          }}
+        >
+          <CarouselContent className="h-full">
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index} className="h-full">
+                <Image
+                  src={slide.src}
+                  alt={`Hero background ${index + 1}`}
+                  fill
+                  className="object-cover object-center"
+                  priority={index === 0}
+                  data-ai-hint={slide.hint}
+                />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white" />
+        </Carousel>
+
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative z-10 flex flex-col items-center text-white p-4">
+        <div className="relative z-10 flex flex-col items-center p-4">
           <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
             Timeless Style, Modern Fit
           </h1>
@@ -162,7 +198,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      
+
       {/* Shop by Category Section */}
       <section className="py-16 md:py-24">
         <div className="container">
