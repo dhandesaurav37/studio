@@ -15,6 +15,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import React from "react";
+import Autoplay from "embla-carousel-autoplay";
 
 export default function HomePage() {
   const featuredProducts = products.slice(0, 8);
@@ -35,6 +36,36 @@ export default function HomePage() {
     }
   );
 
+  const heroSlides = [
+    {
+      imageSrc: "https://placehold.co/1600x900.png",
+      dataAiHint: "fashion model",
+      title: "Exquisite Craftsmanship",
+      subtitle:
+        "Our apparel is meticulously crafted with an unwavering commitment to quality and timeless design.",
+      buttonText: "Discover the Collection",
+      href: "/products",
+    },
+    {
+      imageSrc: "https://placehold.co/1600x900.png",
+      dataAiHint: "luxury clothing",
+      title: "Modern Elegance",
+      subtitle:
+        "Explore a curated selection where contemporary style meets classic sophistication.",
+      buttonText: "Shop New Arrivals",
+      href: "/products?sort=newest",
+    },
+    {
+      imageSrc: "https://placehold.co/1600x900.png",
+      dataAiHint: "stylish apparel",
+      title: "Unparalleled Quality",
+      subtitle:
+        "Experience the difference of premium materials and conscious craftsmanship in every piece.",
+      buttonText: "Learn Our Story",
+      href: "/about",
+    },
+  ];
+
   const ProductCarousel = ({
     products,
   }: {
@@ -51,7 +82,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+            className="sm:basis-1/2 md:basis-1/3 xl:basis-1/4"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
@@ -67,68 +98,102 @@ export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative w-full h-[70vh] bg-cover bg-center bg-no-repeat">
-        <Image
-          src="https://placehold.co/1600x900.png"
-          alt="Model wearing premium apparel"
-          fill
-          className="object-cover"
-          data-ai-hint="fashion model"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-black/20"></div>
-        <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
-          <div className="container text-white">
-            <div className="max-w-2xl mx-auto">
-              <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
-                Define Your Style
-              </h1>
-              <p className="text-lg md:text-xl text-white/80 mb-8">
-                Discover our curated collection of premium apparel, crafted with
-                uncompromising quality and timeless design.
-              </p>
-              <Button size="lg" asChild className="bg-destructive hover:bg-destructive/80 text-destructive-foreground">
-                <Link href="/products">
-                  Shop New Arrivals <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
+      <section className="relative w-full h-[80vh] bg-background">
+        <Carousel
+          plugins={[
+            Autoplay({
+              delay: 5000,
+            }),
+          ]}
+          opts={{
+            loop: true,
+          }}
+          className="w-full h-full"
+        >
+          <CarouselContent>
+            {heroSlides.map((slide, index) => (
+              <CarouselItem key={index}>
+                <div className="relative w-full h-[80vh]">
+                  <Image
+                    src={slide.imageSrc}
+                    alt={slide.title}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={slide.dataAiHint}
+                    priority={index === 0}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
+                  <div className="relative z-10 h-full flex flex-col items-center justify-center text-center">
+                    <div className="container text-white">
+                      <div className="max-w-2xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-bold font-headline mb-4">
+                          {slide.title}
+                        </h1>
+                        <p className="text-lg md:text-xl text-white/80 mb-8">
+                          {slide.subtitle}
+                        </p>
+                        <Button size="lg" asChild className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                          <Link href={slide.href}>
+                            {slide.buttonText}{" "}
+                            <ArrowRight className="ml-2 h-5 w-5" />
+                          </Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+           <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 bg-background/50 hover:bg-background/80 hidden md:flex" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 h-12 w-12 bg-background/50 hover:bg-background/80 hidden md:flex" />
+        </Carousel>
       </section>
 
       {/* Features Section */}
-      <section className="bg-card text-card-foreground py-12 md:py-16">
+      <section className="bg-card text-card-foreground py-16 md:py-20">
         <div className="container">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="flex flex-col items-center">
-              <Gem className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold font-headline mb-2">Exclusive Designs</h3>
-              <p className="text-muted-foreground">
-                Unique pieces you won't find anywhere else.
-              </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 md:gap-x-12">
+            <div className="flex items-start gap-4">
+              <Gem className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-headline mb-2">
+                  Exclusive Designs
+                </h3>
+                <p className="text-muted-foreground">
+                  Unique pieces you won't find anywhere else.
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <ShieldCheck className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold font-headline mb-2">Premium Quality</h3>
-              <p className="text-muted-foreground">
-                Crafted from the finest materials for lasting comfort.
-              </p>
+            <div className="flex items-start gap-4">
+              <ShieldCheck className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-headline mb-2">
+                  Premium Quality
+                </h3>
+                <p className="text-muted-foreground">
+                  Crafted from the finest materials for lasting comfort.
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col items-center">
-              <Truck className="h-10 w-10 mb-4 text-primary" />
-              <h3 className="text-xl font-semibold font-headline mb-2">Fast Shipping</h3>
-              <p className="text-muted-foreground">
-                Get your new favorite styles delivered to your door quickly.
-              </p>
+            <div className="flex items-start gap-4">
+              <Truck className="h-10 w-10 text-primary flex-shrink-0 mt-1" />
+              <div>
+                <h3 className="text-xl font-semibold font-headline mb-2">
+                  Fast Shipping
+                </h3>
+                <p className="text-muted-foreground">
+                  Get your new favorite styles delivered to your door quickly.
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Featured Collection */}
-      <section>
-        <div className="container py-16 md:py-20">
+      <section className="py-16 md:py-20">
+        <div className="container">
           <h2 className="text-3xl md:text-4xl font-bold font-headline text-center mb-12">
             Featured Collection
           </h2>
