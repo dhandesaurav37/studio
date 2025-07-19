@@ -13,7 +13,7 @@ import {
 import { useState, useEffect } from "react";
 
 const navLinks = [
-  { name: "Home", href: "/" },
+  { name: "Shop", href: "/" },
   { name: "Products", href: "/products" },
 ];
 
