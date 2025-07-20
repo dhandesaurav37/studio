@@ -1,4 +1,5 @@
 
+
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { products, Product } from "@/lib/data";
@@ -78,7 +79,7 @@ export default function ProductsPage() {
     });
 
   return (
-    <div className="container py-8 md:py-12">
+    <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline">
           Our Collection
@@ -187,7 +188,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-center">
         {filteredProducts.length > 0 ? (
           <>
             {filteredProducts.map((product) => (
