@@ -41,7 +41,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/services/storage";
@@ -58,7 +58,7 @@ export default function AdminDashboardPage() {
   const [productImages, setProductImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const allCategories = [...new Set(products.map((p) => p.category))];
+  const allCategories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
@@ -125,7 +125,7 @@ export default function AdminDashboardPage() {
     }
   }
 
-  const filteredProducts = products
+  const filteredProducts = useMemo(() => products
     .filter((product) =>
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -133,7 +133,7 @@ export default function AdminDashboardPage() {
       selectedCategory === "All"
         ? true
         : product.category === selectedCategory
-    );
+    ), [products, searchTerm, selectedCategory]);
   
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
