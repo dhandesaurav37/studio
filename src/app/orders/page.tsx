@@ -29,7 +29,7 @@ const initialOrders = [
     date: "June 15, 2024",
     deliveryDate: "June 20, 2024",
     status: "Delivered",
-    total: 184.98,
+    total: 18498,
     items: [
       { product: products[2], quantity: 1, size: "L" },
       { product: products[1], quantity: 1, size: "M" },
@@ -40,7 +40,7 @@ const initialOrders = [
     date: "May 28, 2024",
     deliveryDate: "June 2, 2024",
     status: "Delivered",
-    total: 54.99,
+    total: 5499,
     items: [{ product: products[1], quantity: 1, size: "L" }],
   },
   {
@@ -48,7 +48,7 @@ const initialOrders = [
     date: "April 5, 2024",
     deliveryDate: null,
     status: "Cancelled",
-    total: 129.99,
+    total: 12999,
     items: [{ product: products[2], quantity: 1, size: "XL" }],
   },
 ];
@@ -109,7 +109,7 @@ export default function OrdersPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="font-semibold">
-                    Total: ${order.total.toFixed(2)}
+                    Total: ₹{order.total.toFixed(2)}
                   </p>
                 </CardContent>
                 <CollapsibleContent>
@@ -145,7 +145,7 @@ export default function OrdersPage() {
                               Quantity: {item.quantity}
                             </p>
                             <p className="font-semibold mt-1">
-                              ${item.product.price.toFixed(2)}
+                              ₹{item.product.price.toFixed(2)}
                             </p>
                           </div>
                         </li>

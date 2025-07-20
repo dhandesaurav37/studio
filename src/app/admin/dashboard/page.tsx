@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$45,231.89</div>
+            <div className="text-2xl font-bold">₹4,523,189</div>
             <p className="text-xs text-muted-foreground">
               +20.1% from last month
             </p>
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="price">Price</Label>
-                  <Input id="price" type="number" placeholder="e.g. 49.99" />
+                  <Input id="price" type="number" placeholder="e.g. 4999" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -139,7 +139,7 @@ export default function AdminDashboardPage() {
                             <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                             <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Drag & drop files here</span>, or click to select files</p>
                         </div>
-                        <Input id="dropzone-file" type="file" className="hidden" multiple />
+                        <Input id="dropzone-file" type="file" className="hidden" multiple accept=".png" />
                     </label>
                 </div> 
               </div>

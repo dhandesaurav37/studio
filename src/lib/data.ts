@@ -17,7 +17,7 @@ export const products: Product[] = [
   {
     id: "1",
     name: "Charcoal Crew-Neck Tee",
-    price: 49.99,
+    price: 4999,
     description:
       "A classic crew-neck t-shirt made from premium Peruvian Pima cotton. Ultra-soft, durable, and perfect for any occasion.",
     images: [
@@ -35,7 +35,7 @@ export const products: Product[] = [
   {
     id: "2",
     name: "Slate Grey V-Neck",
-    price: 54.99,
+    price: 5499,
     description:
       "Elevate your basics with our V-neck tee. Made from a unique blend of cotton and modal for a silky smooth feel and a flattering drape.",
     images: [
@@ -53,7 +53,7 @@ export const products: Product[] = [
   {
     id: "3",
     name: "Midnight Blue Oxford Shirt",
-    price: 129.99,
+    price: 12999,
     description:
       "A timeless Oxford shirt in a deep midnight blue. Expertly tailored for a modern fit, featuring a button-down collar and mother-of-pearl buttons.",
     images: [
@@ -71,7 +71,7 @@ export const products: Product[] = [
   {
     id: "4",
     name: "Classic White Dress Shirt",
-    price: 119.99,
+    price: 11999,
     description:
       "The quintessential white dress shirt. Woven from 2-ply Egyptian cotton for a crisp, smooth finish that resists wrinkling.",
     images: [
@@ -89,7 +89,7 @@ export const products: Product[] = [
   {
     id: "5",
     name: "Urban Slim-Fit Jeans",
-    price: 149.99,
+    price: 14999,
     description:
       "Our signature slim-fit jeans in a versatile dark wash. Crafted from premium Japanese selvedge denim with a touch of stretch for comfort.",
     images: [
@@ -107,7 +107,7 @@ export const products: Product[] = [
   {
     id: "6",
     name: "Vintage Straight-Leg Jeans",
-    price: 159.99,
+    price: 15999,
     description:
       "A nod to classic Americana, these straight-leg jeans are made from rigid 14oz denim that will break in beautifully over time.",
     images: [
@@ -125,7 +125,7 @@ export const products: Product[] = [
   {
     id: "7",
     name: "Graphite Henley Tee",
-    price: 69.99,
+    price: 6999,
     description:
       "A sophisticated take on the classic Henley. Features a three-button placket and is crafted from a soft, textured slub cotton.",
     images: [
@@ -143,7 +143,7 @@ export const products: Product[] = [
   {
     id: "8",
     name: "Linen Casual Shirt",
-    price: 139.99,
+    price: 13999,
     description:
       "Stay cool and stylish in our lightweight linen shirt. Perfect for warm weather, it offers a relaxed fit and exceptional breathability.",
     images: [
@@ -161,7 +161,7 @@ export const products: Product[] = [
    {
     id: "9",
     name: "Tech-Knit Sweater",
-    price: 189.99,
+    price: 18999,
     description:
       "A modern sweater knitted from a technical merino wool blend. It's temperature-regulating, soft, and has a clean, minimalist design.",
     images: [
@@ -179,7 +179,7 @@ export const products: Product[] = [
   {
     id: "10",
     name: "Classic Leather Jacket",
-    price: 499.99,
+    price: 49999,
     description:
       "An iconic investment piece. This jacket is crafted from full-grain lambskin leather that gets better with every wear.",
     images: [
@@ -197,7 +197,7 @@ export const products: Product[] = [
   {
     id: "11",
     name: "Oversized Graphic Tee",
-    price: 79.99,
+    price: 7999,
     description:
       "Make a statement with this oversized t-shirt featuring a vintage-inspired wolf graphic. Made from heavyweight cotton for a structured drape.",
     images: [
@@ -215,7 +215,7 @@ export const products: Product[] = [
     {
     id: "12",
     name: "Performance Track Pants",
-    price: 110.00,
+    price: 11000,
     description:
       "Engineered for movement, these track pants are made from a water-repellent, four-way stretch fabric. Perfect for the gym or the street.",
     images: [
@@ -233,7 +233,7 @@ export const products: Product[] = [
   {
     id: "13",
     name: "Classic Leather Belt",
-    price: 89.99,
+    price: 8999,
     description: "A timeless belt crafted from genuine full-grain leather, finished with a classic silver-tone buckle. An essential accessory for any wardrobe.",
     images: [
       "https://placehold.co/600x800.png",
@@ -250,7 +250,7 @@ export const products: Product[] = [
   {
     id: "14",
     name: "Canvas Messenger Bag",
-    price: 179.99,
+    price: 17999,
     description: "A durable and stylish messenger bag made from heavy-duty canvas with leather accents. Features a padded laptop sleeve and multiple pockets for organization.",
     images: [
       "https://placehold.co/600x800.png",
@@ -267,7 +267,7 @@ export const products: Product[] = [
   {
     id: "15",
     name: "Minimalist Card Holder",
-    price: 59.99,
+    price: 5999,
     description: "A slim and modern card holder wallet, handcrafted from premium leather. Designed to hold your essential cards and a few folded bills without the bulk.",
     images: [
       "https://placehold.co/600x800.png",

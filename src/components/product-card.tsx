@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/data";
@@ -55,7 +56,7 @@ export function ProductCard({
           {product.category.replace("-", " ")}
         </p>
         <div className="flex items-center justify-between w-full mt-4">
-          <p className="font-bold text-xl">${product.price.toFixed(2)}</p>
+          <p className="font-bold text-xl">₹{product.price.toFixed(2)}</p>
           {variant === "wishlist" ? (
             <Button
               variant="outline"

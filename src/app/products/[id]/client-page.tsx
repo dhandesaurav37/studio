@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Product, products } from "@/lib/data";
@@ -75,7 +76,7 @@ export default function ProductDetailClientPage({
               {product.rating.toFixed(1)} ({product.reviews} reviews)
             </span>
           </div>
-          <p className="text-3xl font-bold mt-4">${product.price.toFixed(2)}</p>
+          <p className="text-3xl font-bold mt-4">₹{product.price.toFixed(2)}</p>
           <p className="text-muted-foreground mt-6 leading-relaxed">
             {product.description}
           </p>
