@@ -185,19 +185,6 @@ export default function ProductDetailClientPage({
         </div>
       </div>
 
-      {/* Customer Reviews Section */}
-      <div className="mt-16 md:mt-20">
-        <h2 className="text-2xl font-bold font-headline mb-6">
-          Customer Reviews
-        </h2>
-        {/* Review items would go here */}
-        <div className="border rounded-lg p-8 text-center bg-card">
-          <p className="text-muted-foreground">
-            No reviews yet. Be the first to review this product!
-          </p>
-        </div>
-      </div>
-
       {/* Related Products */}
       <div className="mt-16 md:mt-20">
         <h2 className="text-2xl font-bold font-headline mb-6">
