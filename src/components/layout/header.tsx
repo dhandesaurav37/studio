@@ -135,30 +135,29 @@ export function AppHeader() {
           <hr className="my-4" />
           {isAdmin && (
             <>
-              <Link href="/admin/dashboard" className="font-medium text-foreground hover:text-destructive">Dashboard</Link>
-              <Link href="/admin/orders" className="font-medium text-foreground hover:text-destructive">Manage Orders</Link>
+              <Link href="/admin/dashboard" className="block py-2 font-medium text-foreground hover:text-destructive">Dashboard</Link>
+              <Link href="/admin/orders" className="block py-2 font-medium text-foreground hover:text-destructive">Manage Orders</Link>
             </>
           )}
-          <Link href="/profile" className="font-medium text-foreground hover:text-destructive">Profile</Link>
-          <Link href="/orders" className="font-medium text-foreground hover:text-destructive">Orders</Link>
-          <Link href="/wishlist" className="font-medium text-foreground hover:text-destructive">Wishlist</Link>
-          <Link href="/notifications" className="font-medium text-foreground hover:text-destructive">Notifications</Link>
-          <Link href="/settings" className="font-medium text-foreground hover:text-destructive">Settings</Link>
+          <Link href="/profile" className="block py-2 font-medium text-foreground hover:text-destructive">Profile</Link>
+          <Link href="/orders" className="block py-2 font-medium text-foreground hover:text-destructive">Orders</Link>
+          <Link href="/wishlist" className="block py-2 font-medium text-foreground hover:text-destructive">Wishlist</Link>
+          <Link href="/notifications" className="block py-2 font-medium text-foreground hover:text-destructive">Notifications</Link>
+          <Link href="/settings" className="block py-2 font-medium text-foreground hover:text-destructive">Settings</Link>
           <hr className="my-4" />
-          <Button variant="ghost" onClick={handleLogout}>Log Out</Button>
+          <Button variant="ghost" onClick={handleLogout} className="w-full justify-start px-0">Log Out</Button>
         </>
       )
      }
      return (
-        <>
-            <hr className="my-4" />
-            <Button variant="ghost" asChild>
+        <div className="mt-6 flex flex-col gap-2">
+            <Button variant="outline" asChild className="w-full">
               <Link href="/login">Login</Link>
             </Button>
-            <Button asChild>
+            <Button asChild className="w-full">
               <Link href="/signup">Sign Up</Link>
             </Button>
-        </>
+        </div>
      )
   }
 
@@ -239,18 +238,20 @@ export function AppHeader() {
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
-                <nav className="flex flex-col gap-4 p-4 text-lg">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.name}
-                      href={link.href}
-                      className="font-medium text-foreground hover:text-destructive"
-                    >
-                      {link.name}
-                    </Link>
-                  ))}
+                <div className="mt-6">
+                  <nav className="flex flex-col gap-4 text-lg">
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.name}
+                        href={link.href}
+                        className="font-medium text-foreground hover:text-destructive"
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </nav>
                   {renderMobileAuthButtons()}
-                </nav>
+                </div>
               </SheetContent>
             </Sheet>
           </div>
