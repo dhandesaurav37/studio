@@ -61,12 +61,12 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
         My Orders
       </h1>
       {initialOrders.length > 0 ? (
-        <div className="space-y-6">
+        <div className="space-y-6 max-w-4xl mx-auto">
           {initialOrders.map((order) => (
             <Collapsible
               key={order.id}
@@ -170,7 +170,7 @@ export default function OrdersPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 border-2 border-dashed rounded-lg">
+        <div className="text-center py-20 border-2 border-dashed rounded-lg max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold">No orders yet</h2>
           <p className="text-muted-foreground mt-2">
             You haven't placed any orders with us.
