@@ -1,10 +1,23 @@
 
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Package, ShoppingCart, Users } from "lucide-react";
+import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { products } from "@/lib/data";
+
+const allCategories = [...new Set(products.map((p) => p.category))];
 
 export default function AdminDashboardPage() {
   return (
@@ -76,8 +89,8 @@ export default function AdminDashboardPage() {
             <CardTitle className="font-headline">Add New Product</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <form className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>
                   <Input id="product-name" placeholder="e.g. Charcoal Crew-Neck Tee" />
@@ -91,17 +104,56 @@ export default function AdminDashboardPage() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea id="description" placeholder="e.g. A classic crew-neck t-shirt..." />
               </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Input id="category" placeholder="e.g. T-Shirts" />
+                  <Select>
+                    <SelectTrigger id="category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="product-image">Product Image</Label>
-                  <Input id="product-image" type="file" accept="image/png" className="file:text-foreground" />
+                  <Label htmlFor="colors">Colors (comma-separated)</Label>
+                  <Input id="colors" placeholder="e.g., Black, White, Blue" />
                 </div>
               </div>
-              <Button type="submit">Add Product</Button>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="text-sizes">Text-based Sizes (comma-separated)</Label>
+                  <Input id="text-sizes" placeholder="e.g., S, M, L, XL, XXL" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="numeric-sizes">Numeric Sizes (comma-separated)</Label>
+                  <Input id="numeric-sizes" placeholder="e.g., 28, 30, 32" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="product-images">Product Images</Label>
+                <div className="flex items-center justify-center w-full">
+                    <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-card hover:bg-accent/50">
+                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                            <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
+                            <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Drag & drop files here</span>, or click to select files</p>
+                        </div>
+                        <Input id="dropzone-file" type="file" className="hidden" multiple />
+                    </label>
+                </div> 
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch id="new-arrival" />
+                <Label htmlFor="new-arrival">Mark as New Arrival</Label>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" type="button">Cancel</Button>
+                <Button type="submit" className="bg-destructive hover:bg-destructive/90">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Product
+                </Button>
+              </div>
             </form>
           </CardContent>
         </Card>
