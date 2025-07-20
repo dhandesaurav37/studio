@@ -6,11 +6,14 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Heart, Minus, Plus, ShoppingBag, Star, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -29,8 +32,17 @@ export default function ProductDetailClientPage({
     removeFromWishlist,
   } = useStore();
   const { toast } = useToast();
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const isWishlisted = wishlist.some((item) => item.id === product.id);
 
@@ -73,6 +85,15 @@ export default function ProductDetailClientPage({
         description: "You need to select a size before proceeding to checkout.",
         variant: "destructive",
       });
+      return;
+    }
+    if (!user) {
+      toast({
+        title: "Login Required",
+        description: "Please log in to proceed with your purchase.",
+        variant: "destructive",
+      });
+      router.push("/login");
       return;
     }
     // For now, it will just show a toast.
