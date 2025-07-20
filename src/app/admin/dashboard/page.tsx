@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2, Search } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -49,11 +49,16 @@ const allCategories = [...new Set(products.map((p) => p.category))];
 export default function AdminDashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsEditDialogOpen(true);
   };
+
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -197,7 +202,18 @@ export default function AdminDashboardPage() {
        <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle className="font-headline">Manage Products</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="font-headline">Manage Products</CardTitle>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search products..." 
+                  className="pl-10"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
@@ -216,7 +232,7 @@ export default function AdminDashboardPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.map((product) => (
+                {filteredProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell className="hidden sm:table-cell">
                        <div className="relative h-16 w-16 rounded-md overflow-hidden">
