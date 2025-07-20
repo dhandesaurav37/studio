@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -11,53 +11,131 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User, Mail, Phone, Edit, MapPin } from "lucide-react";
+import { User as UserIcon, Mail, Phone, Edit, MapPin } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, User, updateProfile } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 
-const initialUser = {
-  name: "John Doe",
-  email: "m@example.com",
-  mobile: "+1 234 567 890",
+interface UserProfile {
+  name: string;
+  email: string;
+  mobile: string;
   address: {
-    street: "123 Style Avenue",
-    city: "Fashion City",
-    state: "Trends",
-    pincode: "12345",
+    street: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+}
+
+const initialUser: UserProfile = {
+  name: "",
+  email: "",
+  mobile: "",
+  address: {
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
   },
 };
 
 export default function ProfilePage() {
-  const [user, setUser] = useState(initialUser);
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile>(initialUser);
+  const [editedProfile, setEditedProfile] = useState<UserProfile>(initialUser);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState(initialUser);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const { toast } = useToast();
 
-  const handleEditToggle = () => {
-    if (isEditing) {
-      setUser(editedUser);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+        const currentProfile = {
+          name: currentUser.displayName || "",
+          email: currentUser.email || "",
+          mobile: "", // Not stored in auth
+          address: { street: "", city: "", state: "", pincode: "" }, // Not stored in auth
+        };
+        setProfile(currentProfile);
+        setEditedProfile(currentProfile);
+      } else {
+        router.push("/login");
+      }
+      setIsLoading(false);
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  const handleEditToggle = async () => {
+    if (isEditing && user) {
+      // Save logic
+      try {
+        await updateProfile(user, { displayName: editedProfile.name });
+        setProfile(editedProfile);
+        setIsEditing(false);
+        toast({
+          title: "Success",
+          description: "Your profile has been updated.",
+        });
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update profile.",
+          variant: "destructive",
+        });
+      }
     } else {
-      setEditedUser(user);
+      // Enter edit mode
+      setIsEditing(true);
     }
-    setIsEditing(!isEditing);
   };
 
   const handleCancel = () => {
-    setEditedUser(user);
+    setEditedProfile(profile);
     setIsEditing(false);
   };
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setEditedUser((prev) => ({ ...prev, [id]: value }));
+    setEditedProfile((prev) => ({ ...prev, [id]: value }));
   };
   
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setEditedUser((prev) => ({
+    setEditedProfile((prev) => ({
       ...prev,
       address: { ...prev.address, [id]: value },
     }));
   };
+
+  if (isLoading) {
+    return (
+      <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          <Skeleton className="h-10 w-1/4 mb-8" />
+          <Card>
+            <CardHeader className="items-center text-center p-6 sm:p-8">
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-64 mt-2" />
+            </CardHeader>
+            <CardContent className="px-6 sm:px-8 pb-4 space-y-6">
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -74,7 +152,7 @@ export default function ProfilePage() {
       </div>
       <Card className="max-w-2xl mx-auto">
         <CardHeader className="items-center text-center p-6 sm:p-8">
-          <CardTitle className="text-3xl font-headline">{isEditing ? editedUser.name : user.name}</CardTitle>
+          <CardTitle className="text-3xl font-headline">{isEditing ? editedProfile.name : profile.name}</CardTitle>
           <CardDescription>Your personal account details.</CardDescription>
         </CardHeader>
         <CardContent className="px-6 sm:px-8 pb-4 space-y-6">
@@ -82,55 +160,61 @@ export default function ProfilePage() {
             <>
               <div className="grid gap-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" value={editedUser.name} onChange={handleInputChange} />
+                <Input id="name" value={editedProfile.name} onChange={handleInputChange} />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" value={editedUser.email} onChange={handleInputChange} />
+                <Input id="email" type="email" value={editedProfile.email} disabled />
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="mobile">Mobile Number</Label>
-                <Input id="mobile" type="tel" value={editedUser.mobile} onChange={handleInputChange} />
+                <Input id="mobile" type="tel" value={editedProfile.mobile} onChange={handleInputChange} placeholder="Enter your mobile number" />
               </div>
               <div className="grid gap-2">
                  <Label htmlFor="street">Address</Label>
-                 <Input id="street" value={editedUser.address.street} onChange={handleAddressChange} placeholder="Street" />
+                 <Input id="street" value={editedProfile.address.street} onChange={handleAddressChange} placeholder="Street" />
                  <div className="grid grid-cols-3 gap-2">
-                   <Input id="city" value={editedUser.address.city} onChange={handleAddressChange} placeholder="City" />
-                   <Input id="state" value={editedUser.address.state} onChange={handleAddressChange} placeholder="State" />
-                   <Input id="pincode" value={editedUser.address.pincode} onChange={handleAddressChange} placeholder="Pincode" />
+                   <Input id="city" value={editedProfile.address.city} onChange={handleAddressChange} placeholder="City" />
+                   <Input id="state" value={editedProfile.address.state} onChange={handleAddressChange} placeholder="State" />
+                   <Input id="pincode" value={editedProfile.address.pincode} onChange={handleAddressChange} placeholder="Pincode" />
                  </div>
               </div>
             </>
           ) : (
             <>
               <div className="flex items-center gap-4">
-                <User className="h-5 w-5 text-muted-foreground" />
+                <UserIcon className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Full Name</p>
-                  <p className="font-semibold">{user.name}</p>
+                  <p className="font-semibold">{profile.name}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <Mail className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Email Address</p>
-                  <p className="font-semibold">{user.email}</p>
+                  <p className="font-semibold">{profile.email}</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 <Phone className="h-5 w-5 text-muted-foreground" />
                 <div>
                   <p className="text-sm text-muted-foreground">Mobile Number</p>
-                  <p className="font-semibold">{user.mobile}</p>
+                  <p className="font-semibold">{profile.mobile || "Not provided"}</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">
                 <MapPin className="h-5 w-5 text-muted-foreground mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-sm text-muted-foreground">Address</p>
-                  <p className="font-semibold">{user.address.street}</p>
-                  <p className="font-semibold">{user.address.city}, {user.address.state} - {user.address.pincode}</p>
+                  {profile.address.street ? (
+                    <>
+                      <p className="font-semibold">{profile.address.street}</p>
+                      <p className="font-semibold">{profile.address.city}, {profile.address.state} - {profile.address.pincode}</p>
+                    </>
+                  ) : (
+                    <p className="font-semibold">Not provided</p>
+                  )}
                 </div>
               </div>
             </>
