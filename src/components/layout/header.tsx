@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard, Package, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -96,7 +96,12 @@ export function AppHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Hi, {user.displayName || 'User'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {isAdmin && <DropdownMenuItem asChild><Link href="/admin/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>}
+            {isAdmin && (
+              <>
+                <DropdownMenuItem asChild><Link href="/admin/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin/orders"><Truck className="mr-2 h-4 w-4" />Manage Orders</Link></DropdownMenuItem>
+              </>
+            )}
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
@@ -125,7 +130,12 @@ export function AppHeader() {
       return (
          <>
           <hr className="my-4" />
-          {isAdmin && <Link href="/admin/dashboard" className="font-medium text-foreground hover:text-destructive">Dashboard</Link>}
+          {isAdmin && (
+            <>
+              <Link href="/admin/dashboard" className="font-medium text-foreground hover:text-destructive">Dashboard</Link>
+              <Link href="/admin/orders" className="font-medium text-foreground hover:text-destructive">Manage Orders</Link>
+            </>
+          )}
           <Link href="/profile" className="font-medium text-foreground hover:text-destructive">Profile</Link>
           <Link href="/orders" className="font-medium text-foreground hover:text-destructive">Orders</Link>
           <Link href="/wishlist" className="font-medium text-foreground hover:text-destructive">Wishlist</Link>
