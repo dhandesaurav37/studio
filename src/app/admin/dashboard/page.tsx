@@ -88,6 +88,11 @@ export default function AdminDashboardPage() {
         setIsSubmitting(false);
         return;
     }
+     if (!newProductCategory) {
+      toast({ title: "Error", description: "Please select a category.", variant: "destructive" });
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
         const imageUrls = await Promise.all(productImages.map(file => uploadImage(file)));
@@ -458,3 +463,5 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    
