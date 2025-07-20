@@ -54,9 +54,10 @@ export default function AdminDashboardPage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("All");
   const [productImages, setProductImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newProductCategory, setNewProductCategory] = useState('');
   
   const allCategories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
@@ -95,7 +96,7 @@ export default function AdminDashboardPage() {
             name: formValues['product-name'] as string,
             price: Number(formValues['price']),
             description: formValues['description'] as string,
-            category: formValues['category'] as string,
+            category: newProductCategory,
             color: formValues['colors'] as string,
             sizes: [
                 ...(formValues['text-sizes'] as string).split(',').map(s => s.trim()).filter(Boolean),
@@ -115,6 +116,7 @@ export default function AdminDashboardPage() {
         });
         
         setProductImages([]);
+        setNewProductCategory('');
         (e.target as HTMLFormElement).reset();
 
     } catch (error) {
@@ -130,10 +132,10 @@ export default function AdminDashboardPage() {
       product.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .filter((product) =>
-      selectedCategory === "All"
+      selectedCategoryFilter === "All"
         ? true
-        : product.category === selectedCategory
-    ), [products, searchTerm, selectedCategory]);
+        : product.category === selectedCategoryFilter
+    ), [products, searchTerm, selectedCategoryFilter]);
   
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -222,7 +224,7 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select name="category" required>
+                  <Select name="category" required value={newProductCategory} onValueChange={setNewProductCategory}>
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -314,7 +316,7 @@ export default function AdminDashboardPage() {
                     onChange={(e) => setSearchTerm(e.target.value)}
                   />
                 </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCategoryFilter} onValueChange={setSelectedCategoryFilter}>
                   <SelectTrigger className="w-auto min-w-[160px]">
                     <SelectValue placeholder="All Categories" />
                   </SelectTrigger>
