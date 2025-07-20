@@ -4,11 +4,12 @@ import Link from "next/link";
 import type { Product } from "@/lib/data";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Heart, ShoppingBag, X } from "lucide-react";
+import { Heart, ShoppingBag, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -30,12 +31,12 @@ export function ProductCard({
     removeFromWishlist,
   } = useStore();
   const { toast } = useToast();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const isWishlisted = wishlist.some((item) => item.id === product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // prevent link navigation
-    // Add to cart with default size and quantity 1
     const defaultSize = product.sizes[0];
     addToCart({ product, quantity: 1, size: defaultSize });
     toast({
@@ -66,6 +67,22 @@ export function ProductCard({
     onRemove?.(product.id);
   }
 
+  const handleNextImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === product.images.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  const handlePrevImage = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex === 0 ? product.images.length - 1 : prevIndex - 1
+    );
+  };
+
   return (
     <Card
       className={cn(
@@ -77,7 +94,7 @@ export function ProductCard({
         <CardContent className="p-0">
           <div className="relative aspect-[3/4] w-full">
             <Image
-              src={product.images[0]}
+              src={product.images[currentImageIndex]}
               alt={product.name}
               fill
               style={{ objectFit: "cover" }}
@@ -85,6 +102,26 @@ export function ProductCard({
               data-ai-hint={product.dataAiHint}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
+            {product.images.length > 1 && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
+                  onClick={handlePrevImage}
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
+                  onClick={handleNextImage}
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </Button>
+              </>
+            )}
             {variant === "default" && (
               <Badge variant="secondary" className="absolute top-3 right-3">
                 New
