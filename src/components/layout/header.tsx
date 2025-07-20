@@ -27,7 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
-  { name: "Premium Products", href: "/products" },
+  { name: "Premium Products", href: "/premium-products" },
 ];
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";

@@ -1,5 +1,4 @@
 
-
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { products, Product } from "@/lib/data";
@@ -22,13 +21,13 @@ import { Input } from "@/components/ui/input";
 import React from "react";
 import { ProductCard } from "@/components/product-card";
 
-const shopProducts = products.filter(p => p.price <= 4000);
-const allCategories = [...new Set(shopProducts.map((p) => p.category))];
-const allColors = [...new Set(shopProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
+const premiumProducts = products.filter(p => p.price > 4000);
+const allCategories = [...new Set(premiumProducts.map((p) => p.category))];
+const allColors = [...new Set(premiumProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
 const alphaSizes = ["S", "M", "L", "XL", "XXL"];
-const numericSizes = ["30", "32", "34", "36", "38"];
+const numericSizes = ["30", "32", "34", "36", "38", "8", "9", "10", "11", "12", "One Size"];
 
-export default function ProductsPage() {
+export default function PremiumProductsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -61,7 +60,7 @@ export default function ProductsPage() {
     router.push(`${pathname}?${params.toString()}`);
   };
 
-  const filteredProducts = shopProducts
+  const filteredProducts = premiumProducts
     .filter((p: Product) => (category !== "All" ? p.category === category : true))
     .filter((p: Product) => (color !== "All" ? p.color === color : true))
     .filter((p: Product) => (alphaSize !== "All" ? p.sizes.includes(alphaSize) : true))
@@ -83,10 +82,10 @@ export default function ProductsPage() {
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline">
-          Shop Our Collection
+          Premium Collection
         </h1>
         <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-          Browse our curated selection of high-quality apparel and accessories.
+          Explore our exclusive selection of high-end apparel and accessories.
         </p>
       </div>
 
@@ -96,7 +95,7 @@ export default function ProductsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search products..."
+            placeholder="Search premium products..."
             className="pl-10 w-full h-12 text-base"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -156,10 +155,10 @@ export default function ProductsPage() {
             onValueChange={(val) => handleFilterChange("numericSize", val)}
           >
             <SelectTrigger className="w-auto min-w-[170px] flex-grow sm:flex-grow-0">
-              <SelectValue placeholder="Numeric Sizes" />
+              <SelectValue placeholder="Other Sizes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All Numeric Sizes</SelectItem>
+              <SelectItem value="All">All Other Sizes</SelectItem>
               {numericSizes.map((size) => (
                 <SelectItem key={size} value={size}>
                   {size}
