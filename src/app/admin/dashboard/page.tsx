@@ -97,8 +97,8 @@ export default function AdminDashboardPage() {
                   <Input id="category" placeholder="e.g. T-Shirts" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="image-url">Image URL</Label>
-                  <Input id="image-url" placeholder="e.g. https://placehold.co/600x800.png" />
+                  <Label htmlFor="product-image">Product Image</Label>
+                  <Input id="product-image" type="file" accept="image/png" className="file:text-foreground" />
                 </div>
               </div>
               <Button type="submit">Add Product</Button>
