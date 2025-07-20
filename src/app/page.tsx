@@ -30,7 +30,7 @@ const heroImages = [
 export default function HomePage() {
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
-  const premiumCollection = products.filter(p => ["Belts", "Bags", "Wallets"].includes(p.category));
+  const premiumCollection = products.filter(p => ["Belts", "Bags", "Wallets", "Shoes", "Jackets"].includes(p.category) && p.price > 8000);
 
   const allCategories = [...new Set(products.map((p) => p.category))];
 
@@ -45,6 +45,7 @@ export default function HomePage() {
     "Belts": { src: "https://placehold.co/600x400.png", hint: "leather belt" },
     "Bags": { src: "https://placehold.co/600x400.png", hint: "canvas bag" },
     "Wallets": { src: "https://placehold.co/600x400.png", hint: "leather wallet" },
+    "Shoes": { src: "https://placehold.co/600x400.png", hint: "leather shoes" },
   };
 
   const ProductCarousel = ({
