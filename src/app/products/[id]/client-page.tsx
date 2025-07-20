@@ -35,6 +35,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
+import { adminOrders } from "@/lib/admin-data";
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -146,6 +147,35 @@ export default function ProductDetailClientPage({
 
   const handlePayment = async (method: "Online" | "COD") => {
     if (method === "COD") {
+       if (!user || !selectedSize) return;
+
+      const shippingAddress = addressOption === 'new' ? {
+        name: newAddress.name,
+        address: `${newAddress.street}, ${newAddress.city}, ${newAddress.state} ${newAddress.pincode}`,
+        phone: newAddress.mobile
+      } : {
+        name: profile.name,
+        address: `${profile.address.street}, ${profile.address.city}, ${profile.address.state} ${profile.address.pincode}`,
+        phone: profile.mobile
+      };
+
+      const newOrder = {
+        id: `WW-${Math.floor(Math.random() * 90000) + 10000}`,
+        date: new Date().toISOString().split('T')[0],
+        customer: {
+          name: user.displayName || 'N/A',
+          email: user.email || 'N/A',
+        },
+        shippingAddress: shippingAddress,
+        paymentMethod: "COD",
+        status: "Pending" as const,
+        total: product.price * quantity,
+        items: [{ product, quantity, size: selectedSize }],
+      };
+
+      // In a real app, this would be an API call. Here we add to the mock data.
+      adminOrders.unshift(newOrder);
+
       setIsPurchaseDialogOpen(false);
       toast({
         title: "Order Placed!",
