@@ -4,7 +4,7 @@ import { BarChart, Package, ShoppingCart, Users } from "lucide-react";
 
 export default function AdminDashboardPage() {
   return (
-    <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
         Admin Dashboard
       </h1>
