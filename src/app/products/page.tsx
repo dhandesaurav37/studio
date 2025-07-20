@@ -27,12 +27,11 @@ const alphaSizes = ["S", "M", "L", "XL", "XXL"];
 const numericSizes = ["30", "32", "34", "36", "38"];
 
 export default function ProductsPage() {
-  const { products } = useStore();
+  const { shopProducts } = useStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   
-  const shopProducts = products.filter(p => p.price <= 4000);
   const allCategories = [...new Set(shopProducts.map((p) => p.category))];
   const allColors = [...new Set(shopProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
 

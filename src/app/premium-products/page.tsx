@@ -26,12 +26,11 @@ const alphaSizes = ["S", "M", "L", "XL", "XXL"];
 const numericSizes = ["30", "32", "34", "36", "38", "8", "9", "10", "11", "12", "One Size"];
 
 export default function PremiumProductsPage() {
-  const { products } = useStore();
+  const { premiumProducts } = useStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  const premiumProducts = products.filter(p => p.price > 4000);
   const allCategories = [...new Set(premiumProducts.map((p) => p.category))];
   const allColors = [...new Set(premiumProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
 

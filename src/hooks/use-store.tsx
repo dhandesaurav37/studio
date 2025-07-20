@@ -1,7 +1,7 @@
 
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { Product } from '@/lib/data';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, DocumentData } from 'firebase/firestore';
@@ -82,6 +82,8 @@ const initialNotifications: Notification[] = [
 
 interface StoreState {
   products: Product[];
+  shopProducts: Product[];
+  premiumProducts: Product[];
   cart: CartItem[];
   wishlist: WishlistItem[];
   profile: UserProfile;
@@ -139,6 +141,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     return () => unsubscribe();
   }, []);
+
+  const shopProducts = useMemo(() => products.filter(p => p.price <= 4000), [products]);
+  const premiumProducts = useMemo(() => products.filter(p => p.price > 4000), [products]);
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('cart', JSON.stringify(cart));
@@ -230,6 +235,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const value = {
     products,
+    shopProducts,
+    premiumProducts,
     cart,
     wishlist,
     profile,
