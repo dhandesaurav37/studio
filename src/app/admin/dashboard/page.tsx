@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2, Search, X } from "lucide-react";
+import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2, Search, X, Loader2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,15 +44,20 @@ import {
 import { useState } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
+import { uploadImage } from "@/services/storage";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export default function AdminDashboardPage() {
-  const { products, addProduct } = useStore();
+  const { products } = useStore();
   const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [productImages, setProductImages] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const allCategories = [...new Set(products.map((p) => p.category))];
 
   const handleEditClick = (product: Product) => {
@@ -70,37 +75,54 @@ export default function AdminDashboardPage() {
     setProductImages(prev => prev.filter((_, i) => i !== index));
   };
   
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const newProduct: Product = {
-        id: `prod-${Date.now()}`,
-        name: formData.get('product-name') as string,
-        price: Number(formData.get('price')),
-        description: formData.get('description') as string,
-        category: formData.get('category') as string,
-        color: formData.get('colors') as string,
-        sizes: [
-            ...(formData.get('text-sizes') as string).split(',').map(s => s.trim()).filter(Boolean),
-            ...(formData.get('numeric-sizes') as string).split(',').map(s => s.trim()).filter(Boolean)
-        ],
-        // Note: In a real app, you'd upload these images and get back URLs.
-        // For this prototype, we'll use placeholder URLs.
-        images: productImages.length > 0 ? productImages.map(f => URL.createObjectURL(f)) : ['https://placehold.co/600x800.png'],
-        rating: 0,
-        reviews: 0,
-        dataAiHint: 'new product'
-    };
-    
-    addProduct(newProduct);
+    setIsSubmitting(true);
 
-    toast({
-        title: "Product Added!",
-        description: `"${newProduct.name}" has been successfully added to the store.`
-    })
-    
-    setProductImages([]);
-    e.currentTarget.reset();
+    const formData = new FormData(e.currentTarget);
+    const formValues = Object.fromEntries(formData.entries());
+
+    if (productImages.length === 0) {
+        toast({ title: "Error", description: "Please upload at least one product image.", variant: "destructive" });
+        setIsSubmitting(false);
+        return;
+    }
+
+    try {
+        const imageUrls = await Promise.all(productImages.map(file => uploadImage(file)));
+
+        const newProductData = {
+            name: formValues['product-name'] as string,
+            price: Number(formValues['price']),
+            description: formValues['description'] as string,
+            category: formValues['category'] as string,
+            color: formValues['colors'] as string,
+            sizes: [
+                ...(formValues['text-sizes'] as string).split(',').map(s => s.trim()).filter(Boolean),
+                ...(formValues['numeric-sizes'] as string).split(',').map(s => s.trim()).filter(Boolean)
+            ],
+            images: imageUrls,
+            rating: 0,
+            reviews: 0,
+            dataAiHint: 'new product'
+        };
+
+        await addDoc(collection(db, "products"), newProductData);
+
+        toast({
+            title: "Product Added!",
+            description: `"${newProductData.name}" has been successfully added to the store.`
+        });
+        
+        setProductImages([]);
+        (e.target as HTMLFormElement).reset();
+
+    } catch (error) {
+        console.error("Error adding product: ", error);
+        toast({ title: "Error", description: "Failed to add product. Please try again.", variant: "destructive" });
+    } finally {
+        setIsSubmitting(false);
+    }
   }
 
   const filteredProducts = products
@@ -266,10 +288,10 @@ export default function AdminDashboardPage() {
                 <Label htmlFor="new-arrival">Mark as New Arrival</Label>
               </div>
               <div className="flex justify-end gap-2">
-                <Button variant="outline" type="button">Cancel</Button>
-                <Button type="submit">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add Product
+                <Button variant="outline" type="button" disabled={isSubmitting}>Cancel</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <PlusCircle className="mr-2 h-4 w-4" />}
+                    {isSubmitting ? 'Adding Product...' : 'Add Product'}
                 </Button>
               </div>
             </form>
@@ -434,5 +456,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
-    

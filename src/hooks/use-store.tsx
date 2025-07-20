@@ -2,7 +2,10 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { Product, initialProducts } from '@/lib/data';
+import { Product } from '@/lib/data';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot, query, DocumentData } from 'firebase/firestore';
+
 
 export interface CartItem {
   product: Product;
@@ -118,16 +121,24 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setIsMounted(true);
-    setProducts(safelyParseJSON(localStorage.getItem('products'), initialProducts));
+    // Fetch products from Firestore
+    const q = query(collection(db, 'products'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const productsData: Product[] = [];
+      querySnapshot.forEach((doc: DocumentData) => {
+        productsData.push({ id: doc.id, ...doc.data() } as Product);
+      });
+      setProducts(productsData);
+    });
+
+    // Load other state from localStorage
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
-  }, []);
 
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('products', JSON.stringify(products));
-  }, [products, isMounted]);
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('cart', JSON.stringify(cart));
@@ -146,7 +157,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }, [notifications, isMounted]);
   
   const addProduct = (product: Product) => {
-    setProducts(prev => [product, ...prev]);
+    // This is now handled by Firestore, but we can keep it for optimistic UI updates if needed
+    // Or just let Firestore's onSnapshot handle it. For simplicity, we'll let onSnapshot do the work.
   };
   
   const getProductById = useCallback((id: string) => {
@@ -246,5 +258,3 @@ export const useStore = () => {
   }
   return context;
 };
-
-    

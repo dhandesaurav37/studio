@@ -1,5 +1,5 @@
 
-import { Product, initialProducts as products } from "./data";
+import { Product, initialProducts } from "./data";
 
 interface AdminOrderItem {
   product: Product;
@@ -42,7 +42,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Cancelled",
     total: 5499.00,
     items: [
-      { product: products[1], quantity: 1, size: "S" },
+      { product: initialProducts[1], quantity: 1, size: "S" },
     ],
   },
   {
@@ -61,8 +61,8 @@ export const adminOrders: AdminOrder[] = [
     status: "Delivered",
     total: 18498.00,
     items: [
-      { product: products[2], quantity: 1, size: "L" },
-      { product: products[1], quantity: 1, size: "M" },
+      { product: initialProducts[2], quantity: 1, size: "L" },
+      { product: initialProducts[1], quantity: 1, size: "M" },
     ],
   },
   {
@@ -81,8 +81,8 @@ export const adminOrders: AdminOrder[] = [
     status: "Shipped",
     total: 20498.00,
     items: [
-        { product: products[4], quantity: 1, size: "32" },
-        { product: products[0], quantity: 1, size: "M" }
+        { product: initialProducts[4], quantity: 1, size: "32" },
+        { product: initialProducts[0], quantity: 1, size: "M" }
     ],
   },
     {
@@ -101,7 +101,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Pending",
     total: 15999.00,
     items: [
-        { product: products[5], quantity: 1, size: "34" },
+        { product: initialProducts[5], quantity: 1, size: "34" },
     ],
   },
   {
@@ -120,7 +120,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Cancelled",
     total: 12999.00,
     items: [
-        { product: products[2], quantity: 1, size: "XL" }
+        { product: initialProducts[2], quantity: 1, size: "XL" }
     ],
   }
 ];

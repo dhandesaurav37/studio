@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 import WithPWA from '@ducanh2912/next-pwa';
 
@@ -22,6 +23,10 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      }
     ],
   },
 };
