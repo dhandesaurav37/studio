@@ -14,7 +14,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Select,
@@ -24,7 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { products, Product } from "@/lib/data";
+import { Product } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -43,15 +42,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useState } from "react";
-
-const allCategories = [...new Set(products.map((p) => p.category))];
+import { useStore } from "@/hooks/use-store";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboardPage() {
+  const { products, addProduct } = useStore();
+  const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [productImages, setProductImages] = useState<File[]>([]);
+  const allCategories = [...new Set(products.map((p) => p.category))];
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
@@ -68,12 +70,37 @@ export default function AdminDashboardPage() {
     setProductImages(prev => prev.filter((_, i) => i !== index));
   };
   
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Logic to add product would go here
-    // For now, we just clear the images
+    const formData = new FormData(e.currentTarget);
+    const newProduct: Product = {
+        id: `prod-${Date.now()}`,
+        name: formData.get('product-name') as string,
+        price: Number(formData.get('price')),
+        description: formData.get('description') as string,
+        category: formData.get('category') as string,
+        color: formData.get('colors') as string,
+        sizes: [
+            ...(formData.get('text-sizes') as string).split(',').map(s => s.trim()).filter(Boolean),
+            ...(formData.get('numeric-sizes') as string).split(',').map(s => s.trim()).filter(Boolean)
+        ],
+        // Note: In a real app, you'd upload these images and get back URLs.
+        // For this prototype, we'll use placeholder URLs.
+        images: productImages.length > 0 ? productImages.map(f => URL.createObjectURL(f)) : ['https://placehold.co/600x800.png'],
+        rating: 0,
+        reviews: 0,
+        dataAiHint: 'new product'
+    };
+    
+    addProduct(newProduct);
+
+    toast({
+        title: "Product Added!",
+        description: `"${newProduct.name}" has been successfully added to the store.`
+    })
+    
     setProductImages([]);
-    (e.target as HTMLFormElement).reset();
+    e.currentTarget.reset();
   }
 
   const filteredProducts = products
@@ -128,7 +155,7 @@ export default function AdminDashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">573</div>
+            <div className="text-2xl font-bold">{products.length}</div>
             <p className="text-xs text-muted-foreground">
               12 products are low on stock
             </p>
@@ -159,21 +186,21 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>
-                  <Input id="product-name" placeholder="e.g. Charcoal Crew-Neck Tee" />
+                  <Input id="product-name" name="product-name" placeholder="e.g. Charcoal Crew-Neck Tee" required/>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="price">Price</Label>
-                  <Input id="price" type="number" placeholder="e.g. 4999" />
+                  <Input id="price" name="price" type="number" placeholder="e.g. 4999" required/>
                 </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Textarea id="description" placeholder="e.g. A classic crew-neck t-shirt..." />
+                <Textarea id="description" name="description" placeholder="e.g. A classic crew-neck t-shirt..." required/>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
-                  <Select>
+                  <Select name="category" required>
                     <SelectTrigger id="category">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
@@ -184,17 +211,17 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="colors">Colors (comma-separated)</Label>
-                  <Input id="colors" placeholder="e.g., Black, White, Blue" />
+                  <Input id="colors" name="colors" placeholder="e.g., Black, White, Blue" required/>
                 </div>
               </div>
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="text-sizes">Text-based Sizes (comma-separated)</Label>
-                  <Input id="text-sizes" placeholder="e.g., S, M, L, XL, XXL" />
+                  <Input id="text-sizes" name="text-sizes" placeholder="e.g., S, M, L, XL, XXL" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="numeric-sizes">Numeric Sizes (comma-separated)</Label>
-                  <Input id="numeric-sizes" placeholder="e.g., 28, 30, 32" />
+                  <Input id="numeric-sizes" name="numeric-sizes" placeholder="e.g., 28, 30, 32" />
                 </div>
               </div>
               <div className="space-y-2">
@@ -235,7 +262,7 @@ export default function AdminDashboardPage() {
                 )}
               </div>
               <div className="flex items-center space-x-2">
-                <Switch id="new-arrival" />
+                <Switch id="new-arrival" name="new-arrival" />
                 <Label htmlFor="new-arrival">Mark as New Arrival</Label>
               </div>
               <div className="flex justify-end gap-2">

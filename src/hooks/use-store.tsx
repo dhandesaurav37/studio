@@ -1,8 +1,8 @@
 
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import type { Product } from '@/lib/data';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import { Product, initialProducts } from '@/lib/data';
 
 export interface CartItem {
   product: Product;
@@ -78,10 +78,13 @@ const initialNotifications: Notification[] = [
 ];
 
 interface StoreState {
+  products: Product[];
   cart: CartItem[];
   wishlist: WishlistItem[];
   profile: UserProfile;
   notifications: Notification[];
+  addProduct: (product: Product) => void;
+  getProductById: (id: string) => Product | undefined;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
   updateCartItemQuantity: (productId: string, quantity: number) => void;
@@ -96,24 +99,26 @@ interface StoreState {
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
 
-const safelyParseJSON = (value: string | null, fallback: any = []) => {
-  if (value === 'undefined') return fallback;
+const safelyParseJSON = (value: string | null, fallback: any) => {
+  if (value === null || value === 'undefined') return fallback;
   try {
-    return value ? JSON.parse(value) : fallback;
+    return JSON.parse(value);
   } catch {
     return fallback;
   }
 };
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
+  const [products, setProducts] = useState<Product[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
-  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    setProducts(safelyParseJSON(localStorage.getItem('products'), initialProducts));
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
@@ -121,28 +126,32 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('cart', JSON.stringify(cart));
-    }
+    if (isMounted) localStorage.setItem('products', JSON.stringify(products));
+  }, [products, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) localStorage.setItem('cart', JSON.stringify(cart));
   }, [cart, isMounted]);
 
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('wishlist', JSON.stringify(wishlist));
-    }
+    if (isMounted) localStorage.setItem('wishlist', JSON.stringify(wishlist));
   }, [wishlist, isMounted]);
 
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('profile', JSON.stringify(profile));
-    }
+    if (isMounted) localStorage.setItem('profile', JSON.stringify(profile));
   }, [profile, isMounted]);
 
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem('notifications', JSON.stringify(notifications));
-    }
+    if (isMounted) localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications, isMounted]);
+  
+  const addProduct = (product: Product) => {
+    setProducts(prev => [product, ...prev]);
+  };
+  
+  const getProductById = useCallback((id: string) => {
+    return products.find(p => p.id === id);
+  }, [products]);
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -208,10 +217,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const value = {
+    products,
     cart,
     wishlist,
     profile,
     notifications,
+    addProduct,
+    getProductById,
     addToCart,
     removeFromCart,
     updateCartItemQuantity,
@@ -234,3 +246,5 @@ export const useStore = () => {
   }
   return context;
 };
+
+    

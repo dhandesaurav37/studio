@@ -1,13 +1,30 @@
-import { getProductById, products } from "@/lib/data";
-import { notFound } from "next/navigation";
-import ProductDetailClientPage from "./client-page";
 
-export default function ProductDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
-  const product = getProductById(params.id);
+"use client";
+
+import { useStore } from "@/hooks/use-store";
+import { notFound, useParams } from "next/navigation";
+import ProductDetailClientPage from "./client-page";
+import { useEffect, useState } from "react";
+import { Product } from "@/lib/data";
+
+export default function ProductDetailPage() {
+  const params = useParams();
+  const { getProductById, products } = useStore();
+  const [product, setProduct] = useState<Product | null | undefined>(undefined);
+  
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  useEffect(() => {
+    if (id) {
+      setProduct(getProductById(id));
+    }
+  }, [id, getProductById]);
+
+
+  if (product === undefined) {
+    // Loading state, maybe return a skeleton loader here
+    return <div>Loading...</div>;
+  }
 
   if (!product) {
     notFound();
@@ -24,3 +41,5 @@ export default function ProductDetailPage({
     />
   );
 }
+
+    

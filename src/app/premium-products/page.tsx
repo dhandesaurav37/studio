@@ -1,7 +1,7 @@
 
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { products, Product } from "@/lib/data";
+import { Product } from "@/lib/data";
 import {
   Select,
   SelectContent,
@@ -20,17 +20,20 @@ import { ListFilter, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import React from "react";
 import { ProductCard } from "@/components/product-card";
+import { useStore } from "@/hooks/use-store";
 
-const premiumProducts = products.filter(p => p.price > 4000);
-const allCategories = [...new Set(premiumProducts.map((p) => p.category))];
-const allColors = [...new Set(premiumProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
 const alphaSizes = ["S", "M", "L", "XL", "XXL"];
 const numericSizes = ["30", "32", "34", "36", "38", "8", "9", "10", "11", "12", "One Size"];
 
 export default function PremiumProductsPage() {
+  const { products } = useStore();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  const premiumProducts = products.filter(p => p.price > 4000);
+  const allCategories = [...new Set(premiumProducts.map((p) => p.category))];
+  const allColors = [...new Set(premiumProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
 
   const category = searchParams.get("category") || "All";
   const color = searchParams.get("color") || "All";
@@ -207,3 +210,5 @@ export default function PremiumProductsPage() {
     </div>
   );
 }
+
+    

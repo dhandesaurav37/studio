@@ -13,7 +13,7 @@ export interface Product {
   dataAiHint: string;
 }
 
-export const products: Product[] = [
+export const initialProducts: Product[] = [
   {
     id: "1",
     name: "Charcoal Crew-Neck Tee",
@@ -402,4 +402,4 @@ export const products: Product[] = [
   }
 ];
 
-export const getProductById = (id: string) => products.find((p) => p.id === id);
+    

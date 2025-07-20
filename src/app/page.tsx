@@ -3,7 +3,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { products, Product } from "@/lib/data";
+import { Product } from "@/lib/data";
 import { Archive, Shirt, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,6 +17,7 @@ import {
 import React from "react";
 import Autoplay from "embla-carousel-autoplay";
 import { Card } from "@/components/ui/card";
+import { useStore } from "@/hooks/use-store";
 
 const heroImages = [
   { src: "https://placehold.co/1600x900.png", hint: "fashion models" },
@@ -28,6 +29,7 @@ const heroImages = [
 ];
 
 export default function HomePage() {
+  const { products } = useStore();
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
   const premiumCollection = products.filter(p => ["Belts", "Bags", "Wallets", "Shoes", "Jackets"].includes(p.category) && p.price > 8000);
@@ -272,3 +274,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    

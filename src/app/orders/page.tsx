@@ -18,7 +18,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { products } from "@/lib/data";
+import { useStore } from "@/hooks/use-store";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -31,8 +31,8 @@ const initialOrders = [
     status: "Delivered",
     total: 18498,
     items: [
-      { product: products[2], quantity: 1, size: "L" },
-      { product: products[1], quantity: 1, size: "M" },
+      { productId: "3", quantity: 1, size: "L" },
+      { productId: "2", quantity: 1, size: "M" },
     ],
   },
   {
@@ -41,7 +41,7 @@ const initialOrders = [
     deliveryDate: "June 2, 2024",
     status: "Delivered",
     total: 5499,
-    items: [{ product: products[1], quantity: 1, size: "L" }],
+    items: [{ productId: "2", quantity: 1, size: "L" }],
   },
   {
     id: "WW-83712",
@@ -49,25 +49,38 @@ const initialOrders = [
     deliveryDate: null,
     status: "Cancelled",
     total: 12999,
-    items: [{ product: products[2], quantity: 1, size: "XL" }],
+    items: [{ productId: "3", quantity: 1, size: "XL" }],
   },
 ];
 
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
+  const { getProductById } = useStore();
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
+
+  const hydratedOrders = initialOrders.map(order => ({
+    ...order,
+    items: order.items.map(item => {
+        const product = getProductById(item.productId);
+        return {
+            ...item,
+            product
+        }
+    }).filter(item => item.product) // Filter out items where product is not found
+  }));
+
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
         My Orders
       </h1>
-      {initialOrders.length > 0 ? (
+      {hydratedOrders.length > 0 ? (
         <div className="space-y-6 max-w-4xl mx-auto">
-          {initialOrders.map((order) => (
+          {hydratedOrders.map((order) => (
             <Collapsible
               key={order.id}
               asChild
@@ -119,24 +132,24 @@ export default function OrdersPage() {
                     <ul className="space-y-4">
                       {order.items.map((item) => (
                         <li
-                          key={item.product.id}
+                          key={item.product!.id}
                           className="flex items-start gap-4"
                         >
                           <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
                             <Image
-                              src={item.product.images[0]}
-                              alt={item.product.name}
+                              src={item.product!.images[0]}
+                              alt={item.product!.name}
                               fill
                               className="object-cover"
-                              data-ai-hint={item.product.dataAiHint}
+                              data-ai-hint={item.product!.dataAiHint}
                             />
                           </div>
                           <div className="flex-1">
                             <Link
-                              href={`/products/${item.product.id}`}
+                              href={`/products/${item.product!.id}`}
                               className="font-semibold hover:underline"
                             >
-                              {item.product.name}
+                              {item.product!.name}
                             </Link>
                             <p className="text-sm text-muted-foreground">
                               Size: {item.size}
@@ -145,7 +158,7 @@ export default function OrdersPage() {
                               Quantity: {item.quantity}
                             </p>
                             <p className="font-semibold mt-1">
-                              ₹{item.product.price.toFixed(2)}
+                              ₹{item.product!.price.toFixed(2)}
                             </p>
                           </div>
                         </li>
@@ -183,3 +196,5 @@ export default function OrdersPage() {
     </div>
   );
 }
+
+    
