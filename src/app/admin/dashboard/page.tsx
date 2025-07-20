@@ -89,7 +89,7 @@ export default function AdminDashboardPage() {
         return;
     }
      if (!newProductCategory) {
-      toast({ title: "Error", description: "Please select a category.", variant: "destructive" });
+      toast({ title: "Error", description: "Please select or enter a category.", variant: "destructive" });
       setIsSubmitting(false);
       return;
     }
@@ -463,5 +463,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
-    
