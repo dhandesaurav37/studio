@@ -34,10 +34,17 @@ import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
+import { createRazorpayOrder } from "./actions";
 
 interface ProductDetailClientPageProps {
   product: Product;
   relatedProducts: Product[];
+}
+
+declare global {
+    interface Window {
+      Razorpay: any;
+    }
 }
 
 export default function ProductDetailClientPage({
@@ -137,13 +144,64 @@ export default function ProductDetailClientPage({
     setIsPurchaseDialogOpen(true);
   };
 
-  const handlePayment = (method: "Online" | "COD") => {
-    setIsPurchaseDialogOpen(false);
-    toast({
-      title: "Order Placed!",
-      description: `Your order for ${product.name} will be processed shortly. Payment via ${method}.`,
-    });
-    router.push("/orders");
+  const handlePayment = async (method: "Online" | "COD") => {
+    if (method === "COD") {
+      setIsPurchaseDialogOpen(false);
+      toast({
+        title: "Order Placed!",
+        description: `Your order for ${product.name} will be processed shortly. Payment via COD.`,
+      });
+      router.push("/orders");
+      return;
+    }
+    
+    // Handle Online Payment
+    try {
+      const order = await createRazorpayOrder(product.price * quantity);
+       const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: "White Wolf",
+        description: `Purchase of ${product.name}`,
+        order_id: order.id,
+        handler: function (response: any) {
+            toast({
+                title: "Payment Successful!",
+                description: `Your payment for order ${response.razorpay_order_id} was successful.`,
+            });
+            setIsPurchaseDialogOpen(false);
+            router.push("/orders");
+        },
+        prefill: {
+            name: profile.name,
+            email: profile.email,
+            contact: profile.mobile,
+        },
+        notes: {
+            address: `${profile.address.street}, ${profile.address.city}, ${profile.address.pincode}`,
+        },
+        theme: {
+            color: "#333333",
+        },
+       };
+       
+       const rzp1 = new window.Razorpay(options);
+       rzp1.on('payment.failed', function (response: any) {
+            toast({
+                title: "Payment Failed",
+                description: "Something went wrong. Please try again.",
+                variant: "destructive",
+            });
+       });
+       rzp1.open();
+    } catch(error) {
+        toast({
+            title: "Error",
+            description: "Could not connect to payment gateway. Please try again later.",
+            variant: "destructive",
+        })
+    }
   };
 
   const hasDefaultAddress =
@@ -462,5 +520,3 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
-
-    

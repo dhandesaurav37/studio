@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { StoreProvider } from "@/hooks/use-store";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "White Wolf",
@@ -59,6 +60,7 @@ export default function RootLayout({
             <Toaster />
           </ThemeProvider>
         </StoreProvider>
+        <Script src="https://checkout.razorpay.com/v1/checkout.js" />
       </body>
     </html>
   );
