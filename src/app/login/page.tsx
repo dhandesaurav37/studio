@@ -19,6 +19,8 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
+const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
+
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -41,12 +43,17 @@ export default function LoginPage() {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "Success",
         description: "Logged in successfully!",
       });
-      router.push("/");
+
+      if (userCredential.user.email === ADMIN_EMAIL) {
+        router.push("/admin/dashboard");
+      } else {
+        router.push("/");
+      }
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {

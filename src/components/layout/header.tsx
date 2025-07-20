@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu, User as UserIcon } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -30,9 +30,12 @@ const navLinks = [
   { name: "Premium Products", href: "/products" },
 ];
 
+const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
+
 export function AppHeader() {
   const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -40,6 +43,7 @@ export function AppHeader() {
     setIsMounted(true);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      setIsAdmin(currentUser?.email === ADMIN_EMAIL);
     });
     return () => unsubscribe();
   }, []);
@@ -92,6 +96,7 @@ export function AppHeader() {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Hi, {user.displayName || 'User'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            {isAdmin && <DropdownMenuItem asChild><Link href="/admin/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>}
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
@@ -120,6 +125,7 @@ export function AppHeader() {
       return (
          <>
           <hr className="my-4" />
+          {isAdmin && <Link href="/admin/dashboard" className="font-medium text-foreground hover:text-destructive">Dashboard</Link>}
           <Link href="/profile" className="font-medium text-foreground hover:text-destructive">Profile</Link>
           <Link href="/orders" className="font-medium text-foreground hover:text-destructive">Orders</Link>
           <Link href="/wishlist" className="font-medium text-foreground hover:text-destructive">Wishlist</Link>
