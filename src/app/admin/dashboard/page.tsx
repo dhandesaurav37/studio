@@ -1,6 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Package, ShoppingCart, Users } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
 
 export default function AdminDashboardPage() {
   return (
@@ -69,10 +73,36 @@ export default function AdminDashboardPage() {
       <div className="mt-8">
         <Card>
           <CardHeader>
-            <CardTitle>Welcome, Admin!</CardTitle>
+            <CardTitle className="font-headline">Add New Product</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>This is your dashboard. From here, you can manage orders, products, and users.</p>
+            <form className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="product-name">Product Name</Label>
+                  <Input id="product-name" placeholder="e.g. Charcoal Crew-Neck Tee" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price</Label>
+                  <Input id="price" type="number" placeholder="e.g. 49.99" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" placeholder="e.g. A classic crew-neck t-shirt..." />
+              </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Input id="category" placeholder="e.g. T-Shirts" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="image-url">Image URL</Label>
+                  <Input id="image-url" placeholder="e.g. https://placehold.co/600x800.png" />
+                </div>
+              </div>
+              <Button type="submit">Add Product</Button>
+            </form>
           </CardContent>
         </Card>
       </div>
