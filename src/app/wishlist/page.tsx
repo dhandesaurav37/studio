@@ -14,7 +14,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+    <div className="container py-12 md:py-16">
       <div className="text-center mb-12">
         <h1 className="text-4xl md:text-5xl font-bold font-headline">
           Your Wishlist
