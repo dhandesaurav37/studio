@@ -4,7 +4,24 @@
 import { Product } from "@/lib/data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Heart, Minus, Plus, ShoppingBag, Star, Zap } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import {
+  Heart,
+  Minus,
+  Plus,
+  ShoppingBag,
+  Star,
+  Zap,
+  Edit,
+} from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
@@ -14,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -36,6 +54,7 @@ export default function ProductDetailClientPage({
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -77,9 +96,9 @@ export default function ProductDetailClientPage({
       });
     }
   };
-  
+
   const handleBuyNow = () => {
-     if (!selectedSize) {
+    if (!selectedSize) {
       toast({
         title: "Please select a size",
         description: "You need to select a size before proceeding to checkout.",
@@ -96,12 +115,16 @@ export default function ProductDetailClientPage({
       router.push("/login");
       return;
     }
-    // For now, it will just show a toast.
-    // Later, this would redirect to a checkout page.
-     toast({
-      title: "Proceeding to checkout",
-      description: `Buying ${quantity} of ${product.name} (Size: ${selectedSize})`,
+    setIsPurchaseDialogOpen(true);
+  };
+
+  const handlePayment = (method: "Online" | "COD") => {
+    setIsPurchaseDialogOpen(false);
+    toast({
+        title: "Order Placed!",
+        description: `Your order for ${product.name} will be processed shortly. Payment via ${method}.`
     });
+    router.push('/orders');
   }
 
   return (
@@ -182,9 +205,9 @@ export default function ProductDetailClientPage({
               ))}
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4 mt-8">
-             <div className="flex items-center border rounded-md">
+            <div className="flex items-center border rounded-md">
               <Button
                 variant="ghost"
                 size="icon"
@@ -218,11 +241,21 @@ export default function ProductDetailClientPage({
           </div>
 
           {/* Quantity and Actions */}
-           <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
-            <Button size="lg" className="flex-1 w-full" variant="secondary" onClick={handleAddToCart}>
+          <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
+            <Button
+              size="lg"
+              className="flex-1 w-full"
+              variant="secondary"
+              onClick={handleAddToCart}
+            >
               <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
             </Button>
-            <Button size="lg" className="flex-1 w-full" onClick={handleBuyNow} variant="destructive">
+            <Button
+              size="lg"
+              className="flex-1 w-full"
+              onClick={handleBuyNow}
+              variant="destructive"
+            >
               <Zap className="mr-2 h-5 w-5" /> Buy Now
             </Button>
           </div>
@@ -240,6 +273,50 @@ export default function ProductDetailClientPage({
           ))}
         </div>
       </div>
+      {/* Purchase Confirmation Dialog */}
+      <Dialog open={isPurchaseDialogOpen} onOpenChange={setIsPurchaseDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-2xl">Confirm Purchase</DialogTitle>
+            <DialogDescription>
+              Confirm your shipping details for "{product.name}".
+            </DialogDescription>
+          </DialogHeader>
+          <RadioGroup defaultValue="default-address" className="space-y-4">
+            <div className="rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <RadioGroupItem value="default-address" id="default-address" />
+                        <Label htmlFor="default-address" className="font-semibold cursor-pointer">Use Default Address</Label>
+                    </div>
+                     <Button variant="outline" size="sm" asChild>
+                       <Link href="/profile"><Edit className="mr-2 h-3 w-3" />Change</Link>
+                    </Button>
+                </div>
+                <p className="text-sm text-destructive mt-2 pl-8">No default address and/or phone number found. Please add them in your profile.</p>
+            </div>
+             <div className="rounded-lg border p-4 flex items-center gap-3">
+                 <RadioGroupItem value="new-address" id="new-address" />
+                 <Label htmlFor="new-address" className="font-semibold cursor-pointer">Ship to a New Address</Label>
+            </div>
+          </RadioGroup>
+          <Separator />
+          <div className="flex justify-between items-center">
+             <div>
+                <p className="text-sm text-muted-foreground">Total Amount</p>
+                <p className="text-2xl font-bold">₹{(product.price * quantity).toFixed(2)}</p>
+             </div>
+             <div className="relative h-20 w-20 rounded-md overflow-hidden">
+                <Image src={product.images[0]} alt={product.name} fill className="object-cover" data-ai-hint={product.dataAiHint} />
+             </div>
+          </div>
+           <div className="grid grid-cols-2 gap-4">
+                <Button variant="destructive" onClick={() => handlePayment("Online")}>Pay Online</Button>
+                <Button variant="secondary" onClick={() => handlePayment("COD")}>Cash on Delivery</Button>
+            </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
