@@ -15,11 +15,17 @@ export default function WishlistPage() {
 
   return (
     <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
-        Your Wishlist
-      </h1>
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold font-headline">
+          Your Wishlist
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+            Your favorite items, saved for later.
+        </p>
+      </div>
+
       {wishlist.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+        <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-center">
           {wishlist.map((product) => (
             <ProductCard
               key={product.id}
@@ -28,9 +34,9 @@ export default function WishlistPage() {
               onRemove={handleRemoveFromWishlist}
             />
           ))}
-        </div>
+        </main>
       ) : (
-        <div className="text-center py-20 border-2 border-dashed rounded-lg">
+        <div className="col-span-full text-center py-20 border-2 border-dashed rounded-lg w-full max-w-4xl mx-auto">
           <h2 className="text-2xl font-semibold">Your wishlist is empty</h2>
           <p className="text-muted-foreground mt-2">
             Save your favorite items to view them here later.
