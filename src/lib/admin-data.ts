@@ -1,5 +1,5 @@
 
-import { Product, products } from "./data";
+import { Product, initialProducts as products } from "./data";
 
 interface AdminOrderItem {
   product: Product;
