@@ -33,6 +33,7 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -57,6 +58,17 @@ export default function ProductDetailClientPage({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
+  const [addressOption, setAddressOption] = useState<"default" | "new">(
+    "default"
+  );
+  const [newAddress, setNewAddress] = useState({
+    name: "",
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+    mobile: "",
+  });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -64,6 +76,11 @@ export default function ProductDetailClientPage({
     });
     return () => unsubscribe();
   }, []);
+
+  const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setNewAddress((prev) => ({ ...prev, [id]: value }));
+  };
 
   const isWishlisted = wishlist.some((item) => item.id === product.id);
 
@@ -123,17 +140,33 @@ export default function ProductDetailClientPage({
   const handlePayment = (method: "Online" | "COD") => {
     setIsPurchaseDialogOpen(false);
     toast({
-        title: "Order Placed!",
-        description: `Your order for ${product.name} will be processed shortly. Payment via ${method}.`
+      title: "Order Placed!",
+      description: `Your order for ${product.name} will be processed shortly. Payment via ${method}.`,
     });
-    router.push('/orders');
-  }
+    router.push("/orders");
+  };
 
-  const hasAddress = profile.address?.street && profile.address?.city;
-  const hasMobile = !!profile.mobile;
+  const hasDefaultAddress =
+    profile.address?.street &&
+    profile.address?.city &&
+    profile.address?.state &&
+    profile.address?.pincode &&
+    profile.mobile;
+
+  const hasNewAddress =
+    newAddress.name &&
+    newAddress.street &&
+    newAddress.city &&
+    newAddress.state &&
+    newAddress.pincode &&
+    newAddress.mobile;
+
+  const isAddressValid =
+    (addressOption === "default" && hasDefaultAddress) ||
+    (addressOption === "new" && hasNewAddress);
 
   return (
-    <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
         {/* Product Images */}
         <div className="grid grid-cols-1 gap-4">
@@ -279,63 +312,155 @@ export default function ProductDetailClientPage({
         </div>
       </div>
       {/* Purchase Confirmation Dialog */}
-      <Dialog open={isPurchaseDialogOpen} onOpenChange={setIsPurchaseDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog
+        open={isPurchaseDialogOpen}
+        onOpenChange={setIsPurchaseDialogOpen}
+      >
+        <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle className="font-headline text-2xl">Confirm Purchase</DialogTitle>
+            <DialogTitle className="font-headline text-2xl">
+              Confirm Purchase
+            </DialogTitle>
             <DialogDescription>
               Confirm your shipping details for "{product.name}".
             </DialogDescription>
           </DialogHeader>
-          <RadioGroup defaultValue="default-address" className="space-y-4">
+          <RadioGroup
+            value={addressOption}
+            onValueChange={(value) =>
+              setAddressOption(value as "default" | "new")
+            }
+            className="space-y-4"
+          >
             <div className="rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <RadioGroupItem value="default-address" id="default-address" />
-                        <Label htmlFor="default-address" className="font-semibold cursor-pointer">Use Default Address</Label>
-                    </div>
-                     <Button variant="outline" size="sm" asChild>
-                       <Link href="/profile"><Edit className="mr-2 h-3 w-3" />Change</Link>
-                    </Button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <RadioGroupItem value="default" id="default-address" />
+                  <Label
+                    htmlFor="default-address"
+                    className="font-semibold cursor-pointer"
+                  >
+                    Use Default Address
+                  </Label>
                 </div>
-                 <div className="text-sm text-muted-foreground mt-3 pl-8 space-y-1">
-                  {hasAddress || hasMobile ? (
-                    <>
-                      {hasAddress ? (
-                         <div className="flex items-start">
-                            <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                            <span>{profile.address.street}, {profile.address.city}, {profile.address.state} - {profile.address.pincode}</span>
-                         </div>
-                      ) : (
-                         <p className="text-destructive">No address found. Please add one in your profile.</p>
-                      )}
-                    </>
-                  ) : (
-                     <p className="text-destructive">No default address and/or phone number found. Please add them in your profile.</p>
-                  )}
-                 </div>
+                <Button variant="outline" size="sm" asChild>
+                  <Link href="/profile">
+                    <Edit className="mr-2 h-3 w-3" />
+                    Change
+                  </Link>
+                </Button>
+              </div>
+              <div className="text-sm text-muted-foreground mt-3 pl-8 space-y-1">
+                {hasDefaultAddress ? (
+                  <>
+                    <div className="flex items-start">
+                      <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>
+                        {profile.address.street}, {profile.address.city},{" "}
+                        {profile.address.state} - {profile.address.pincode}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-destructive">
+                    No default address and/or phone number found. Please add
+                    them in your profile.
+                  </p>
+                )}
+              </div>
             </div>
-             <div className="rounded-lg border p-4 flex items-center gap-3">
-                 <RadioGroupItem value="new-address" id="new-address" disabled />
-                 <Label htmlFor="new-address" className="font-semibold cursor-pointer text-muted-foreground">Ship to a New Address</Label>
+            <div className="rounded-lg border p-4">
+              <div className="flex items-center gap-3">
+                <RadioGroupItem value="new" id="new-address" />
+                <Label
+                  htmlFor="new-address"
+                  className="font-semibold cursor-pointer"
+                >
+                  Ship to a New Address
+                </Label>
+              </div>
+              {addressOption === "new" && (
+                <div className="space-y-3 mt-4 pl-8">
+                  <Input
+                    id="name"
+                    placeholder="Full Name"
+                    value={newAddress.name}
+                    onChange={handleNewAddressChange}
+                  />
+                  <Input
+                    id="mobile"
+                    placeholder="Mobile Number"
+                    value={newAddress.mobile}
+                    onChange={handleNewAddressChange}
+                  />
+                  <Input
+                    id="street"
+                    placeholder="Street Address"
+                    value={newAddress.street}
+                    onChange={handleNewAddressChange}
+                  />
+                  <div className="grid grid-cols-3 gap-2">
+                    <Input
+                      id="city"
+                      placeholder="City"
+                      value={newAddress.city}
+                      onChange={handleNewAddressChange}
+                    />
+                    <Input
+                      id="state"
+                      placeholder="State"
+                      value={newAddress.state}
+                      onChange={handleNewAddressChange}
+                    />
+                    <Input
+                      id="pincode"
+                      placeholder="Pincode"
+                      value={newAddress.pincode}
+                      onChange={handleNewAddressChange}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </RadioGroup>
           <Separator />
           <div className="flex justify-between items-center">
-             <div>
-                <p className="text-sm text-muted-foreground">Total Amount</p>
-                <p className="text-2xl font-bold">₹{(product.price * quantity).toFixed(2)}</p>
-             </div>
-             <div className="relative h-20 w-20 rounded-md overflow-hidden">
-                <Image src={product.images[0]} alt={product.name} fill className="object-cover" data-ai-hint={product.dataAiHint} />
-             </div>
-          </div>
-           <div className="grid grid-cols-2 gap-4">
-                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!hasAddress || !hasMobile}>Pay Online</Button>
-                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!hasAddress || !hasMobile}>Cash on Delivery</Button>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Amount</p>
+              <p className="text-2xl font-bold">
+                ₹{(product.price * quantity).toFixed(2)}
+              </p>
             </div>
+            <div className="relative h-20 w-20 rounded-md overflow-hidden">
+              <Image
+                src={product.images[0]}
+                alt={product.name}
+                fill
+                className="object-cover"
+                data-ai-hint={product.dataAiHint}
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Button
+              variant="destructive"
+              onClick={() => handlePayment("Online")}
+              disabled={!isAddressValid}
+            >
+              Pay Online
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => handlePayment("COD")}
+              disabled={!isAddressValid}
+            >
+              Cash on Delivery
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
+
+    
