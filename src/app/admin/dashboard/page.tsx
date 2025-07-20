@@ -48,6 +48,24 @@ import { uploadImage } from "@/services/storage";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
+const staticCategories = [
+  "Shirts",
+  "T-Shirts",
+  "Oversized T-shirts",
+  "Pants",
+  "Jeans",
+  "Trousers",
+  "Shoes",
+  "Bags",
+  "Belts",
+  "Socks",
+  "Wallets",
+  "Sweater",
+  "Jackets",
+  "Track Pants"
+];
+
+
 export default function AdminDashboardPage() {
   const { products } = useStore();
   const { toast } = useToast();
@@ -59,7 +77,7 @@ export default function AdminDashboardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newProductCategory, setNewProductCategory] = useState('');
   
-  const allCategories = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
+  const allCategoriesForFilter = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
@@ -234,7 +252,7 @@ export default function AdminDashboardPage() {
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                      {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
@@ -327,7 +345,7 @@ export default function AdminDashboardPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All Categories</SelectItem>
-                    {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                    {allCategoriesForFilter.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -427,7 +445,7 @@ export default function AdminDashboardPage() {
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                        {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
                       </SelectContent>
                     </Select>
                   </div>
@@ -463,5 +481,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
-    
