@@ -17,7 +17,7 @@ export const products: Product[] = [
   {
     id: "1",
     name: "Charcoal Crew-Neck Tee",
-    price: 4999,
+    price: 1999,
     description:
       "A classic crew-neck t-shirt made from premium Peruvian Pima cotton. Ultra-soft, durable, and perfect for any occasion.",
     images: [
@@ -35,7 +35,7 @@ export const products: Product[] = [
   {
     id: "2",
     name: "Slate Grey V-Neck",
-    price: 5499,
+    price: 2499,
     description:
       "Elevate your basics with our V-neck tee. Made from a unique blend of cotton and modal for a silky smooth feel and a flattering drape.",
     images: [
@@ -53,7 +53,7 @@ export const products: Product[] = [
   {
     id: "3",
     name: "Midnight Blue Oxford Shirt",
-    price: 12999,
+    price: 3999,
     description:
       "A timeless Oxford shirt in a deep midnight blue. Expertly tailored for a modern fit, featuring a button-down collar and mother-of-pearl buttons.",
     images: [
@@ -71,7 +71,7 @@ export const products: Product[] = [
   {
     id: "4",
     name: "Classic White Dress Shirt",
-    price: 11999,
+    price: 3899,
     description:
       "The quintessential white dress shirt. Woven from 2-ply Egyptian cotton for a crisp, smooth finish that resists wrinkling.",
     images: [
@@ -89,7 +89,7 @@ export const products: Product[] = [
   {
     id: "5",
     name: "Urban Slim-Fit Jeans",
-    price: 14999,
+    price: 4999,
     description:
       "Our signature slim-fit jeans in a versatile dark wash. Crafted from premium Japanese selvedge denim with a touch of stretch for comfort.",
     images: [
@@ -107,7 +107,7 @@ export const products: Product[] = [
   {
     id: "6",
     name: "Vintage Straight-Leg Jeans",
-    price: 15999,
+    price: 5999,
     description:
       "A nod to classic Americana, these straight-leg jeans are made from rigid 14oz denim that will break in beautifully over time.",
     images: [
@@ -125,7 +125,7 @@ export const products: Product[] = [
   {
     id: "7",
     name: "Graphite Henley Tee",
-    price: 6999,
+    price: 2999,
     description:
       "A sophisticated take on the classic Henley. Features a three-button placket and is crafted from a soft, textured slub cotton.",
     images: [
@@ -143,7 +143,7 @@ export const products: Product[] = [
   {
     id: "8",
     name: "Linen Casual Shirt",
-    price: 13999,
+    price: 4299,
     description:
       "Stay cool and stylish in our lightweight linen shirt. Perfect for warm weather, it offers a relaxed fit and exceptional breathability.",
     images: [
@@ -161,7 +161,7 @@ export const products: Product[] = [
    {
     id: "9",
     name: "Tech-Knit Sweater",
-    price: 18999,
+    price: 8999,
     description:
       "A modern sweater knitted from a technical merino wool blend. It's temperature-regulating, soft, and has a clean, minimalist design.",
     images: [
@@ -179,7 +179,7 @@ export const products: Product[] = [
   {
     id: "10",
     name: "Classic Leather Jacket",
-    price: 49999,
+    price: 19999,
     description:
       "An iconic investment piece. This jacket is crafted from full-grain lambskin leather that gets better with every wear.",
     images: [
@@ -197,7 +197,7 @@ export const products: Product[] = [
   {
     id: "11",
     name: "Oversized Graphic Tee",
-    price: 7999,
+    price: 3499,
     description:
       "Make a statement with this oversized t-shirt featuring a vintage-inspired wolf graphic. Made from heavyweight cotton for a structured drape.",
     images: [
@@ -215,7 +215,7 @@ export const products: Product[] = [
     {
     id: "12",
     name: "Performance Track Pants",
-    price: 11000,
+    price: 3999,
     description:
       "Engineered for movement, these track pants are made from a water-repellent, four-way stretch fabric. Perfect for the gym or the street.",
     images: [
@@ -250,7 +250,7 @@ export const products: Product[] = [
   {
     id: "14",
     name: "Canvas Messenger Bag",
-    price: 17999,
+    price: 7999,
     description: "A durable and stylish messenger bag made from heavy-duty canvas with leather accents. Features a padded laptop sleeve and multiple pockets for organization.",
     images: [
       "https://placehold.co/600x800.png",
@@ -284,7 +284,7 @@ export const products: Product[] = [
   {
     id: "16",
     name: "Suede Tassel Loafers",
-    price: 22999,
+    price: 12999,
     description: "Sophisticated loafers crafted from rich brown suede, featuring elegant tassels. A perfect blend of comfort and style for the discerning gentleman.",
     images: [
       "https://placehold.co/600x800.png",
@@ -335,7 +335,7 @@ export const products: Product[] = [
   {
     id: "19",
     name: "Wool Cashmere Overcoat",
-    price: 55999,
+    price: 25999,
     description: "A luxurious overcoat crafted from a fine wool and cashmere blend. Its timeless design and superior warmth make it an essential winter garment.",
     images: [
       "https://placehold.co/600x800.png",
@@ -349,6 +349,57 @@ export const products: Product[] = [
     reviews: 65,
     dataAiHint: "wool overcoat",
   },
+   {
+    id: "20",
+    name: "Striped Crew-Neck Tee",
+    price: 2199,
+    description: "A timeless striped t-shirt made from our signature soft Pima cotton. A versatile piece for any casual look.",
+    images: [
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png"
+    ],
+    category: "T-Shirts",
+    sizes: ["S", "M", "L", "XL"],
+    color: "Navy/White",
+    rating: 4.7,
+    reviews: 110,
+    dataAiHint: "striped t-shirt"
+  },
+  {
+    id: "21",
+    name: "Relaxed Fit Chinos",
+    price: 3999,
+    description: "Comfortable and stylish relaxed-fit chinos, perfect for smart-casual occasions. Made from a durable cotton twill.",
+    images: [
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png"
+    ],
+    category: "Jeans",
+    sizes: ["30", "32", "34", "36", "38"],
+    color: "Khaki",
+    rating: 4.6,
+    reviews: 85,
+    dataAiHint: "khaki chinos"
+  },
+  {
+    id: "22",
+    name: "Polo Shirt",
+    price: 2999,
+    description: "A classic polo shirt crafted from breathable cotton pique. A wardrobe staple for a polished yet casual look.",
+    images: [
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png",
+      "https://placehold.co/600x800.png"
+    ],
+    category: "Shirts",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    color: "Red",
+    rating: 4.8,
+    reviews: 130,
+    dataAiHint: "polo shirt"
+  }
 ];
 
 export const getProductById = (id: string) => products.find((p) => p.id === id);
