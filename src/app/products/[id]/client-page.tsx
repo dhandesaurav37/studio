@@ -4,7 +4,7 @@
 import { Product } from "@/lib/data";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Heart, Minus, Plus, ShoppingBag, Star } from "lucide-react";
+import { Heart, Minus, Plus, ShoppingBag, Star, Zap } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import { ProductCard } from "@/components/product-card";
@@ -65,6 +65,23 @@ export default function ProductDetailClientPage({
       });
     }
   };
+  
+  const handleBuyNow = () => {
+     if (!selectedSize) {
+      toast({
+        title: "Please select a size",
+        description: "You need to select a size before proceeding to checkout.",
+        variant: "destructive",
+      });
+      return;
+    }
+    // For now, it will just show a toast.
+    // Later, this would redirect to a checkout page.
+     toast({
+      title: "Proceeding to checkout",
+      description: `Buying ${quantity} of ${product.name} (Size: ${selectedSize})`,
+    });
+  }
 
   return (
     <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -144,10 +161,9 @@ export default function ProductDetailClientPage({
               ))}
             </div>
           </div>
-
-          {/* Quantity and Actions */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-8">
-            <div className="flex items-center border rounded-md">
+          
+          <div className="flex items-center gap-4 mt-8">
+             <div className="flex items-center border rounded-md">
               <Button
                 variant="ghost"
                 size="icon"
@@ -164,9 +180,6 @@ export default function ProductDetailClientPage({
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
-            <Button size="lg" className="flex-1 w-full" onClick={handleAddToCart}>
-              <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
-            </Button>
             <Button
               variant="outline"
               size="icon"
@@ -180,6 +193,16 @@ export default function ProductDetailClientPage({
                 )}
               />
               <span className="sr-only">Wishlist</span>
+            </Button>
+          </div>
+
+          {/* Quantity and Actions */}
+           <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
+            <Button size="lg" className="flex-1 w-full" variant="secondary" onClick={handleAddToCart}>
+              <ShoppingBag className="mr-2 h-5 w-5" /> Add to Cart
+            </Button>
+            <Button size="lg" className="flex-1 w-full" onClick={handleBuyNow} variant="destructive">
+              <Zap className="mr-2 h-5 w-5" /> Buy Now
             </Button>
           </div>
         </div>
