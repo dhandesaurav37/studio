@@ -59,6 +59,7 @@ export default function ProductDetailClientPage({
     addToWishlist,
     removeFromWishlist,
     profile,
+    addNotification,
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -159,8 +160,9 @@ export default function ProductDetailClientPage({
         phone: profile.mobile
       };
 
+      const newOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
       const newOrder = {
-        id: `WW-${Math.floor(Math.random() * 90000) + 10000}`,
+        id: newOrderId,
         date: new Date().toISOString().split('T')[0],
         customer: {
           name: user.displayName || 'N/A',
@@ -173,8 +175,18 @@ export default function ProductDetailClientPage({
         items: [{ product, quantity, size: selectedSize }],
       };
 
-      // In a real app, this would be an API call. Here we add to the mock data.
       adminOrders.unshift(newOrder);
+
+      addNotification({
+        id: Date.now(),
+        type: 'admin',
+        icon: 'Package',
+        title: 'New COD Order Received',
+        description: `Order #${newOrderId} for ${product.name} has been placed by ${user.displayName || user.email}.`,
+        time: 'Just now',
+        read: false,
+        orderId: newOrderId,
+      });
 
       setIsPurchaseDialogOpen(false);
       toast({
