@@ -107,8 +107,8 @@ export default function HomePage() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-30 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-30 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
         </Carousel>
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4">
