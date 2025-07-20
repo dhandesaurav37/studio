@@ -21,6 +21,7 @@ import {
   Star,
   Zap,
   Edit,
+  MapPin,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
@@ -48,6 +49,7 @@ export default function ProductDetailClientPage({
     wishlist,
     addToWishlist,
     removeFromWishlist,
+    profile,
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -126,6 +128,9 @@ export default function ProductDetailClientPage({
     });
     router.push('/orders');
   }
+
+  const hasAddress = profile.address?.street && profile.address?.city;
+  const hasMobile = !!profile.mobile;
 
   return (
     <div className="container py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -293,11 +298,26 @@ export default function ProductDetailClientPage({
                        <Link href="/profile"><Edit className="mr-2 h-3 w-3" />Change</Link>
                     </Button>
                 </div>
-                <p className="text-sm text-destructive mt-2 pl-8">No default address and/or phone number found. Please add them in your profile.</p>
+                 <div className="text-sm text-muted-foreground mt-3 pl-8 space-y-1">
+                  {hasAddress || hasMobile ? (
+                    <>
+                      {hasAddress ? (
+                         <div className="flex items-start">
+                            <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                            <span>{profile.address.street}, {profile.address.city}, {profile.address.state} - {profile.address.pincode}</span>
+                         </div>
+                      ) : (
+                         <p className="text-destructive">No address found. Please add one in your profile.</p>
+                      )}
+                    </>
+                  ) : (
+                     <p className="text-destructive">No default address and/or phone number found. Please add them in your profile.</p>
+                  )}
+                 </div>
             </div>
              <div className="rounded-lg border p-4 flex items-center gap-3">
-                 <RadioGroupItem value="new-address" id="new-address" />
-                 <Label htmlFor="new-address" className="font-semibold cursor-pointer">Ship to a New Address</Label>
+                 <RadioGroupItem value="new-address" id="new-address" disabled />
+                 <Label htmlFor="new-address" className="font-semibold cursor-pointer text-muted-foreground">Ship to a New Address</Label>
             </div>
           </RadioGroup>
           <Separator />
@@ -311,12 +331,11 @@ export default function ProductDetailClientPage({
              </div>
           </div>
            <div className="grid grid-cols-2 gap-4">
-                <Button variant="destructive" onClick={() => handlePayment("Online")}>Pay Online</Button>
-                <Button variant="secondary" onClick={() => handlePayment("COD")}>Cash on Delivery</Button>
+                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!hasAddress || !hasMobile}>Pay Online</Button>
+                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!hasAddress || !hasMobile}>Cash on Delivery</Button>
             </div>
         </DialogContent>
       </Dialog>
     </div>
   );
 }
-

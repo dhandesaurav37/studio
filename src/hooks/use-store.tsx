@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
@@ -11,36 +12,64 @@ export interface CartItem {
 
 export type WishlistItem = Product;
 
+export interface UserProfile {
+  name: string;
+  email: string;
+  mobile: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+}
+
+const initialProfile: UserProfile = {
+  name: "",
+  email: "",
+  mobile: "",
+  address: {
+    street: "",
+    city: "",
+    state: "",
+    pincode: "",
+  },
+};
+
 interface StoreState {
   cart: CartItem[];
   wishlist: WishlistItem[];
+  profile: UserProfile;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
   updateCartItemQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   addToWishlist: (item: WishlistItem) => void;
   removeFromWishlist: (productId: string) => void;
+  setProfile: (profile: UserProfile) => void;
 }
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
 
-const safelyParseJSON = (value: string | null) => {
+const safelyParseJSON = (value: string | null, fallback: any = []) => {
   try {
-    return value ? JSON.parse(value) : [];
+    return value ? JSON.parse(value) : fallback;
   } catch {
-    return [];
+    return fallback;
   }
 };
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const [profile, setProfileState] = useState<UserProfile>(initialProfile);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    setCart(safelyParseJSON(localStorage.getItem('cart')));
-    setWishlist(safelyParseJSON(localStorage.getItem('wishlist')));
+    setCart(safelyParseJSON(localStorage.getItem('cart'), []));
+    setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
+    setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
   }, []);
 
   useEffect(() => {
@@ -54,6 +83,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('wishlist', JSON.stringify(wishlist));
     }
   }, [wishlist, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem('profile', JSON.stringify(profile));
+    }
+  }, [profile, isMounted]);
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -97,16 +132,22 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const removeFromWishlist = (productId: string) => {
     setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== productId));
   };
+  
+  const setProfile = (newProfile: UserProfile) => {
+    setProfileState(newProfile);
+  }
 
   const value = {
     cart,
     wishlist,
+    profile,
     addToCart,
     removeFromCart,
     updateCartItemQuantity,
     clearCart,
     addToWishlist,
     removeFromWishlist,
+    setProfile,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

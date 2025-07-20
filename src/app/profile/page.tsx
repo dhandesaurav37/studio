@@ -19,35 +19,12 @@ import { onAuthStateChanged, User, updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-
-interface UserProfile {
-  name: string;
-  email: string;
-  mobile: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    pincode: string;
-  };
-}
-
-const initialUser: UserProfile = {
-  name: "",
-  email: "",
-  mobile: "",
-  address: {
-    street: "",
-    city: "",
-    state: "",
-    pincode: "",
-  },
-};
+import { useStore, UserProfile } from "@/hooks/use-store";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
-  const [profile, setProfile] = useState<UserProfile>(initialUser);
-  const [editedProfile, setEditedProfile] = useState<UserProfile>(initialUser);
+  const { profile, setProfile } = useStore();
+  const [editedProfile, setEditedProfile] = useState<UserProfile>(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
@@ -57,11 +34,11 @@ export default function ProfilePage() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        // Sync profile from store with auth data on load
         const currentProfile = {
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
-          mobile: "", // Not stored in auth
-          address: { street: "", city: "", state: "", pincode: "" }, // Not stored in auth
+          ...profile,
+          name: currentUser.displayName || profile.name,
+          email: currentUser.email || profile.email,
         };
         setProfile(currentProfile);
         setEditedProfile(currentProfile);
@@ -71,14 +48,22 @@ export default function ProfilePage() {
       setIsLoading(false);
     });
     return () => unsubscribe();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router]);
+
+  useEffect(() => {
+    setEditedProfile(profile);
+  }, [profile]);
+
 
   const handleEditToggle = async () => {
     if (isEditing && user) {
       // Save logic
       try {
-        await updateProfile(user, { displayName: editedProfile.name });
-        setProfile(editedProfile);
+        if (editedProfile.name !== user.displayName) {
+          await updateProfile(user, { displayName: editedProfile.name });
+        }
+        setProfile(editedProfile); // Save to global store
         setIsEditing(false);
         toast({
           title: "Success",
