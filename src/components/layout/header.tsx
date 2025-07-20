@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu, User } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -20,6 +20,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { auth } from "@/lib/firebase";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/hooks/use-toast";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
@@ -28,15 +32,34 @@ const navLinks = [
 
 export function AppHeader() {
   const [isMounted, setIsMounted] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     setIsMounted(true);
-    // In a real app, you'd check for a token or session here
-    // For now, we'll just simulate a logged-in user after a delay
-    const timer = setTimeout(() => setIsLoggedIn(true), 2000);
-    return () => clearTimeout(timer);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unsubscribe();
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Success",
+        description: "You have been logged out.",
+      });
+      router.push("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!isMounted) {
     return (
@@ -57,17 +80,17 @@ export function AppHeader() {
   }
 
   const renderAuthButtons = () => {
-    if (isLoggedIn) {
+    if (user) {
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
+              <UserIcon className="h-5 w-5" />
               <span className="sr-only">User Menu</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuLabel>Hi, {user.displayName || 'User'}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
@@ -75,7 +98,7 @@ export function AppHeader() {
             <DropdownMenuItem asChild><Link href="/notifications">Notifications</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>Log Out</DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -93,7 +116,7 @@ export function AppHeader() {
   };
   
   const renderMobileAuthButtons = () => {
-     if (isLoggedIn) {
+     if (user) {
       return (
          <>
           <hr className="my-4" />
@@ -103,7 +126,7 @@ export function AppHeader() {
           <Link href="/notifications" className="font-medium text-foreground hover:text-destructive">Notifications</Link>
           <Link href="/settings" className="font-medium text-foreground hover:text-destructive">Settings</Link>
           <hr className="my-4" />
-          <Button variant="ghost" onClick={() => setIsLoggedIn(false)}>Log Out</Button>
+          <Button variant="ghost" onClick={handleLogout}>Log Out</Button>
         </>
       )
      }
