@@ -2,7 +2,7 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2, Search } from "lucide-react";
+import { BarChart, Package, ShoppingCart, Users, UploadCloud, PlusCircle, MoreHorizontal, Edit, Trash2, Search, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -51,11 +51,30 @@ export default function AdminDashboardPage() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [productImages, setProductImages] = useState<File[]>([]);
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsEditDialogOpen(true);
   };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setProductImages(prev => [...prev, ...Array.from(e.target.files!)]);
+    }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setProductImages(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Logic to add product would go here
+    // For now, we just clear the images
+    setProductImages([]);
+    (e.target as HTMLFormElement).reset();
+  }
 
   const filteredProducts = products
     .filter((product) =>
@@ -136,7 +155,7 @@ export default function AdminDashboardPage() {
             <CardTitle className="font-headline">Add New Product</CardTitle>
           </CardHeader>
           <CardContent>
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleFormSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>
@@ -186,9 +205,34 @@ export default function AdminDashboardPage() {
                             <UploadCloud className="w-8 h-8 mb-4 text-muted-foreground" />
                             <p className="mb-2 text-sm text-muted-foreground"><span className="font-semibold">Drag & drop files here</span>, or click to select files</p>
                         </div>
-                        <Input id="dropzone-file" type="file" className="hidden" multiple accept=".png" />
+                        <Input id="dropzone-file" type="file" className="hidden" multiple accept="image/png, image/jpeg, image/webp" onChange={handleImageChange} />
                     </label>
-                </div> 
+                </div>
+                {productImages.length > 0 && (
+                  <div className="mt-4 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+                    {productImages.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <Image
+                          src={URL.createObjectURL(file)}
+                          alt={`preview ${index}`}
+                          width={100}
+                          height={100}
+                          onLoad={(e) => URL.revokeObjectURL((e.target as HTMLImageElement).src)}
+                          className="rounded-md object-cover w-full aspect-square"
+                        />
+                         <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleRemoveImage(index)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex items-center space-x-2">
                 <Switch id="new-arrival" />
@@ -353,7 +397,7 @@ export default function AdminDashboardPage() {
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                <Button type="submit" className="bg-destructive hover:bg-destructive/90">Save Changes</Button>
+                <Button type="submit" onClick={() => setIsEditDialogOpen(false)}>Save Changes</Button>
               </DialogFooter>
             </>
           )}
@@ -363,3 +407,5 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
+
+    
