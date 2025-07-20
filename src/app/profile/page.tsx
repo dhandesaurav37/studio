@@ -60,7 +60,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container py-12 md:py-16 px-4 sm:px-6 lg:px-8">
+    <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center justify-between mb-8 max-w-2xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold font-headline">
           My Profile
