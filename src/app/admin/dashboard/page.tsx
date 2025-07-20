@@ -45,7 +45,7 @@ import { useState, useMemo } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/services/storage";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const staticCategories = [
@@ -70,7 +70,9 @@ export default function AdminDashboardPage() {
   const { products } = useStore();
   const { toast } = useToast();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [editedProductData, setEditedProductData] = useState<Partial<Product> | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState("All");
   const [productImages, setProductImages] = useState<File[]>([]);
@@ -81,6 +83,7 @@ export default function AdminDashboardPage() {
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
+    setEditedProductData({ ...product });
     setIsEditDialogOpen(true);
   };
 
@@ -148,6 +151,44 @@ export default function AdminDashboardPage() {
     } finally {
         setIsSubmitting(false);
     }
+  }
+
+  const handleSaveChanges = async () => {
+    if (!selectedProduct || !editedProductData) return;
+    setIsSaving(true);
+    try {
+      const productRef = doc(db, "products", selectedProduct.id);
+      await updateDoc(productRef, editedProductData);
+      toast({
+        title: "Success!",
+        description: `"${editedProductData.name}" has been updated.`
+      });
+      setIsEditDialogOpen(false);
+      setSelectedProduct(null);
+      setEditedProductData(null);
+    } catch (error) {
+      console.error("Error updating product: ", error);
+      toast({ title: "Error", description: "Failed to update product.", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    const fieldName = id.replace('edit-', '');
+    setEditedProductData(prev => ({ ...prev, [fieldName]: value }));
+  };
+
+  const handleEditSelectChange = (value: string) => {
+    setEditedProductData(prev => ({ ...prev, category: value }));
+  };
+  
+  const handleEditSizesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+     const { id, value } = e.target;
+     const textSizes = (id === 'edit-text-sizes' ? value : (document.getElementById('edit-text-sizes') as HTMLInputElement).value).split(',').map(s => s.trim()).filter(Boolean);
+     const numericSizes = (id === 'edit-numeric-sizes' ? value : (document.getElementById('edit-numeric-sizes') as HTMLInputElement).value).split(',').map(s => s.trim()).filter(Boolean);
+     setEditedProductData(prev => ({ ...prev, sizes: [...textSizes, ...numericSizes] }));
   }
 
   const filteredProducts = useMemo(() => products
@@ -414,7 +455,7 @@ export default function AdminDashboardPage() {
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="sm:max-w-[625px]">
-          {selectedProduct && (
+          {selectedProduct && editedProductData && (
              <>
               <DialogHeader>
                 <DialogTitle>Edit Product</DialogTitle>
@@ -425,22 +466,22 @@ export default function AdminDashboardPage() {
               <div className="space-y-6 py-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-product-name">Product Name</Label>
-                    <Input id="edit-product-name" defaultValue={selectedProduct.name} />
+                    <Label htmlFor="edit-name">Product Name</Label>
+                    <Input id="edit-name" value={editedProductData.name} onChange={handleEditInputChange} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-price">Price (₹)</Label>
-                    <Input id="edit-price" type="number" defaultValue={selectedProduct.price} />
+                    <Input id="edit-price" type="number" value={editedProductData.price} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-description">Description</Label>
-                  <Textarea id="edit-description" defaultValue={selectedProduct.description} />
+                  <Textarea id="edit-description" value={editedProductData.description} onChange={handleEditInputChange} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-category">Category</Label>
-                    <Select defaultValue={selectedProduct.category}>
+                    <Select value={editedProductData.category} onValueChange={handleEditSelectChange}>
                       <SelectTrigger id="edit-category">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
@@ -450,18 +491,18 @@ export default function AdminDashboardPage() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-colors">Colors (comma-separated)</Label>
-                    <Input id="edit-colors" defaultValue={selectedProduct.color} />
+                    <Label htmlFor="edit-color">Colors (comma-separated)</Label>
+                    <Input id="edit-color" value={editedProductData.color} onChange={handleEditInputChange} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
-                    <Input id="edit-text-sizes" defaultValue={selectedProduct.sizes.filter(s => isNaN(parseInt(s))).join(', ')} />
+                    <Input id="edit-text-sizes" value={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
-                    <Input id="edit-numeric-sizes" defaultValue={selectedProduct.sizes.filter(s => !isNaN(parseInt(s))).join(', ')} />
+                    <Input id="edit-numeric-sizes" value={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -470,8 +511,11 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
-                <Button type="submit" onClick={() => setIsEditDialogOpen(false)}>Save Changes</Button>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSaving}>Cancel</Button>
+                <Button type="submit" onClick={handleSaveChanges} disabled={isSaving}>
+                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </Button>
               </DialogFooter>
             </>
           )}
