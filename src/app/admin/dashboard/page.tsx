@@ -8,6 +8,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -15,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { products } from "@/lib/data";
+import { products, Product } from "@/lib/data";
 import {
   Table,
   TableBody,
@@ -33,11 +42,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import { useState } from "react";
 
 const allCategories = [...new Set(products.map((p) => p.category))];
 
 export default function AdminDashboardPage() {
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
+  const handleEditClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditDialogOpen(true);
+  };
+  
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
@@ -167,7 +184,7 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex justify-end gap-2">
                 <Button variant="outline" type="button">Cancel</Button>
-                <Button type="submit" className="bg-destructive hover:bg-destructive/90">
+                <Button type="submit">
                     <PlusCircle className="mr-2 h-4 w-4" />
                     Add Product
                 </Button>
@@ -228,7 +245,9 @@ export default function AdminDashboardPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem><Edit className="mr-2 h-4 w-4"/>Edit</DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => handleEditClick(product)}>
+                            <Edit className="mr-2 h-4 w-4"/>Edit
+                          </DropdownMenuItem>
                           <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -240,6 +259,73 @@ export default function AdminDashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="sm:max-w-[625px]">
+          {selectedProduct && (
+             <>
+              <DialogHeader>
+                <DialogTitle>Edit Product</DialogTitle>
+                <DialogDescription>
+                  Make changes to "{selectedProduct.name}". Click save when you're done.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-6 py-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-product-name">Product Name</Label>
+                    <Input id="edit-product-name" defaultValue={selectedProduct.name} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-price">Price (₹)</Label>
+                    <Input id="edit-price" type="number" defaultValue={selectedProduct.price} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea id="edit-description" defaultValue={selectedProduct.description} />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-category">Category</Label>
+                    <Select defaultValue={selectedProduct.category}>
+                      <SelectTrigger id="edit-category">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {allCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-colors">Colors (comma-separated)</Label>
+                    <Input id="edit-colors" defaultValue={selectedProduct.color} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
+                    <Input id="edit-text-sizes" defaultValue={selectedProduct.sizes.filter(s => isNaN(parseInt(s))).join(', ')} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
+                    <Input id="edit-numeric-sizes" defaultValue={selectedProduct.sizes.filter(s => !isNaN(parseInt(s))).join(', ')} />
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Switch id="edit-new-arrival" defaultChecked={products.slice(0, 4).some(p => p.id === selectedProduct.id)} />
+                  <Label htmlFor="edit-new-arrival">Mark as New Arrival</Label>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Cancel</Button>
+                <Button type="submit" className="bg-destructive hover:bg-destructive/90">Save Changes</Button>
+              </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }
