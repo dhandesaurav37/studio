@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard, Package, Truck } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -24,6 +24,8 @@ import { auth } from "@/lib/firebase";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
+import { useStore } from "@/hooks/use-store";
+import { Badge } from "../ui/badge";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
@@ -38,6 +40,7 @@ export function AppHeader() {
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { cart, wishlist } = useStore();
 
   useEffect(() => {
     setIsMounted(true);
@@ -159,6 +162,22 @@ export function AppHeader() {
      )
   }
 
+  const HeaderIcon = ({ href, children, count }: { href: string, children: React.ReactNode, count: number }) => (
+    <Button variant="ghost" size="icon" asChild>
+      <Link href={href} className="relative">
+        {children}
+        {count > 0 && (
+          <Badge
+            variant="destructive"
+            className="absolute -top-1 -right-2 h-5 w-5 rounded-full flex items-center justify-center p-0 text-xs"
+          >
+            {count}
+          </Badge>
+        )}
+      </Link>
+    </Button>
+  );
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-sm">
       <div className="w-full flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
@@ -181,18 +200,14 @@ export function AppHeader() {
             ))}
           </nav>
           <div className="flex items-center gap-2 ml-auto">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/wishlist">
-                <Heart className="h-5 w-5" />
-                <span className="sr-only">Wishlist</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/cart">
-                <ShoppingBag className="h-5 w-5" />
-                <span className="sr-only">Cart</span>
-              </Link>
-            </Button>
+            <HeaderIcon href="/wishlist" count={wishlist.length}>
+              <Heart className="h-5 w-5" />
+              <span className="sr-only">Wishlist</span>
+            </HeaderIcon>
+            <HeaderIcon href="/cart" count={cart.length}>
+              <ShoppingBag className="h-5 w-5" />
+              <span className="sr-only">Cart</span>
+            </HeaderIcon>
             <div className="mx-2 h-6 border-l border-border"></div>
             {renderAuthButtons()}
           </div>
@@ -205,12 +220,10 @@ export function AppHeader() {
           </Link>
 
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" asChild>
-              <Link href="/cart">
-                <ShoppingBag className="h-5 w-5" />
-                <span className="sr-only">Cart</span>
-              </Link>
-            </Button>
+            <HeaderIcon href="/cart" count={cart.length}>
+              <ShoppingBag className="h-5 w-5" />
+              <span className="sr-only">Cart</span>
+            </HeaderIcon>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">

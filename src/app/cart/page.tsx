@@ -9,40 +9,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { products } from "@/lib/data";
+import { useStore } from "@/hooks/use-store";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-
-const initialCartItems = [
-  { product: products[0], quantity: 1, size: "M" },
-  { product: products[2], quantity: 1, size: "L" },
-];
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState(initialCartItems);
-
-  const handleRemoveItem = (productId: string) => {
-    setCartItems(cartItems.filter((item) => item.product.id !== productId));
-  };
+  const { cart, removeFromCart, updateCartItemQuantity } = useStore();
 
   const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity < 1) return;
-    setCartItems(
-      cartItems.map((item) =>
-        item.product.id === productId
-          ? { ...item, quantity: newQuantity }
-          : item
-      )
-    );
+    if (newQuantity < 1) {
+      removeFromCart(productId);
+    } else {
+      updateCartItemQuantity(productId, newQuantity);
+    }
   };
 
-  const subtotal = cartItems.reduce(
+  const subtotal = cart.reduce(
     (acc, item) => acc + item.product.price * item.quantity,
     0
   );
-  const shipping = cartItems.length > 0 ? 150 : 0;
+  const shipping = cart.length > 0 ? 150 : 0;
   const total = subtotal + shipping;
 
   return (
@@ -50,13 +37,13 @@ export default function CartPage() {
       <h1 className="text-3xl md:text-4xl font-bold font-headline mb-8">
         Your Cart
       </h1>
-      {cartItems.length > 0 ? (
+      {cart.length > 0 ? (
         <div className="grid md:grid-cols-3 gap-8 md:gap-12">
           <div className="md:col-span-2">
             <Card>
               <CardContent className="p-0">
                 <ul className="divide-y">
-                  {cartItems.map((item) => (
+                  {cart.map((item) => (
                     <li
                       key={item.product.id}
                       className="flex items-center p-4 sm:p-6 gap-4 sm:gap-6"
@@ -123,7 +110,7 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="text-muted-foreground hover:text-destructive"
-                          onClick={() => handleRemoveItem(item.product.id)}
+                          onClick={() => removeFromCart(item.product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Remove item</span>
@@ -133,7 +120,7 @@ export default function CartPage() {
                           variant="ghost"
                           size="icon"
                           className="sm:hidden text-muted-foreground hover:text-destructive absolute top-2 right-2"
-                          onClick={() => handleRemoveItem(item.product.id)}
+                          onClick={() => removeFromCart(item.product.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                           <span className="sr-only">Remove item</span>

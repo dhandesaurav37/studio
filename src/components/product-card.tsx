@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Heart, ShoppingBag, X } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { cn } from "@/lib/utils";
+import { useStore } from "@/hooks/use-store";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -21,6 +23,49 @@ export function ProductCard({
   onRemove,
   className,
 }: ProductCardProps) {
+  const {
+    addToCart,
+    wishlist,
+    addToWishlist,
+    removeFromWishlist,
+  } = useStore();
+  const { toast } = useToast();
+
+  const isWishlisted = wishlist.some((item) => item.id === product.id);
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); // prevent link navigation
+    // Add to cart with default size and quantity 1
+    const defaultSize = product.sizes[0];
+    addToCart({ product, quantity: 1, size: defaultSize });
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  };
+
+  const handleWishlistToggle = (e: React.MouseEvent) => {
+    e.preventDefault(); // prevent link navigation
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+      toast({
+        title: "Removed from wishlist",
+        description: `${product.name} has been removed from your wishlist.`,
+      });
+    } else {
+      addToWishlist(product);
+      toast({
+        title: "Added to wishlist",
+        description: `${product.name} has been added to your wishlist.`,
+      });
+    }
+  };
+
+  const handleRemoveClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    onRemove?.(product.id);
+  }
+
   return (
     <Card
       className={cn(
@@ -61,7 +106,7 @@ export function ProductCard({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onRemove?.(product.id)}
+              onClick={handleRemoveClick}
             >
               <X className="mr-2 h-4 w-4" /> Remove
             </Button>
@@ -71,11 +116,17 @@ export function ProductCard({
                 variant="ghost"
                 size="icon"
                 className="hover:bg-accent/20"
+                onClick={handleWishlistToggle}
               >
-                <Heart className="h-5 w-5 text-accent" />
+                <Heart
+                  className={cn(
+                    "h-5 w-5 text-muted-foreground",
+                    isWishlisted && "fill-destructive text-destructive"
+                  )}
+                />
                 <span className="sr-only">Add to Wishlist</span>
               </Button>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" onClick={handleAddToCart}>
                 <ShoppingBag className="h-5 w-5" />
                 <span className="sr-only">Add to Cart</span>
               </Button>
