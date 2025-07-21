@@ -30,6 +30,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useStore, OrderStatus } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
+import { format } from 'date-fns';
+
 
 export default function AdminOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
@@ -173,7 +175,7 @@ export default function AdminOrdersPage() {
                            <CheckCircle className={`h-5 w-5 ${getStatusIconColor(order.status)}`}/>
                            <div>
                             <p className="font-mono text-sm font-semibold">{order.id}</p>
-                            <p className="text-xs text-muted-foreground">{new Date(order.date).toLocaleDateString()}</p>
+                            <p className="text-xs text-muted-foreground">{format(new Date(order.date), 'dd/MM/yyyy')}</p>
                            </div>
                         </div>
                         <div className="hidden md:block">
