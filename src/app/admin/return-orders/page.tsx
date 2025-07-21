@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/collapsible";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useStore, OrderStatus } from "@/hooks/use-store";
@@ -33,9 +33,8 @@ export default function AdminReturnOrdersPage() {
   const { updateOrderStatus, addNotification } = useStore();
   const { toast } = useToast();
   
-  // For the purpose of this demo, we'll filter from the static adminOrders list.
-  // In a real app, this would be a separate query.
-  const returnRequests = adminOrders.filter(o => o.status === 'Return Requested');
+  // Now includes all return-related statuses
+  const returnOrders = adminOrders.filter(o => ['Return Requested', 'Returned', 'Return Rejected'].includes(o.status));
 
 
   const handleToggle = (orderId: string) => {
@@ -67,7 +66,19 @@ export default function AdminReturnOrdersPage() {
     });
   };
 
-  const filteredOrders = returnRequests.filter(
+  const getBadgeVariant = (status: OrderStatus) => {
+    switch (status) {
+      case 'Returned':
+        return 'default'; // Using green-like color
+      case 'Return Rejected':
+        return 'destructive';
+      case 'Return Requested':
+      default:
+        return 'secondary'; // Using a neutral/yellow-ish color for pending
+    }
+  };
+
+  const filteredOrders = returnOrders.filter(
     (order) =>
       order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -77,16 +88,16 @@ export default function AdminReturnOrdersPage() {
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl md:text-4xl font-bold font-headline mb-2">
-          Manage Return Orders
+          Return Management
         </h1>
         <p className="text-muted-foreground mb-8">
           Review and process return requests from customers.
         </p>
         <Card>
           <CardHeader>
-            <CardTitle>Return Requests ({filteredOrders.length})</CardTitle>
+            <CardTitle>All Return Orders ({filteredOrders.length})</CardTitle>
             <CardDescription>
-              A list of all pending return requests.
+              A list of all return requests and their statuses.
             </CardDescription>
             <div className="relative pt-2">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -120,7 +131,7 @@ export default function AdminReturnOrdersPage() {
                                <p className="font-semibold text-sm">{order.customer.name}</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <Badge variant="destructive" className="w-32 justify-center">{order.status}</Badge>
+                                <Badge variant={getBadgeVariant(order.status)} className="w-32 justify-center">{order.status}</Badge>
                                 <p className="font-bold hidden sm:block">₹{order.total.toFixed(2)}</p>
                                  {openOrderId === order.id ? (
                                   <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -159,15 +170,25 @@ export default function AdminReturnOrdersPage() {
                                 </Table>
                             </div>
                             <div>
-                                 <h4 className="font-semibold mb-4">Actions</h4>
-                                 <div className="space-y-2">
-                                     <Button className="w-full" onClick={() => handleReturnAction(order.id, 'accept')}>
-                                         <CheckCircle className="mr-2 h-4 w-4" /> Accept Return
-                                     </Button>
-                                     <Button className="w-full" variant="destructive" onClick={() => handleReturnAction(order.id, 'reject')}>
-                                         <XCircle className="mr-2 h-4 w-4" /> Reject Return
-                                     </Button>
-                                 </div>
+                                 <h4 className="font-semibold mb-4">
+                                    {order.status === 'Return Requested' ? 'Actions' : 'Status'}
+                                 </h4>
+                                 {order.status === 'Return Requested' ? (
+                                    <div className="space-y-2">
+                                        <Button className="w-full" onClick={() => handleReturnAction(order.id, 'accept')}>
+                                            <CheckCircle className="mr-2 h-4 w-4" /> Accept Return
+                                        </Button>
+                                        <Button className="w-full" variant="destructive" onClick={() => handleReturnAction(order.id, 'reject')}>
+                                            <XCircle className="mr-2 h-4 w-4" /> Reject Return
+                                        </Button>
+                                    </div>
+                                 ) : (
+                                    <div className="flex items-center gap-2 rounded-md border p-3 bg-background">
+                                        {order.status === 'Returned' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                                        {order.status === 'Return Rejected' && <XCircle className="h-5 w-5 text-destructive" />}
+                                        <p className="font-semibold">Return {order.status}</p>
+                                    </div>
+                                 )}
                                  <Separator className="my-6"/>
                                  <h4 className="font-semibold mb-4">Shipping & Payment</h4>
                                  <div className="text-sm space-y-2 text-muted-foreground">
@@ -184,7 +205,7 @@ export default function AdminReturnOrdersPage() {
                 </div>
             ) : (
                  <div className="text-center text-muted-foreground p-12">
-                    There are no pending return requests.
+                    There are no return requests to display.
                 </div>
             )}
           </CardContent>
