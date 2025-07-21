@@ -60,7 +60,7 @@ export const adminOrders: AdminOrder[] = [
       phone: "555-567-8901",
     },
     paymentMethod: "Credit Card",
-    status: "Delivered",
+    status: "Order Returned Successfully",
     deliveryDate: "2024-07-20T10:00:00.000Z",
     total: 18498.00,
     items: [
@@ -81,7 +81,7 @@ export const adminOrders: AdminOrder[] = [
         phone: "07219789870",
     },
     paymentMethod: "COD",
-    status: "Shipped",
+    status: "Return Request Accepted",
     total: 20498.00,
     items: [
         { product: initialProducts[4], quantity: 1, size: "32" },
@@ -101,7 +101,7 @@ export const adminOrders: AdminOrder[] = [
         phone: "555-234-5678",
     },
     paymentMethod: "PayPal",
-    status: "Pending",
+    status: "Return Requested",
     total: 15999.00,
     items: [
         { product: initialProducts[5], quantity: 1, size: "34" },
@@ -120,7 +120,7 @@ export const adminOrders: AdminOrder[] = [
         phone: "07219789870",
     },
     paymentMethod: "COD",
-    status: "Cancelled",
+    status: "Return Rejected",
     total: 12999.00,
     items: [
         { product: initialProducts[2], quantity: 1, size: "XL" }

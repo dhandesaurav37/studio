@@ -45,7 +45,7 @@ export interface OrderItem {
     product?: Product;
 }
 
-export type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Return Requested' | 'Returned' | 'Return Rejected';
+export type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Return Requested' | 'Return Request Accepted' | 'Order Returned Successfully' | 'Return Rejected';
 
 export interface UserOrder {
     id: string;

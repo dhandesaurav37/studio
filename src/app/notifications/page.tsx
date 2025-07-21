@@ -1,7 +1,7 @@
 
 "use client";
 
-import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon, Undo2 } from "lucide-react";
+import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon, Undo2, PackageCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/hooks/use-store";
 import { auth } from "@/lib/firebase";
@@ -9,6 +9,7 @@ import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import type { OrderStatus, Notification as NotificationType } from "@/hooks/use-store";
+import { adminOrders } from "@/lib/admin-data";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -37,11 +38,13 @@ export default function NotificationsPage() {
     let userNotificationDescription: string;
     let userNotificationIcon: string;
 
+    const orderInStaticList = adminOrders.find(o => o.id === orderId);
+
     if (notification.title.includes('Return Requested')) {
         // Handling a return request
-        newStatus = action === 'accept' ? 'Returned' : 'Return Rejected';
+        newStatus = action === 'accept' ? 'Return Request Accepted' : 'Return Rejected';
         userNotificationTitle = `Return ${action === 'accept' ? 'Accepted' : 'Rejected'}`;
-        userNotificationDescription = `Your return request for order #${orderId} has been ${action === 'accept' ? 'accepted' : 'rejected'}.`;
+        userNotificationDescription = `Your return request for order #${orderId} has been ${action === 'accept' ? 'accepted. A pickup will be scheduled soon' : 'rejected'}.`;
         userNotificationIcon = action === 'accept' ? 'CheckCircle' : 'XCircleIcon';
     } else {
         // Handling a new order
@@ -49,6 +52,10 @@ export default function NotificationsPage() {
         userNotificationTitle = `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`;
         userNotificationDescription = `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`;
         userNotificationIcon = action === 'accept' ? 'Truck' : 'XCircleIcon';
+    }
+    
+    if (orderInStaticList) {
+        orderInStaticList.status = newStatus;
     }
 
     // Update the user's order status in the global state
@@ -82,6 +89,7 @@ export default function NotificationsPage() {
       case "XCircleIcon": return <XCircleIcon className="h-5 w-5" />;
       case "CheckCircle": return <CheckCircle className="h-5 w-5" />;
       case "Undo2": return <Undo2 className="h-5 w-5" />;
+      case "PackageCheck": return <PackageCheck className="h-5 w-5" />;
       default: return <Bell className="h-5 w-5" />;
     }
   }
@@ -122,7 +130,7 @@ export default function NotificationsPage() {
                   <p className="text-xs text-muted-foreground mt-2">
                     {notification.time}
                   </p>
-                  {notification.type === 'admin' && !notification.read && notification.orderId && (
+                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('Order') && (
                      <div className="flex gap-2 mt-4">
                         <Button size="sm" onClick={() => handleOrderAction(notification, 'accept')}>
                             <CheckCircle className="mr-2 h-4 w-4" />
@@ -131,6 +139,18 @@ export default function NotificationsPage() {
                         <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification, 'reject')}>
                             <XCircleIcon className="mr-2 h-4 w-4" />
                             Reject
+                        </Button>
+                     </div>
+                  )}
+                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('Return') && (
+                     <div className="flex gap-2 mt-4">
+                        <Button size="sm" onClick={() => handleOrderAction(notification, 'accept')}>
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Accept Return
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification, 'reject')}>
+                            <XCircleIcon className="mr-2 h-4 w-4" />
+                            Reject Return
                         </Button>
                      </div>
                   )}

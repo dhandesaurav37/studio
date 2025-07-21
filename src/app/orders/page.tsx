@@ -90,15 +90,15 @@ export default function OrdersPage() {
   const getBadgeVariant = (status: OrderStatus) => {
     switch (status) {
       case "Delivered":
+      case 'Order Returned Successfully':
         return "default";
       case "Shipped":
+      case 'Return Request Accepted':
         return "secondary";
       case "Cancelled":
       case 'Return Rejected':
         return "destructive";
       case 'Return Requested':
-      case 'Returned':
-        return 'default';
       case "Pending":
       default:
         return "outline";
@@ -144,7 +144,7 @@ export default function OrdersPage() {
                     <div className="flex items-center gap-4">
                       <Badge
                         variant={getBadgeVariant(order.status)}
-                        className="self-start sm:self-center w-28 justify-center"
+                        className="self-start sm:self-center w-48 justify-center text-center"
                       >
                         {order.status}
                       </Badge>

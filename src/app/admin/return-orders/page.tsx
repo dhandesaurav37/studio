@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/collapsible";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, PackageCheck, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useStore, OrderStatus, UserOrder } from "@/hooks/use-store";
@@ -30,20 +30,46 @@ import { adminOrders } from "@/lib/admin-data";
 export default function AdminReturnOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const { orders, updateOrderStatus, addNotification, getProductById } = useStore();
+  const { orders, updateOrderStatus, addNotification } = useStore();
   const { toast } = useToast();
   
-  // Use live orders from the store and find the associated admin data
   const returnOrders: AdminOrder[] = adminOrders.filter(o => 
-    ['Return Requested', 'Returned', 'Return Rejected'].includes(o.status)
+    ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
   );
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   
-  const handleReturnAction = (orderId: string, action: "accept" | "reject") => {
-    const newStatus: OrderStatus = action === 'accept' ? 'Returned' : 'Return Rejected';
+  const handleReturnAction = (orderId: string, action: "accept-request" | "reject-request" | "confirm-collection") => {
+    let newStatus: OrderStatus | null = null;
+    let toastTitle = "";
+    let userNotificationTitle = "";
+    let userNotificationDescription = "";
+    let userNotificationIcon = "";
+
+    if (action === "accept-request") {
+        newStatus = 'Return Request Accepted';
+        toastTitle = 'Return Request Accepted';
+        userNotificationTitle = 'Return Request Accepted';
+        userNotificationDescription = `Your return request for order #${orderId} has been accepted. A pickup will be scheduled soon.`;
+        userNotificationIcon = 'CheckCircle';
+    } else if (action === "reject-request") {
+        newStatus = 'Return Rejected';
+        toastTitle = 'Return Request Rejected';
+        userNotificationTitle = 'Return Request Rejected';
+        userNotificationDescription = `Your return request for order #${orderId} has been rejected.`;
+        userNotificationIcon = 'XCircle';
+    } else if (action === "confirm-collection") {
+        newStatus = 'Order Returned Successfully';
+        toastTitle = 'Return Collected';
+        userNotificationTitle = 'Return Collected';
+        userNotificationDescription = `The returned item(s) for order #${orderId} have been collected.`;
+        userNotificationIcon = 'PackageCheck';
+    }
+
+    if (!newStatus) return;
+
     const orderInStaticList = adminOrders.find(o => o.id === orderId);
     if(orderInStaticList) {
         orderInStaticList.status = newStatus;
@@ -54,28 +80,30 @@ export default function AdminReturnOrdersPage() {
     addNotification({
         id: Date.now(),
         type: 'user',
-        icon: action === 'accept' ? 'CheckCircle' : 'XCircle',
-        title: `Return ${action === 'accept' ? 'Accepted' : 'Rejected'}`,
-        description: `Your return request for order #${orderId} has been ${action === 'accept' ? 'accepted' : 'rejected'}.`,
+        icon: userNotificationIcon,
+        title: userNotificationTitle,
+        description: userNotificationDescription,
         time: 'Just now',
         read: false,
     });
     
     toast({
-      title: `Return Request ${action === 'accept' ? 'Accepted' : 'Rejected'}`,
+      title: toastTitle,
       description: `Order #${orderId} has been updated.`
     });
   };
-
+  
   const getBadgeVariant = (status: OrderStatus) => {
     switch (status) {
-      case 'Returned':
-        return 'default'; // Using green-like color
+      case 'Order Returned Successfully':
+        return 'default';
       case 'Return Rejected':
         return 'destructive';
+      case 'Return Request Accepted':
+          return 'secondary';
       case 'Return Requested':
       default:
-        return 'secondary'; // Using a neutral/yellow-ish color for pending
+        return 'outline';
     }
   };
 
@@ -84,6 +112,17 @@ export default function AdminReturnOrdersPage() {
       order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getStatusIcon = (status: OrderStatus) => {
+    switch(status) {
+        case 'Return Requested': return <HelpCircle className="h-5 w-5 text-amber-500" />;
+        case 'Return Request Accepted': return <CheckCircle className="h-5 w-5 text-blue-500" />;
+        case 'Order Returned Successfully': return <PackageCheck className="h-5 w-5 text-green-500" />;
+        case 'Return Rejected': return <XCircle className="h-5 w-5 text-red-500" />;
+        default: return <HelpCircle className="h-5 w-5 text-muted-foreground" />;
+    }
+  }
+
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -123,6 +162,7 @@ export default function AdminReturnOrdersPage() {
                     <CollapsibleTrigger asChild>
                         <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors">
                             <div className="flex items-center gap-3">
+                               {getStatusIcon(order.status)}
                                <div>
                                 <p className="font-mono text-sm font-semibold">{order.id}</p>
                                 <p className="text-xs text-muted-foreground">{format(new Date(order.date), 'dd/MM/yyyy')}</p>
@@ -132,7 +172,7 @@ export default function AdminReturnOrdersPage() {
                                <p className="font-semibold text-sm">{order.customer.name}</p>
                             </div>
                             <div className="flex items-center gap-4">
-                                <Badge variant={getBadgeVariant(order.status)} className="w-32 justify-center">{order.status}</Badge>
+                                <Badge variant={getBadgeVariant(order.status)} className="w-48 justify-center text-center">{order.status}</Badge>
                                 <p className="font-bold hidden sm:block">₹{order.total.toFixed(2)}</p>
                                  {openOrderId === order.id ? (
                                   <ChevronUp className="h-4 w-4 text-muted-foreground" />
@@ -172,22 +212,32 @@ export default function AdminReturnOrdersPage() {
                             </div>
                             <div>
                                  <h4 className="font-semibold mb-4">
-                                    {order.status === 'Return Requested' ? 'Actions' : 'Status'}
+                                    Return Actions
                                  </h4>
-                                 {order.status === 'Return Requested' ? (
+                                 {order.status === 'Return Requested' && (
                                     <div className="space-y-2">
-                                        <Button className="w-full" onClick={() => handleReturnAction(order.id, 'accept')}>
-                                            <CheckCircle className="mr-2 h-4 w-4" /> Accept Return
+                                        <p className="text-sm text-muted-foreground mb-2">User has requested a return. Please review and respond.</p>
+                                        <Button className="w-full" onClick={() => handleReturnAction(order.id, 'accept-request')}>
+                                            <CheckCircle className="mr-2 h-4 w-4" /> Accept Request
                                         </Button>
-                                        <Button className="w-full" variant="destructive" onClick={() => handleReturnAction(order.id, 'reject')}>
-                                            <XCircle className="mr-2 h-4 w-4" /> Reject Return
+                                        <Button className="w-full" variant="destructive" onClick={() => handleReturnAction(order.id, 'reject-request')}>
+                                            <XCircle className="mr-2 h-4 w-4" /> Reject Request
                                         </Button>
                                     </div>
-                                 ) : (
+                                 )}
+                                 {order.status === 'Return Request Accepted' && (
+                                    <div className="space-y-2">
+                                        <p className="text-sm text-muted-foreground mb-2">Return request accepted. Awaiting item collection.</p>
+                                        <Button className="w-full" onClick={() => handleReturnAction(order.id, 'confirm-collection')}>
+                                            <PackageCheck className="mr-2 h-4 w-4" /> Confirm Collection
+                                        </Button>
+                                    </div>
+                                 )}
+                                 {(order.status === 'Order Returned Successfully' || order.status === 'Return Rejected') && (
                                     <div className="flex items-center gap-2 rounded-md border p-3 bg-background">
-                                        {order.status === 'Returned' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                                        {order.status === 'Order Returned Successfully' && <CheckCircle className="h-5 w-5 text-green-600" />}
                                         {order.status === 'Return Rejected' && <XCircle className="h-5 w-5 text-destructive" />}
-                                        <p className="font-semibold">Return {order.status}</p>
+                                        <p className="font-semibold">{order.status}</p>
                                     </div>
                                  )}
                                  <Separator className="my-6"/>
@@ -215,5 +265,3 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
-
-    
