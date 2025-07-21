@@ -21,7 +21,7 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, RotateCcw } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useStore, OrderStatus } from "@/hooks/use-store";
+import { useStore, OrderStatus, UserOrder } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
 import type { AdminOrder } from "@/lib/admin-data";
@@ -30,12 +30,13 @@ import { adminOrders } from "@/lib/admin-data";
 export default function AdminReturnOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const { updateOrderStatus, addNotification } = useStore();
+  const { orders, updateOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
   
-  // Now includes all return-related statuses
-  const returnOrders = adminOrders.filter(o => ['Return Requested', 'Returned', 'Return Rejected'].includes(o.status));
-
+  // Use live orders from the store and find the associated admin data
+  const returnOrders: AdminOrder[] = adminOrders.filter(o => 
+    ['Return Requested', 'Returned', 'Return Rejected'].includes(o.status)
+  );
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
@@ -214,3 +215,5 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
+
+    
