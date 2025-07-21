@@ -27,6 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 type OrderStatus = "Pending" | "Shipped" | "Delivered" | "Cancelled";
 
@@ -43,6 +44,11 @@ export default function AdminOrdersPage() {
     setOrders(orders.map(order => 
       order.id === orderId ? { ...order, status: newStatus } : order
     ));
+    // Also update the static list so changes persist during session
+    const orderInStaticList = adminOrders.find(o => o.id === orderId);
+    if(orderInStaticList) {
+        orderInStaticList.status = newStatus;
+    }
   };
 
   const filteredOrders = orders.filter(
@@ -177,7 +183,7 @@ export default function AdminOrdersPage() {
                                 <p>Payment Method: <span className="font-semibold text-foreground">{order.paymentMethod}</span></p>
                              </div>
                              <Separator className="my-6"/>
-                             <h4 className="font-semibold mb-4">Actions</h4>
+                             <h4 className="font-semibold mb-4">Update Status</h4>
                              <Select value={order.status} onValueChange={(value: OrderStatus) => handleStatusChange(order.id, value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Change status"/>
@@ -201,12 +207,3 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
-
-// Minimal components for the table to avoid creating separate files for this one-off case
-const Table: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="w-full text-sm">{children}</div>;
-const TableHeader: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="border-b">{children}</div>;
-const TableBody: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="divide-y divide-border">{children}</div>;
-const TableRow: React.FC<{ children: React.ReactNode }> = ({ children }) => <div className="flex items-center">{children}</div>;
-const TableHead: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => <div className={`p-2 flex-1 font-semibold text-muted-foreground ${className}`}>{children}</div>;
-const TableCell: React.FC<{ children: React.ReactNode; className?: string }> = ({ children, className }) => <div className={`p-2 flex-1 ${className}`}>{children}</div>;
-
