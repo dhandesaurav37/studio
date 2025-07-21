@@ -1,13 +1,14 @@
 
 "use client";
 
-import { Bell, CheckCircle, Package, Tag, Truck, XCircle } from "lucide-react";
+import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/hooks/use-store";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
+import type { OrderStatus } from "@/hooks/use-store";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -31,7 +32,7 @@ export default function NotificationsPage() {
   ) => {
     const order = orders.find((o) => o.id === orderId);
     if (order) {
-      const newStatus = action === "accept" ? "Shipped" : "Cancelled";
+      const newStatus: OrderStatus = action === "accept" ? "Shipped" : "Cancelled";
       
       // Update the user's order status in the global state
       updateOrderStatus(orderId, newStatus);
@@ -40,7 +41,7 @@ export default function NotificationsPage() {
       addNotification({
         id: Date.now(),
         type: 'user',
-        icon: action === 'accept' ? 'Truck' : 'XCircle',
+        icon: action === 'accept' ? 'Truck' : 'XCircleIcon',
         title: `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`,
         description: `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`,
         time: 'Just now',
@@ -61,7 +62,8 @@ export default function NotificationsPage() {
       case "Truck": return <Truck className="h-5 w-5" />;
       case "Bell": return <Bell className="h-5 w-5" />;
       case "Package": return <Package className="h-5 w-5" />;
-      case "XCircle": return <XCircle className="h-5 w-5" />;
+      case "XCircleIcon": return <XCircleIcon className="h-5 w-5" />;
+      case "CheckCircle": return <CheckCircle className="h-5 w-5" />;
       default: return <Bell className="h-5 w-5" />;
     }
   }
@@ -109,7 +111,7 @@ export default function NotificationsPage() {
                             Accept
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification.id, notification.orderId!, 'reject')}>
-                            <XCircle className="mr-2 h-4 w-4" />
+                            <XCircleIcon className="mr-2 h-4 w-4" />
                             Reject
                         </Button>
                      </div>

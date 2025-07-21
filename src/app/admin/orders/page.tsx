@@ -18,7 +18,7 @@ import {
 import { adminOrders, AdminOrder } from "@/lib/admin-data";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp, Search, XCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Search, CheckCircle, Truck, XCircle as XCircleIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -28,27 +28,74 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
-type OrderStatus = "Pending" | "Shipped" | "Delivered" | "Cancelled";
+import { useStore, OrderStatus } from "@/hooks/use-store";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>(adminOrders);
+  const { updateOrderStatus, addNotification } = useStore();
+  const { toast } = useToast();
+
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   
   const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
+    // Update local admin page state
     setOrders(orders.map(order => 
       order.id === orderId ? { ...order, status: newStatus } : order
     ));
-    // Also update the static list so changes persist during session
+    
+    // Update the static list so changes persist during session
     const orderInStaticList = adminOrders.find(o => o.id === orderId);
     if(orderInStaticList) {
         orderInStaticList.status = newStatus;
     }
+
+    // Update global user state and send notification
+    updateOrderStatus(orderId, newStatus);
+
+    let notificationTitle = "";
+    let notificationDescription = "";
+    let notificationIcon = "Bell";
+
+    switch(newStatus) {
+      case "Shipped":
+        notificationTitle = "Order Shipped";
+        notificationDescription = `Your order #${orderId} is on its way.`;
+        notificationIcon = "Truck";
+        break;
+      case "Delivered":
+        notificationTitle = "Order Delivered";
+        notificationDescription = `Your order #${orderId} has been delivered. Enjoy!`;
+        notificationIcon = "CheckCircle";
+        break;
+      case "Cancelled":
+        notificationTitle = "Order Cancelled";
+        notificationDescription = `Your order #${orderId} has been cancelled.`;
+        notificationIcon = "XCircleIcon";
+        break;
+      default:
+        return; // Don't notify for "Pending"
+    }
+
+    addNotification({
+        id: Date.now(),
+        type: 'user',
+        icon: notificationIcon,
+        title: notificationTitle,
+        description: notificationDescription,
+        time: 'Just now',
+        read: false,
+    });
+    
+    toast({
+      title: "Order Updated",
+      description: `Order #${orderId} has been marked as ${newStatus}.`
+    })
   };
 
   const filteredOrders = orders.filter(
@@ -123,7 +170,7 @@ export default function AdminOrdersPage() {
                   <CollapsibleTrigger asChild>
                      <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50 transition-colors">
                         <div className="flex items-center gap-3">
-                           <XCircle className={`h-5 w-5 ${getStatusIconColor(order.status)}`}/>
+                           <CheckCircle className={`h-5 w-5 ${getStatusIconColor(order.status)}`}/>
                            <div>
                             <p className="font-mono text-sm font-semibold">{order.id}</p>
                             <p className="text-xs text-muted-foreground">{new Date(order.date).toLocaleDateString()}</p>
