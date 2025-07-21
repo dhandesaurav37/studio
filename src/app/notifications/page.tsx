@@ -13,7 +13,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead, addNotification } = useStore();
+  const { notifications, markAsRead, markAllAsRead, addNotification, updateOrderStatus } = useStore();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -32,9 +32,13 @@ export default function NotificationsPage() {
   ) => {
     const order = adminOrders.find((o) => o.id === orderId);
     if (order) {
+      const newStatus = action === "accept" ? "Shipped" : "Cancelled";
       // In a real app, you'd update this in the database.
       // For now, we'll update the mock data.
-      order.status = action === "accept" ? "Shipped" : "Cancelled";
+      order.status = newStatus;
+      
+      // Update the user's order status in the global state
+      updateOrderStatus(orderId, newStatus);
       
       // Add a notification for the user
       addNotification({

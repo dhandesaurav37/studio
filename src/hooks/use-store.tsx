@@ -45,11 +45,13 @@ export interface OrderItem {
     product?: Product;
 }
 
+export type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+
 export interface UserOrder {
     id: string;
     date: string;
     deliveryDate: string | null;
-    status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+    status: OrderStatus;
     total: number;
     items: OrderItem[];
 }
@@ -148,6 +150,7 @@ interface StoreState {
   markAsRead: (notificationId: number) => void;
   markAllAsRead: (type: 'user' | 'admin') => void;
   addOrder: (order: UserOrder) => void;
+  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
 }
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
@@ -296,6 +299,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const addOrder = (order: UserOrder) => {
     setOrders(prevOrders => [order, ...prevOrders]);
   };
+  
+  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+    setOrders(prevOrders =>
+      prevOrders.map(o => (o.id === orderId ? { ...o, status } : o))
+    );
+  };
 
   const value = {
     products,
@@ -319,6 +328,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     markAsRead,
     markAllAsRead,
     addOrder,
+    updateOrderStatus,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

@@ -22,6 +22,7 @@ import { useStore } from "@/hooks/use-store";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import type { OrderStatus } from "@/hooks/use-store";
 
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
@@ -29,6 +30,20 @@ export default function OrdersPage() {
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
+  };
+
+  const getBadgeVariant = (status: OrderStatus) => {
+    switch (status) {
+      case "Delivered":
+        return "default";
+      case "Shipped":
+        return "secondary";
+      case "Cancelled":
+        return "destructive";
+      case "Pending":
+      default:
+        return "outline";
+    }
   };
 
   const hydratedOrders = orders.map(order => ({
@@ -67,15 +82,7 @@ export default function OrdersPage() {
                   </div>
                   <div className="flex items-center gap-4">
                     <Badge
-                      variant={
-                        order.status === "Delivered"
-                          ? "default"
-                          : order.status === "Cancelled"
-                          ? "destructive"
-                          : order.status === "Pending"
-                          ? "outline"
-                          : "secondary"
-                      }
+                      variant={getBadgeVariant(order.status)}
                       className="self-start sm:self-center"
                     >
                       {order.status}
