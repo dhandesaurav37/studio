@@ -131,6 +131,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         productsData.push({ id: doc.id, ...doc.data() } as Product);
       });
       setProducts(productsData);
+    }, (error) => {
+      console.error("Firestore snapshot error:", error);
     });
 
     // Load other state from localStorage
