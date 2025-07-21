@@ -26,7 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { ProductCard } from "@/components/product-card";
-import { useStore } from "@/hooks/use-store";
+import { useStore, UserOrder } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { auth } from "@/lib/firebase";
@@ -60,6 +60,7 @@ export default function ProductDetailClientPage({
     removeFromWishlist,
     profile,
     addNotification,
+    addOrder,
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -160,9 +161,19 @@ export default function ProductDetailClientPage({
         phone: profile.mobile
       };
 
-      const newOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
-      const newOrder = {
-        id: newOrderId,
+      const newAdminOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
+      
+      const newUserOrder: UserOrder = {
+        id: newAdminOrderId,
+        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
+        deliveryDate: null,
+        status: "Pending",
+        total: product.price * quantity,
+        items: [{ productId: product.id, quantity, size: selectedSize }]
+      }
+      
+      const newAdminOrder = {
+        id: newAdminOrderId,
         date: new Date().toISOString().split('T')[0],
         customer: {
           name: user.displayName || 'N/A',
@@ -175,17 +186,18 @@ export default function ProductDetailClientPage({
         items: [{ product, quantity, size: selectedSize }],
       };
 
-      adminOrders.unshift(newOrder);
+      adminOrders.unshift(newAdminOrder);
+      addOrder(newUserOrder);
 
       addNotification({
         id: Date.now(),
         type: 'admin',
         icon: 'Package',
         title: 'New COD Order Received',
-        description: `Order #${newOrderId} for ${product.name} has been placed by ${user.displayName || user.email}.`,
+        description: `Order #${newAdminOrderId} for ${product.name} has been placed by ${user.displayName || user.email}.`,
         time: 'Just now',
         read: false,
-        orderId: newOrderId,
+        orderId: newAdminOrderId,
       });
 
       setIsPurchaseDialogOpen(false);

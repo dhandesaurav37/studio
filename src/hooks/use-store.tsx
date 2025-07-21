@@ -38,6 +38,22 @@ export interface Notification {
   orderId?: string;
 }
 
+export interface OrderItem {
+    productId: string;
+    quantity: number;
+    size: string;
+    product?: Product;
+}
+
+export interface UserOrder {
+    id: string;
+    date: string;
+    deliveryDate: string | null;
+    status: 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+    total: number;
+    items: OrderItem[];
+}
+
 const initialProfile: UserProfile = {
   name: "",
   email: "",
@@ -80,6 +96,36 @@ const initialNotifications: Notification[] = [
   },
 ];
 
+const initialOrders: UserOrder[] = [
+  {
+    id: "WW-84521",
+    date: "June 15, 2024",
+    deliveryDate: "June 20, 2024",
+    status: "Delivered",
+    total: 18498,
+    items: [
+      { productId: "3", quantity: 1, size: "L" },
+      { productId: "2", quantity: 1, size: "M" },
+    ],
+  },
+  {
+    id: "WW-84199",
+    date: "May 28, 2024",
+    deliveryDate: "June 2, 2024",
+    status: "Delivered",
+    total: 5499,
+    items: [{ productId: "2", quantity: 1, size: "L" }],
+  },
+  {
+    id: "WW-83712",
+    date: "April 5, 2024",
+    deliveryDate: null,
+    status: "Cancelled",
+    total: 12999,
+    items: [{ productId: "3", quantity: 1, size: "XL" }],
+  },
+];
+
 interface StoreState {
   products: Product[];
   shopProducts: Product[];
@@ -88,6 +134,7 @@ interface StoreState {
   wishlist: WishlistItem[];
   profile: UserProfile;
   notifications: Notification[];
+  orders: UserOrder[];
   addProduct: (product: Product) => void;
   getProductById: (id: string) => Product | undefined;
   addToCart: (item: CartItem) => void;
@@ -100,6 +147,7 @@ interface StoreState {
   addNotification: (notification: Notification) => void;
   markAsRead: (notificationId: number) => void;
   markAllAsRead: (type: 'user' | 'admin') => void;
+  addOrder: (order: UserOrder) => void;
 }
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
@@ -119,6 +167,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [orders, setOrders] = useState<UserOrder[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -145,6 +194,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
+    setOrders(safelyParseJSON(localStorage.getItem('orders'), initialOrders));
 
     return () => unsubscribe();
   }, []);
@@ -167,6 +217,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isMounted) localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications, isMounted]);
+
+   useEffect(() => {
+    if (isMounted) localStorage.setItem('orders', JSON.stringify(orders));
+  }, [orders, isMounted]);
   
   const addProduct = (product: Product) => {
     // This is now handled by Realtime DB, but we can keep it for optimistic UI updates if needed
@@ -238,6 +292,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       prev.map(n => (n.type === type ? { ...n, read: true } : n))
     );
   }
+  
+  const addOrder = (order: UserOrder) => {
+    setOrders(prevOrders => [order, ...prevOrders]);
+  };
 
   const value = {
     products,
@@ -247,6 +305,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     wishlist,
     profile,
     notifications,
+    orders,
     addProduct,
     getProductById,
     addToCart,
@@ -258,7 +317,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setProfile,
     addNotification,
     markAsRead,
-    markAllAsRead
+    markAllAsRead,
+    addOrder,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

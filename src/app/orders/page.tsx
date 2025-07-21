@@ -23,45 +23,15 @@ import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp } from "lucide-react";
 
-const initialOrders = [
-  {
-    id: "WW-84521",
-    date: "June 15, 2024",
-    deliveryDate: "June 20, 2024",
-    status: "Delivered",
-    total: 18498,
-    items: [
-      { productId: "3", quantity: 1, size: "L" },
-      { productId: "2", quantity: 1, size: "M" },
-    ],
-  },
-  {
-    id: "WW-84199",
-    date: "May 28, 2024",
-    deliveryDate: "June 2, 2024",
-    status: "Delivered",
-    total: 5499,
-    items: [{ productId: "2", quantity: 1, size: "L" }],
-  },
-  {
-    id: "WW-83712",
-    date: "April 5, 2024",
-    deliveryDate: null,
-    status: "Cancelled",
-    total: 12999,
-    items: [{ productId: "3", quantity: 1, size: "XL" }],
-  },
-];
-
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
-  const { getProductById } = useStore();
+  const { orders, getProductById } = useStore();
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
 
-  const hydratedOrders = initialOrders.map(order => ({
+  const hydratedOrders = orders.map(order => ({
     ...order,
     items: order.items.map(item => {
         const product = getProductById(item.productId);
@@ -102,6 +72,8 @@ export default function OrdersPage() {
                           ? "default"
                           : order.status === "Cancelled"
                           ? "destructive"
+                          : order.status === "Pending"
+                          ? "outline"
                           : "secondary"
                       }
                       className="self-start sm:self-center"
@@ -196,5 +168,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-
-    
