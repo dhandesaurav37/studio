@@ -21,16 +21,35 @@ import {
 import { useStore } from "@/hooks/use-store";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, XCircle } from "lucide-react";
 import type { OrderStatus } from "@/hooks/use-store";
+import { useToast } from "@/hooks/use-toast";
 
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
-  const { orders, getProductById } = useStore();
+  const { orders, getProductById, updateOrderStatus, addNotification } = useStore();
+  const { toast } = useToast();
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
+  
+  const handleCancelOrder = (orderId: string) => {
+    updateOrderStatus(orderId, "Cancelled");
+    addNotification({
+        id: Date.now(),
+        type: 'admin',
+        icon: 'XCircleIcon',
+        title: 'Order Cancelled by User',
+        description: `User has cancelled order #${orderId}.`,
+        time: 'Just now',
+        read: false,
+    });
+    toast({
+        title: "Order Cancelled",
+        description: "Your order has been successfully cancelled.",
+    })
+  }
 
   const getBadgeVariant = (status: OrderStatus) => {
     switch (status) {
@@ -153,8 +172,14 @@ export default function OrdersPage() {
                        </div>
                     )}
                   </CardContent>
-                  <CardFooter>
+                  <CardFooter className="flex justify-between">
                     <Button variant="secondary" size="sm">Reorder</Button>
+                    {order.status === 'Pending' && (
+                        <Button variant="destructive" size="sm" onClick={() => handleCancelOrder(order.id)}>
+                            <XCircle className="mr-2 h-4 w-4"/>
+                            Cancel Order
+                        </Button>
+                    )}
                   </CardFooter>
                 </CollapsibleContent>
               </Card>
