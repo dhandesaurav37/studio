@@ -45,8 +45,8 @@ import { useState, useMemo } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/services/storage";
-import { collection, addDoc, doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { getDatabase, ref, push, set, update } from "firebase/database";
+import { rtdb } from "@/lib/firebase";
 
 const staticCategories = [
   "Shirts",
@@ -134,7 +134,10 @@ export default function AdminDashboardPage() {
             dataAiHint: 'new product'
         };
 
-        await addDoc(collection(db, "products"), newProductData);
+        const productsRef = ref(rtdb, 'products');
+        const newProductRef = push(productsRef);
+        await set(newProductRef, newProductData);
+
 
         toast({
             title: "Product Added!",
@@ -157,8 +160,8 @@ export default function AdminDashboardPage() {
     if (!selectedProduct || !editedProductData) return;
     setIsSaving(true);
     try {
-      const productRef = doc(db, "products", selectedProduct.id);
-      await updateDoc(productRef, editedProductData);
+      const productRef = ref(rtdb, `products/${selectedProduct.id}`);
+      await update(productRef, editedProductData);
       toast({
         title: "Success!",
         description: `"${editedProductData.name}" has been updated.`

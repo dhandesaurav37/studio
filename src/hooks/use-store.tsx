@@ -3,8 +3,8 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { Product } from '@/lib/data';
-import { db } from '@/lib/firebase';
-import { collection, onSnapshot, query, DocumentData } from 'firebase/firestore';
+import { rtdb } from '@/lib/firebase';
+import { ref, onValue } from 'firebase/database';
 
 
 export interface CartItem {
@@ -123,16 +123,21 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setIsMounted(true);
-    // Fetch products from Firestore
-    const q = query(collection(db, 'products'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const productsData: Product[] = [];
-      querySnapshot.forEach((doc: DocumentData) => {
-        productsData.push({ id: doc.id, ...doc.data() } as Product);
-      });
-      setProducts(productsData);
+    // Fetch products from Realtime Database
+    const productsRef = ref(rtdb, 'products');
+    const unsubscribe = onValue(productsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const productsData: Product[] = Object.keys(data).map(key => ({
+            id: key,
+            ...data[key]
+        }));
+        setProducts(productsData);
+      } else {
+        setProducts([]);
+      }
     }, (error) => {
-      console.error("Firestore snapshot error:", error);
+      console.error("Realtime Database snapshot error:", error);
     });
 
     // Load other state from localStorage
@@ -164,8 +169,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }, [notifications, isMounted]);
   
   const addProduct = (product: Product) => {
-    // This is now handled by Firestore, but we can keep it for optimistic UI updates if needed
-    // Or just let Firestore's onSnapshot handle it. For simplicity, we'll let onSnapshot do the work.
+    // This is now handled by Realtime DB, but we can keep it for optimistic UI updates if needed
   };
   
   const getProductById = useCallback((id: string) => {

@@ -13,6 +13,8 @@ export interface Product {
   dataAiHint: string;
 }
 
+// This data is now only for initial seeding or as a reference.
+// The primary data source is Firebase Realtime Database.
 export const initialProducts: Product[] = [
   {
     id: "1",
@@ -401,5 +403,3 @@ export const initialProducts: Product[] = [
     dataAiHint: "polo shirt"
   }
 ];
-
-    
