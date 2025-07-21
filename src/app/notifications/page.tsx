@@ -1,14 +1,14 @@
 
 "use client";
 
-import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon } from "lucide-react";
+import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/hooks/use-store";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
-import type { OrderStatus } from "@/hooks/use-store";
+import type { OrderStatus, Notification as NotificationType } from "@/hooks/use-store";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -26,29 +26,46 @@ export default function NotificationsPage() {
   }, []);
 
   const handleOrderAction = (
-    notificationId: number,
-    orderId: string,
+    notification: NotificationType,
     action: "accept" | "reject"
   ) => {
-    const order = orders.find((o) => o.id === orderId);
-    if (order) {
-      const newStatus: OrderStatus = action === "accept" ? "Shipped" : "Cancelled";
-      
-      // Update the user's order status in the global state
-      updateOrderStatus(orderId, newStatus);
-      
-      // Add a notification for the user
-      addNotification({
-        id: Date.now(),
-        type: 'user',
-        icon: action === 'accept' ? 'Truck' : 'XCircleIcon',
-        title: `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`,
-        description: `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`,
-        time: 'Just now',
-        read: false,
-      });
+    const orderId = notification.orderId;
+    if (!orderId) return;
+
+    let newStatus: OrderStatus;
+    let userNotificationTitle: string;
+    let userNotificationDescription: string;
+    let userNotificationIcon: string;
+
+    if (notification.title.includes('Return Requested')) {
+        // Handling a return request
+        newStatus = action === 'accept' ? 'Returned' : 'Return Rejected';
+        userNotificationTitle = `Return ${action === 'accept' ? 'Accepted' : 'Rejected'}`;
+        userNotificationDescription = `Your return request for order #${orderId} has been ${action === 'accept' ? 'accepted' : 'rejected'}.`;
+        userNotificationIcon = action === 'accept' ? 'CheckCircle' : 'XCircleIcon';
+    } else {
+        // Handling a new order
+        newStatus = action === 'accept' ? 'Shipped' : 'Cancelled';
+        userNotificationTitle = `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`;
+        userNotificationDescription = `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`;
+        userNotificationIcon = action === 'accept' ? 'Truck' : 'XCircleIcon';
     }
-    markAsRead(notificationId);
+
+    // Update the user's order status in the global state
+    updateOrderStatus(orderId, newStatus);
+    
+    // Add a notification for the user
+    addNotification({
+      id: Date.now(),
+      type: 'user',
+      icon: userNotificationIcon,
+      title: userNotificationTitle,
+      description: userNotificationDescription,
+      time: 'Just now',
+      read: false,
+    });
+    
+    markAsRead(notification.id);
   };
   
   const userNotifications = notifications.filter(n => n.type !== 'admin');
@@ -64,6 +81,7 @@ export default function NotificationsPage() {
       case "Package": return <Package className="h-5 w-5" />;
       case "XCircleIcon": return <XCircleIcon className="h-5 w-5" />;
       case "CheckCircle": return <CheckCircle className="h-5 w-5" />;
+      case "Undo2": return <Undo2 className="h-5 w-5" />;
       default: return <Bell className="h-5 w-5" />;
     }
   }
@@ -106,11 +124,11 @@ export default function NotificationsPage() {
                   </p>
                   {notification.type === 'admin' && !notification.read && notification.orderId && (
                      <div className="flex gap-2 mt-4">
-                        <Button size="sm" onClick={() => handleOrderAction(notification.id, notification.orderId!, 'accept')}>
+                        <Button size="sm" onClick={() => handleOrderAction(notification, 'accept')}>
                             <CheckCircle className="mr-2 h-4 w-4" />
                             Accept
                         </Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification.id, notification.orderId!, 'reject')}>
+                        <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification, 'reject')}>
                             <XCircleIcon className="mr-2 h-4 w-4" />
                             Reject
                         </Button>
