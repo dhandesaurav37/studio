@@ -18,17 +18,19 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useStore } from "@/hooks/use-store";
+import { useStore, UserOrder } from "@/hooks/use-store";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp, XCircle } from "lucide-react";
 import type { OrderStatus } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from "next/navigation";
 
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
-  const { orders, getProductById, updateOrderStatus, addNotification } = useStore();
+  const { orders, getProductById, updateOrderStatus, addNotification, addToCart } = useStore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
@@ -50,6 +52,20 @@ export default function OrdersPage() {
         description: "Your order has been successfully cancelled.",
     })
   }
+
+  const handleReorder = (order: UserOrder) => {
+    order.items.forEach(item => {
+      const product = getProductById(item.productId);
+      if (product) {
+        addToCart({ product, quantity: item.quantity, size: item.size });
+      }
+    });
+    toast({
+      title: "Items Added to Cart",
+      description: "The items from your previous order have been added to your cart.",
+    });
+    router.push('/cart');
+  };
 
   const getBadgeVariant = (status: OrderStatus) => {
     switch (status) {
@@ -173,7 +189,7 @@ export default function OrdersPage() {
                     )}
                   </CardContent>
                   <CardFooter className="flex justify-between">
-                    <Button variant="secondary" size="sm">Reorder</Button>
+                    <Button variant="secondary" size="sm" onClick={() => handleReorder(order)}>Reorder</Button>
                     {order.status === 'Pending' && (
                         <Button variant="destructive" size="sm" onClick={() => handleCancelOrder(order.id)}>
                             <XCircle className="mr-2 h-4 w-4"/>
