@@ -82,7 +82,7 @@ export default function NotificationsPage() {
               <li
                 key={notification.id}
                 className={`flex flex-col sm:flex-row items-start gap-4 p-4 sm:p-6 ${
-                  !notification.read ? "bg-accent/10" : ""
+                  !notification.read ? "bg-card" : ""
                 }`}
               >
                 <div
