@@ -45,7 +45,7 @@ export default function CartPage() {
                 <ul className="divide-y">
                   {cart.map((item) => (
                     <li
-                      key={item.product.id}
+                      key={`${item.product.id}-${item.size}`}
                       className="flex items-center p-4 sm:p-6 gap-4 sm:gap-6"
                     >
                       <div className="relative h-24 w-24 sm:h-32 sm:w-32 rounded-md overflow-hidden flex-shrink-0">
@@ -152,8 +152,8 @@ export default function CartPage() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button size="lg" className="w-full">
-                  Proceed to Checkout
+                <Button size="lg" className="w-full" asChild>
+                  <Link href="/checkout">Proceed to Checkout</Link>
                 </Button>
               </CardFooter>
             </Card>
