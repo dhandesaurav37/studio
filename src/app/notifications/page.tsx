@@ -13,7 +13,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead } = useStore();
+  const { notifications, markAsRead, markAllAsRead, addNotification } = useStore();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -35,6 +35,17 @@ export default function NotificationsPage() {
       // In a real app, you'd update this in the database.
       // For now, we'll update the mock data.
       order.status = action === "accept" ? "Shipped" : "Cancelled";
+      
+      // Add a notification for the user
+      addNotification({
+        id: Date.now(),
+        type: 'user',
+        icon: action === 'accept' ? 'Truck' : 'XCircle',
+        title: `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`,
+        description: `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`,
+        time: 'Just now',
+        read: false,
+      });
     }
     markAsRead(notificationId);
   };
@@ -50,6 +61,7 @@ export default function NotificationsPage() {
       case "Truck": return <Truck className="h-5 w-5" />;
       case "Bell": return <Bell className="h-5 w-5" />;
       case "Package": return <Package className="h-5 w-5" />;
+      case "XCircle": return <XCircle className="h-5 w-5" />;
       default: return <Bell className="h-5 w-5" />;
     }
   }
