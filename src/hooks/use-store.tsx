@@ -45,7 +45,7 @@ export interface OrderItem {
     product?: Product;
 }
 
-export type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type OrderStatus = 'Pending' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Return Requested' | 'Returned' | 'Return Rejected';
 
 export interface UserOrder {
     id: string;
@@ -102,7 +102,7 @@ const initialOrders: UserOrder[] = [
   {
     id: "WW-84521",
     date: "June 15, 2024",
-    deliveryDate: "June 20, 2024",
+    deliveryDate: "2024-06-20T12:00:00.000Z",
     status: "Delivered",
     total: 18498,
     items: [
@@ -113,7 +113,7 @@ const initialOrders: UserOrder[] = [
   {
     id: "WW-84199",
     date: "May 28, 2024",
-    deliveryDate: "June 2, 2024",
+    deliveryDate: "2024-06-02T12:00:00.000Z",
     status: "Delivered",
     total: 5499,
     items: [{ productId: "2", quantity: 1, size: "L" }],
@@ -150,7 +150,7 @@ interface StoreState {
   markAsRead: (notificationId: number) => void;
   markAllAsRead: (type: 'user' | 'admin') => void;
   addOrder: (order: UserOrder) => void;
-  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+  updateOrderStatus: (orderId: string, status: OrderStatus, deliveryDate?: string) => void;
 }
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
@@ -170,7 +170,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [orders, setOrders] = useState<UserOrder[]>([]);
+  const [orders, setOrdersState] = useState<UserOrder[]>([]);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -197,7 +197,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
-    setOrders(safelyParseJSON(localStorage.getItem('orders'), initialOrders));
+    setOrdersState(safelyParseJSON(localStorage.getItem('orders'), initialOrders));
 
     return () => unsubscribe();
   }, []);
@@ -297,12 +297,12 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const addOrder = (order: UserOrder) => {
-    setOrders(prevOrders => [order, ...prevOrders]);
+    setOrdersState(prevOrders => [order, ...prevOrders]);
   };
   
-  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
-    setOrders(prevOrders =>
-      prevOrders.map(o => (o.id === orderId ? { ...o, status } : o))
+  const updateOrderStatus = (orderId: string, status: OrderStatus, deliveryDate?: string) => {
+    setOrdersState(prevOrders =>
+      prevOrders.map(o => (o.id === orderId ? { ...o, status, deliveryDate: deliveryDate !== undefined ? deliveryDate : o.deliveryDate } : o))
     );
   };
 

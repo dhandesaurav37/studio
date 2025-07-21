@@ -55,10 +55,13 @@ export default function AdminOrdersPage() {
     const orderInStaticList = adminOrders.find(o => o.id === orderId);
     if(orderInStaticList) {
         orderInStaticList.status = newStatus;
+        if (newStatus === 'Delivered') {
+          orderInStaticList.deliveryDate = new Date().toISOString();
+        }
     }
 
     // Update global user state and send notification
-    updateOrderStatus(orderId, newStatus);
+    updateOrderStatus(orderId, newStatus, newStatus === 'Delivered' ? new Date().toISOString() : undefined);
 
     let notificationTitle = "";
     let notificationDescription = "";
@@ -81,7 +84,7 @@ export default function AdminOrdersPage() {
         notificationIcon = "XCircleIcon";
         break;
       default:
-        return; // Don't notify for "Pending"
+        return; // Don't notify for "Pending" or returns
     }
 
     addNotification({
@@ -102,9 +105,10 @@ export default function AdminOrdersPage() {
 
   const filteredOrders = orders.filter(
     (order) =>
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.email.toLowerCase().includes(searchTerm.toLowerCase())
+      order.customer.email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+      !['Return Requested', 'Returned', 'Return Rejected'].includes(order.status)
   );
 
   const getStatusBadgeVariant = (status: OrderStatus) => {
@@ -115,6 +119,10 @@ export default function AdminOrdersPage() {
         return "secondary";
       case "Cancelled":
         return "destructive";
+      case 'Return Requested':
+      case 'Returned':
+      case 'Return Rejected':
+        return 'destructive';
       case "Pending":
       default:
         return "outline";

@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard, Truck } from "lucide-react";
+import { Heart, ShoppingBag, Menu, User as UserIcon, LayoutDashboard, Truck, Undo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -103,6 +103,7 @@ export function AppHeader() {
               <>
                 <DropdownMenuItem asChild><Link href="/admin/dashboard"><LayoutDashboard className="mr-2 h-4 w-4" />Dashboard</Link></DropdownMenuItem>
                 <DropdownMenuItem asChild><Link href="/admin/orders"><Truck className="mr-2 h-4 w-4" />Manage Orders</Link></DropdownMenuItem>
+                <DropdownMenuItem asChild><Link href="/admin/return-orders"><Undo2 className="mr-2 h-4 w-4" />Return Orders</Link></DropdownMenuItem>
               </>
             )}
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
@@ -137,6 +138,7 @@ export function AppHeader() {
             <>
               <Link href="/admin/dashboard" className="block py-2 font-medium text-foreground hover:text-destructive">Dashboard</Link>
               <Link href="/admin/orders" className="block py-2 font-medium text-foreground hover:text-destructive">Manage Orders</Link>
+              <Link href="/admin/return-orders" className="block py-2 font-medium text-foreground hover:text-destructive">Return Orders</Link>
             </>
           )}
           <Link href="/profile" className="block py-2 font-medium text-foreground hover:text-destructive">Profile</Link>

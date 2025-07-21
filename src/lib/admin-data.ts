@@ -1,5 +1,6 @@
 
 import { Product, initialProducts } from "./data";
+import type { OrderStatus } from "@/hooks/use-store";
 
 interface AdminOrderItem {
   product: Product;
@@ -10,6 +11,7 @@ interface AdminOrderItem {
 export interface AdminOrder {
   id: string;
   date: string;
+  deliveryDate?: string;
   customer: {
     name: string;
     email: string;
@@ -20,7 +22,7 @@ export interface AdminOrder {
     phone: string;
   };
   paymentMethod: string;
-  status: "Pending" | "Shipped" | "Delivered" | "Cancelled";
+  status: OrderStatus;
   total: number;
   items: AdminOrderItem[];
 }
@@ -59,6 +61,7 @@ export const adminOrders: AdminOrder[] = [
     },
     paymentMethod: "Credit Card",
     status: "Delivered",
+    deliveryDate: "2024-07-20T10:00:00.000Z",
     total: 18498.00,
     items: [
       { product: initialProducts[2], quantity: 1, size: "L" },
