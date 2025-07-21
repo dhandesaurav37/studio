@@ -32,6 +32,8 @@ export default function NotificationsPage() {
   ) => {
     const order = adminOrders.find((o) => o.id === orderId);
     if (order) {
+      // In a real app, you'd update this in the database.
+      // For now, we'll update the mock data.
       order.status = action === "accept" ? "Shipped" : "Cancelled";
     }
     markAsRead(notificationId);
