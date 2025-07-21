@@ -4,7 +4,6 @@
 import { Bell, CheckCircle, Package, Tag, Truck, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/hooks/use-store";
-import { adminOrders } from "@/lib/admin-data";
 import { auth } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
@@ -13,7 +12,7 @@ import { onAuthStateChanged } from "firebase/auth";
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead, addNotification, updateOrderStatus } = useStore();
+  const { notifications, markAsRead, markAllAsRead, addNotification, updateOrderStatus, orders } = useStore();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -30,12 +29,9 @@ export default function NotificationsPage() {
     orderId: string,
     action: "accept" | "reject"
   ) => {
-    const order = adminOrders.find((o) => o.id === orderId);
+    const order = orders.find((o) => o.id === orderId);
     if (order) {
       const newStatus = action === "accept" ? "Shipped" : "Cancelled";
-      // In a real app, you'd update this in the database.
-      // For now, we'll update the mock data.
-      order.status = newStatus;
       
       // Update the user's order status in the global state
       updateOrderStatus(orderId, newStatus);
