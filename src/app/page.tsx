@@ -48,6 +48,9 @@ export default function HomePage() {
     "Bags": { src: "https://placehold.co/600x400.png", hint: "canvas bag" },
     "Wallets": { src: "https://placehold.co/600x400.png", hint: "leather wallet" },
     "Shoes": { src: "https://placehold.co/600x400.png", hint: "leather shoes" },
+    "Pants": { src: "https://placehold.co/600x400.png", hint: "pants" },
+    "Trousers": { src: "https://placehold.co/600x400.png", hint: "trousers" },
+    "Socks": { src: "https://placehold.co/600x400.png", hint: "socks" },
   };
 
   const ProductCarousel = ({
