@@ -360,7 +360,7 @@ export default function ProductDetailClientPage({
     (addressOption === "default" && hasDefaultAddress) ||
     (addressOption === "new" && hasNewAddress);
   
-  const alphaSizes = product.sizes.filter(s => isNaN(parseInt(s)));
+  const alphaSizes = useMemo(() => product.sizes.filter(s => isNaN(parseInt(s))), [product.sizes]);
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
