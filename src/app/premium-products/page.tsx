@@ -212,7 +212,7 @@ export default function PremiumProductsPage() {
         </div>
       </div>
 
-      <main className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-center">
+      <main className="mt-12 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-center">
         {filteredProducts.length > 0 ? (
           <>
             {filteredProducts.map((product) => (
