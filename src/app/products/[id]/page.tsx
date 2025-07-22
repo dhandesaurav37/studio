@@ -30,9 +30,36 @@ export default function ProductDetailPage() {
     notFound();
   }
 
+  const getProductNameRoot = (name: string) => {
+    // Simple logic to get a "base" name, e.g., "Charcoal Crew-Neck Tee" -> "Crew-Neck Tee"
+    const commonWords = ["t-shirt", "tee", "shirt", "jeans", "sweater", "jacket", "pants", "overcoat", "loafers", "belt", "wallet", "bag"];
+    for (const word of commonWords) {
+        if (name.toLowerCase().includes(word)) {
+            return name.substring(name.toLowerCase().indexOf(word));
+        }
+    }
+    return name;
+  };
+
+  const productNameRoot = getProductNameRoot(product.name);
+
   const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 3);
+    .filter((p) => p.id !== product.id)
+    .sort((a, b) => {
+        const aIsSimilarName = getProductNameRoot(a.name) === productNameRoot;
+        const bIsSimilarName = getProductNameRoot(b.name) === productNameRoot;
+        const aIsSameCategory = a.category === product.category;
+        const bIsSameCategory = b.category === product.category;
+
+        if (aIsSimilarName && !bIsSimilarName) return -1;
+        if (!aIsSimilarName && bIsSimilarName) return 1;
+        if (aIsSameCategory && !bIsSameCategory) return -1;
+        if (!aIsSameCategory && bIsSameCategory) return 1;
+        
+        return 0; // Or other fallback sorting like rating
+    })
+    .slice(0, 4);
+
 
   return (
     <ProductDetailClientPage
