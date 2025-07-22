@@ -246,7 +246,7 @@ export default function ProductDetailClientPage({
     setIsPurchaseDialogOpen(true);
   };
 
-  const placeOrder = async (method: "Online" | "COD") => {
+  const placeOrder = async (method: "Online" | "COD", orderId?: string) => {
       if (!user || !selectedSize) return;
 
       const shippingAddress = addressOption === 'new' ? {
@@ -259,10 +259,12 @@ export default function ProductDetailClientPage({
         phone: profile.mobile
       };
 
-      const newAdminOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
+      const ordersRef = ref(rtdb, 'orders');
+      const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
+      const finalOrderId = newOrderRef.key!;
       
       const newUserOrder: UserOrder = {
-        id: newAdminOrderId,
+        id: finalOrderId,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
         deliveryDate: null,
         status: "Pending",
@@ -271,7 +273,7 @@ export default function ProductDetailClientPage({
       }
       
       const newAdminOrder = {
-        id: newAdminOrderId,
+        id: finalOrderId,
         date: new Date().toISOString().split('T')[0],
         customer: {
           name: user.displayName || 'N/A',
@@ -289,21 +291,18 @@ export default function ProductDetailClientPage({
       };
       
       try {
-        const ordersRef = ref(rtdb, 'orders');
-        const newOrderRef = push(ordersRef);
-        await set(newOrderRef, { ...newAdminOrder, id: newOrderRef.key });
-
-        addOrder({ ...newUserOrder, id: newOrderRef.key! });
+        await set(newOrderRef, newAdminOrder);
+        addOrder(newUserOrder);
 
         addNotification({
             id: Date.now(),
             type: 'admin',
             icon: 'Package',
             title: `New ${method} Order Received`,
-            description: `Order #${newAdminOrderId} for ${product.name} has been placed.`,
+            description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${product.name} has been placed.`,
             time: 'Just now',
             read: false,
-            orderId: newOrderRef.key!,
+            orderId: finalOrderId,
         });
 
         setIsPurchaseDialogOpen(false);
@@ -322,8 +321,10 @@ export default function ProductDetailClientPage({
     if (method === "COD") {
        placeOrder(method);
     } else { // Handle Online Payment
+      const newOrderRef = push(ref(rtdb, 'orders'));
+      const tempOrderId = newOrderRef.key!;
       try {
-        const order = await createRazorpayOrder(product.price * quantity);
+        const order = await createRazorpayOrder(product.price * quantity, tempOrderId);
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -332,11 +333,11 @@ export default function ProductDetailClientPage({
             description: `Purchase of ${product.name}`,
             order_id: order.id,
             handler: function (response: any) {
-                placeOrder(method);
+                placeOrder(method, order.receipt.replace('receipt_order_', ''));
             },
             prefill: {
                 name: profile.name,
-                email: profile.email,
+                email: user?.email,
                 contact: profile.mobile,
             },
             notes: {

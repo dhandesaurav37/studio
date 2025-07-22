@@ -188,12 +188,15 @@ export default function CheckoutPage() {
         phone: profile.mobile
       };
 
-    const newAdminOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
     const productNames = cart.map(item => item.product.name).join(', ');
 
-    const placeOrder = async () => {
+    const placeOrder = async (orderId?: string) => {
+        const ordersRef = ref(rtdb, 'orders');
+        const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
+        const finalOrderId = newOrderRef.key!;
+
         const newUserOrder: UserOrder = {
-          id: newAdminOrderId,
+          id: finalOrderId,
           date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
           deliveryDate: null,
           status: "Pending",
@@ -202,7 +205,7 @@ export default function CheckoutPage() {
         };
 
         const newAdminOrder = {
-          id: newAdminOrderId,
+          id: finalOrderId,
           date: new Date().toISOString().split('T')[0],
           customer: { name: user.displayName || 'N/A', email: user.email || 'N/A' },
           shippingAddress: shippingAddress,
@@ -217,21 +220,18 @@ export default function CheckoutPage() {
         };
         
         try {
-            const ordersRef = ref(rtdb, 'orders');
-            const newOrderRef = push(ordersRef);
-            await set(newOrderRef, { ...newAdminOrder, id: newOrderRef.key });
-
-            addOrder({ ...newUserOrder, id: newOrderRef.key! });
+            await set(newOrderRef, newAdminOrder);
+            addOrder(newUserOrder);
         
             addNotification({
                 id: Date.now(),
                 type: 'admin',
                 icon: 'Package',
                 title: `New ${method} Order Received`,
-                description: `Order #${newAdminOrderId} for ${productNames} has been placed.`,
+                description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${productNames} has been placed.`,
                 time: 'Just now',
                 read: false,
-                orderId: newOrderRef.key!,
+                orderId: finalOrderId,
             });
 
             clearCart();
@@ -250,21 +250,24 @@ export default function CheckoutPage() {
     if (method === "COD") {
        placeOrder();
     } else { // Online Payment
+      const ordersRef = ref(rtdb, 'orders');
+      const newOrderRef = push(ordersRef);
+      const tempOrderId = newOrderRef.key!;
       try {
-        const order = await createRazorpayOrder(total);
+        const order = await createRazorpayOrder(total, tempOrderId);
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: order.amount,
           currency: order.currency,
           name: "White Wolf",
-          description: `Order #${newAdminOrderId}`,
+          description: `Order #${tempOrderId.slice(-6).toUpperCase()}`,
           order_id: order.id,
           handler: function (response: any) {
-              placeOrder();
+              placeOrder(order.receipt.replace('receipt_order_', ''));
           },
           prefill: {
               name: profile.name,
-              email: profile.email,
+              email: user.email,
               contact: profile.mobile,
           },
           notes: {

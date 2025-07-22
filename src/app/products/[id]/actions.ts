@@ -3,7 +3,7 @@
 
 import Razorpay from "razorpay";
 
-export async function createRazorpayOrder(amount: number) {
+export async function createRazorpayOrder(amount: number, orderId: string) {
   const instance = new Razorpay({
     key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID!,
     key_secret: process.env.RAZORPAY_KEY_SECRET!,
@@ -12,7 +12,7 @@ export async function createRazorpayOrder(amount: number) {
   const options = {
     amount: amount * 100, // amount in the smallest currency unit
     currency: "INR",
-    receipt: `receipt_order_${new Date().getTime()}`,
+    receipt: `receipt_order_${orderId}`,
   };
 
   try {

@@ -44,7 +44,7 @@ export default function OrdersPage() {
         type: 'admin',
         icon: 'XCircleIcon',
         title: 'Order Cancelled by User',
-        description: `User has cancelled order #${orderId}.`,
+        description: `User has cancelled order #${orderId.slice(-6).toUpperCase()}.`,
         time: 'Just now',
         read: false,
         orderId: orderId,
@@ -62,7 +62,7 @@ export default function OrdersPage() {
         type: 'admin',
         icon: 'Undo2',
         title: 'Return Requested',
-        description: `User has requested a return for order #${orderId}.`,
+        description: `User has requested a return for order #${orderId.slice(-6).toUpperCase()}.`,
         time: 'Just now',
         read: false,
         orderId: orderId,
@@ -137,7 +137,7 @@ export default function OrdersPage() {
                   <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                       <CardTitle className="font-headline">
-                        Order #{order.id}
+                        Order #{order.id.slice(-6).toUpperCase()}
                       </CardTitle>
                       <CardDescription>Date: {order.date}</CardDescription>
                     </div>
