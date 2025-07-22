@@ -24,7 +24,7 @@ const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage.3.jpg?alt=media&token=8a311781-b466-41bf-b57b-ef5fdf229d0e", hint: "stylish apparel" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.4.jpg?alt=media&token=439923c8-1f23-435c-aa34-3adcb5a3fc62", hint: "urban fashion" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage5.png.jpg?alt=media&token=cb8c1725-4cc0-4c7d-9417-1d155023ac31", hint: "modern clothing" },
-  { src: "https://placehold.co/1920x1080.png", hint: "fashion shoot" },
+  { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage6.png.jpg?alt=media&token=d708f6bb-3105-4a8e-a3db-51d9c23119ad", hint: "fashion shoot" },
 ];
 
 export default function HomePage() {
