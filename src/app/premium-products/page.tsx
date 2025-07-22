@@ -119,8 +119,8 @@ export default function PremiumProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
-              {allCategories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
+              {allCategories.map((cat, index) => (
+                <SelectItem key={`${cat}-${index}`} value={cat}>
                   {cat}
                 </SelectItem>
               ))}
@@ -135,8 +135,8 @@ export default function PremiumProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Brands</SelectItem>
-              {allBrands.map((b) => (
-                <SelectItem key={b} value={b}>
+              {allBrands.map((b, index) => (
+                <SelectItem key={`${b}-${index}`} value={b}>
                   {b}
                 </SelectItem>
               ))}
@@ -151,8 +151,8 @@ export default function PremiumProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Colors</SelectItem>
-              {allColors.map((c) => (
-                <SelectItem key={c} value={c}>
+              {allColors.map((c, index) => (
+                <SelectItem key={`${c}-${index}`} value={c}>
                   {c}
                 </SelectItem>
               ))}
@@ -167,8 +167,8 @@ export default function PremiumProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Alpha Sizes</SelectItem>
-              {alphaSizes.map((size) => (
-                <SelectItem key={size} value={size}>
+              {alphaSizes.map((size, index) => (
+                <SelectItem key={`${size}-${index}`} value={size}>
                   {size}
                 </SelectItem>
               ))}
@@ -183,8 +183,8 @@ export default function PremiumProductsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Other Sizes</SelectItem>
-              {numericSizes.map((size) => (
-                <SelectItem key={size} value={size}>
+              {numericSizes.map((size, index) => (
+                <SelectItem key={`${size}-${index}`} value={size}>
                   {size}
                 </SelectItem>
               ))}
