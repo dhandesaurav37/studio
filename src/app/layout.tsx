@@ -11,6 +11,7 @@ import Script from "next/script";
 export const metadata: Metadata = {
   title: "White Wolf",
   description: "Premium apparel for the modern individual.",
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({

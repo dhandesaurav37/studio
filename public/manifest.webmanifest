@@ -1,0 +1,21 @@
+{
+    "name": "White Wolf",
+    "short_name": "White Wolf",
+    "description": "Premium apparel for the modern individual.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#111827",
+    "icons": [
+        {
+            "src": "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/WhiteWolfLogo.png?alt=media&token=8b8f27e6-15ac-4c62-90e7-835455a376a3",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/WhiteWolfLogo.png?alt=media&token=8b8f27e6-15ac-4c62-90e7-835455a376a3",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
