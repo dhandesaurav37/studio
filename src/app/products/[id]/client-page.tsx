@@ -416,34 +416,26 @@ export default function ProductDetailClientPage({
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
         {/* Product Images */}
-        <div className="grid grid-cols-1 gap-4">
-          <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
-            <Image
-              src={product.images[0]}
-              alt={product.name}
-              fill
-              className="object-cover"
-              data-ai-hint={product.dataAiHint}
-              priority
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            {product.images.slice(1, 4).map((img, index) => (
-              <div
-                key={index}
-                className="relative aspect-square w-full h-auto rounded-lg overflow-hidden"
-              >
-                <Image
-                  src={img}
-                  alt={`${product.name} ${index + 2}`}
-                  fill
-                  className="object-cover"
-                  data-ai-hint={product.dataAiHint}
-                />
-              </div>
+        <Carousel className="w-full">
+          <CarouselContent>
+            {product.images.map((img, index) => (
+              <CarouselItem key={index}>
+                <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
+                  <Image
+                    src={img}
+                    alt={`${product.name} ${index + 1}`}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={product.dataAiHint}
+                    priority={index === 0}
+                  />
+                </div>
+              </CarouselItem>
             ))}
-          </div>
-        </div>
+          </CarouselContent>
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
+        </Carousel>
 
         {/* Product Details */}
         <div>
