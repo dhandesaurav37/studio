@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,7 @@ const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7", hint: "fashion model" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage2.png.jpg?alt=media&token=93103ea4-dfb7-4138-8427-5100004cf391", hint: "mens fashion" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage.3.jpg?alt=media&token=8a311781-b466-41bf-b57b-ef5fdf229d0e", hint: "stylish apparel" },
-  { src: "https://placehold.co/1920x1080.png", hint: "urban fashion" },
+  { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.4.jpg?alt=media&token=439923c8-1f23-435c-aa34-3adcb5a3fc62", hint: "urban fashion" },
   { src: "https://placehold.co/1920x1080.png", hint: "modern clothing" },
   { src: "https://placehold.co/1920x1080.png", hint: "fashion shoot" },
 ];
