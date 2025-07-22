@@ -562,10 +562,10 @@ export default function ProductDetailClientPage({
           </div>
 
           {/* Quantity and Actions */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
+          <div className="flex items-center gap-4 mt-4">
             <Button
               size="lg"
-              className="flex-1 w-full"
+              className="flex-1"
               variant="secondary"
               onClick={handleAddToCart}
             >
@@ -573,7 +573,7 @@ export default function ProductDetailClientPage({
             </Button>
             <Button
               size="lg"
-              className="flex-1 w-full"
+              className="flex-1"
               onClick={handleBuyNow}
               variant="destructive"
             >
