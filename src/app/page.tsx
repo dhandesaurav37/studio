@@ -14,7 +14,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import React from "react";
+import React, { useMemo } from "react";
 import Autoplay from "embla-carousel-autoplay";
 import { Card } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
@@ -36,22 +36,25 @@ export default function HomePage() {
 
   const allCategories = [...new Set(products.map((p) => p.category))];
 
-  const categoryImages: { [key: string]: { src: string; hint: string } } = {
-    "T-Shirts": { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/C-Tshirt.png.jpg?alt=media&token=799d63b7-65be-4925-91b1-641152f4cea7", hint: "t-shirts" },
-    "Shirts": { src: "https://placehold.co/600x400.png", hint: "dress shirts" },
-    "Jeans": { src: "https://placehold.co/600x400.png", hint: "denim jeans" },
-    "Sweater": { src: "https://placehold.co/600x400.png", hint: "knit sweater" },
-    "Jackets": { src: "https://placehold.co/600x400.png", hint: "stylish jacket" },
-    "Oversized T-shirts": { src: "https://placehold.co/600x400.png", hint: "oversized t-shirt" },
-    "Track Pants": { src: "https://placehold.co/600x400.png", hint: "track pants" },
-    "Belts": { src: "https://placehold.co/600x400.png", hint: "leather belt" },
-    "Bags": { src: "https://placehold.co/600x400.png", hint: "canvas bag" },
-    "Wallets": { src: "https://placehold.co/600x400.png", hint: "leather wallet" },
-    "Shoes": { src: "https://placehold.co/600x400.png", hint: "leather shoes" },
-    "Pants": { src: "https://placehold.co/600x400.png", hint: "pants" },
-    "Trousers": { src: "https://placehold.co/600x400.png", hint: "trousers" },
-    "Socks": { src: "https://placehold.co/600x400.png", hint: "socks" },
-  };
+  const categoryImages = useMemo(() => {
+    const images: { [key: string]: { src: string; hint: string } } = {};
+    allCategories.forEach((category) => {
+      const productForCategory = products.find((p) => p.category === category);
+      if (productForCategory && productForCategory.images.length > 0) {
+        images[category] = {
+          src: productForCategory.images[0],
+          hint: productForCategory.dataAiHint,
+        };
+      } else {
+        images[category] = {
+          src: "https://placehold.co/600x400.png",
+          hint: category.toLowerCase(),
+        };
+      }
+    });
+    return images;
+  }, [allCategories, products]);
+
 
   const ProductCarousel = ({
     products,
@@ -254,11 +257,11 @@ export default function HomePage() {
               >
                 <Card className="overflow-hidden relative h-64">
                   <Image
-                    src={categoryImages[category]?.src || "https://placehold.co/600x400.png"}
+                    src={categoryImages[category]?.src}
                     alt={category}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    data-ai-hint={categoryImages[category]?.hint || category.toLowerCase()}
+                    data-ai-hint={categoryImages[category]?.hint}
                   />
                   <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
                   <div className="absolute inset-0 flex items-center justify-center p-4">
