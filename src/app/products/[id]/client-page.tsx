@@ -65,6 +65,20 @@ declare global {
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
 
+const categoryImages: { [key: string]: { src: string; hint: string } } = {
+    "T-Shirts": { src: "https://placehold.co/600x400.png", hint: "t-shirts" },
+    "Shirts": { src: "https://placehold.co/600x400.png", hint: "dress shirts" },
+    "Jeans": { src: "https://placehold.co/600x400.png", hint: "denim jeans" },
+    "Sweater": { src: "https://placehold.co/600x400.png", hint: "knit sweater" },
+    "Jackets": { src: "https://placehold.co/600x400.png", hint: "stylish jacket" },
+    "Oversized T-shirts": { src: "https://placehold.co/600x400.png", hint: "oversized t-shirt" },
+    "Track Pants": { src: "https://placehold.co/600x400.png", hint: "track pants" },
+    "Belts": { src: "https://placehold.co/600x400.png", hint: "leather belt" },
+    "Bags": { src: "https://placehold.co/600x400.png", hint: "canvas bag" },
+    "Wallets": { src: "https://placehold.co/600x400.png", hint: "leather wallet" },
+    "Shoes": { src: "https://placehold.co/600x400.png", hint: "leather shoes" },
+};
+
 export default function ProductDetailClientPage({
   product,
   relatedProducts,
@@ -111,6 +125,8 @@ export default function ProductDetailClientPage({
     }
     return [];
   }, [product.category, allProducts]);
+
+  const allCategories = [...new Set(allProducts.map((p) => p.category))];
 
 
   useEffect(() => {
@@ -488,7 +504,7 @@ export default function ProductDetailClientPage({
               </Dialog>
             </div>
             <div className="flex flex-wrap gap-2">
-              {alphaSizes.map((size) => (
+              {product.sizes.map((size) => (
                 <Button
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
@@ -615,6 +631,43 @@ export default function ProductDetailClientPage({
             </Carousel>
         </div>
       )}
+      
+      {/* Shop by Category Section */}
+      <section className="py-16 md:py-20">
+        <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold font-headline">
+              Shop by Category
+            </h2>
+            <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+              Explore our diverse range of apparel and accessories.
+            </p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+            {allCategories.map((category) => (
+              <Link
+                href={`/products?category=${encodeURIComponent(category)}`}
+                key={category}
+                className="group"
+              >
+                <Card className="overflow-hidden relative h-48">
+                  <Image
+                    src={categoryImages[category]?.src || "https://placehold.co/600x400.png"}
+                    alt={category}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    data-ai-hint={categoryImages[category]?.hint || category.toLowerCase()}
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors duration-300" />
+                  <div className="absolute inset-0 flex items-center justify-center p-4">
+                    <h3 className="text-white text-lg font-bold text-center drop-shadow-lg">
+                      {category}
+                    </h3>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+        </div>
+      </section>
 
       {/* Purchase Confirmation Dialog */}
       <Dialog
