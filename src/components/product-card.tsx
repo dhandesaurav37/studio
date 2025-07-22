@@ -37,7 +37,15 @@ export function ProductCard({
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // prevent link navigation
-    const defaultSize = product.sizes[0];
+    const defaultSize = product.sizes?.[0];
+    if (!defaultSize) {
+        toast({
+            title: "Product Unavailable",
+            description: "This product does not have any sizes available.",
+            variant: "destructive",
+        });
+        return;
+    }
     addToCart({ product, quantity: 1, size: defaultSize });
     toast({
       title: "Added to cart",
@@ -123,7 +131,7 @@ export function ProductCard({
               </>
             )}
              <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-                {product.sizes.map(size => (
+                {product.sizes && product.sizes.map(size => (
                   <Badge key={size} variant="secondary" className="text-xs">{size}</Badge>
                 ))}
              </div>
