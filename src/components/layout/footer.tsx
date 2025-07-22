@@ -50,7 +50,7 @@ export function Footer() {
           </div>
 
           {/* Links */}
-          <div className="lg:col-span-5 grid grid-cols-2 md:grid-cols-3 gap-8">
+          <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-8">
             <div>
               <h4 className="font-semibold mb-4 tracking-wider uppercase text-sm">Shop</h4>
               <ul className="space-y-3 text-sm">
@@ -391,27 +391,6 @@ export function Footer() {
                 </li>
               </ul>
             </div>
-          </div>
-
-          {/* Newsletter */}
-          <div className="lg:col-span-3">
-            <h4 className="font-semibold mb-4 tracking-wider uppercase text-sm">
-              Join The Pack
-            </h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Subscribe for exclusive updates, new arrivals, and special offers.
-            </p>
-            <form className="flex w-full max-w-sm items-center">
-              <Input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-background border-border rounded-r-none h-11 flex-1"
-                aria-label="Email for newsletter"
-              />
-              <Button type="submit" variant="secondary" className="rounded-l-none h-11">
-                Subscribe
-              </Button>
-            </form>
           </div>
         </div>
         <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
