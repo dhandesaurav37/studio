@@ -359,6 +359,8 @@ export default function ProductDetailClientPage({
   const isAddressValid =
     (addressOption === "default" && hasDefaultAddress) ||
     (addressOption === "new" && hasNewAddress);
+  
+  const alphaSizes = product.sizes.filter(s => isNaN(parseInt(s)));
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -486,7 +488,7 @@ export default function ProductDetailClientPage({
               </Dialog>
             </div>
             <div className="flex flex-wrap gap-2">
-              {product.sizes.map((size) => (
+              {alphaSizes.map((size) => (
                 <Button
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
