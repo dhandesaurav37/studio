@@ -138,6 +138,8 @@ interface StoreState {
   profile: UserProfile;
   notifications: Notification[];
   orders: UserOrder[];
+  averageRating: number;
+  totalRatings: number;
   getProductById: (id: string) => Product | undefined;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
@@ -151,6 +153,7 @@ interface StoreState {
   markAllAsRead: (type: 'user' | 'admin') => void;
   addOrder: (order: UserOrder) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus, deliveryDate?: string) => void;
+  submitRating: (newRating: number) => void;
 }
 
 const StoreContext = createContext<StoreState | undefined>(undefined);
@@ -171,6 +174,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [orders, setOrdersState] = useState<UserOrder[]>([]);
+  const [averageRating, setAverageRating] = useState(4.7);
+  const [totalRatings, setTotalRatings] = useState(256);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -198,6 +203,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
     setOrdersState(safelyParseJSON(localStorage.getItem('orders'), initialOrders));
+    setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
+    setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
+
 
     return () => unsubscribe();
   }, []);
@@ -226,6 +234,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
    useEffect(() => {
     if (isMounted) localStorage.setItem('orders', JSON.stringify(orders));
   }, [orders, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating));
+  }, [averageRating, isMounted]);
+
+  useEffect(() => {
+    if (isMounted) localStorage.setItem('totalRatings', JSON.stringify(totalRatings));
+  }, [totalRatings, isMounted]);
   
   const getProductById = useCallback((id: string) => {
     return productMap.get(id);
@@ -304,6 +320,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  const submitRating = (newRating: number) => {
+    const newTotalRatings = totalRatings + 1;
+    const newAverageRating = (averageRating * totalRatings + newRating) / newTotalRatings;
+    setTotalRatings(newTotalRatings);
+    setAverageRating(newAverageRating);
+  };
+
   const value = {
     products,
     productMap,
@@ -314,6 +337,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     profile,
     notifications,
     orders,
+    averageRating,
+    totalRatings,
     getProductById,
     addToCart,
     removeFromCart,
@@ -327,6 +352,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     markAllAsRead,
     addOrder,
     updateOrderStatus,
+    submitRating,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

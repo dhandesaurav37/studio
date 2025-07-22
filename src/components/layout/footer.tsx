@@ -4,7 +4,7 @@
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Instagram, Mail, Phone } from "lucide-react";
+import { Instagram, Mail, Phone, Star } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,8 +13,11 @@ import {
   DialogTrigger,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { useStore } from "@/hooks/use-store";
 
 export function Footer() {
+  const { averageRating } = useStore();
+
   return (
     <footer className="bg-card text-card-foreground border-t w-full">
       <div className="py-12 md:py-16 px-4 sm:px-6 lg:px-8">
@@ -123,9 +126,13 @@ export function Footer() {
                 <li>
                   <Link
                     href="/faq"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
                   >
                     FAQs
+                    <span className="flex items-center text-xs text-amber-500">
+                      <Star className="h-3 w-3 mr-1 fill-amber-500" />
+                      {averageRating.toFixed(1)}
+                    </span>
                   </Link>
                 </li>
               </ul>

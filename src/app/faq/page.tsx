@@ -20,6 +20,7 @@ import {
 import { Star } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useStore } from "@/hooks/use-store";
 
 const faqs = [
   {
@@ -54,10 +55,7 @@ export default function FaqPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
-  
-  // State for average rating and total count
-  const [averageRating, setAverageRating] = useState(4.7);
-  const [totalRatings, setTotalRatings] = useState(256);
+  const { averageRating, totalRatings, submitRating } = useStore();
 
   const handleRatingSubmit = () => {
     if (rating === 0) {
@@ -68,13 +66,8 @@ export default function FaqPage() {
       });
       return;
     }
-    
-    // Update average and total ratings
-    const newTotalRatings = totalRatings + 1;
-    const newAverageRating = (averageRating * totalRatings + rating) / newTotalRatings;
-    
-    setTotalRatings(newTotalRatings);
-    setAverageRating(newAverageRating);
+
+    submitRating(rating);
 
     toast({
       title: "Thank you for your feedback!",
