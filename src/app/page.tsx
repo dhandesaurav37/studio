@@ -19,7 +19,14 @@ import Autoplay from "embla-carousel-autoplay";
 import { Card } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
 
-const heroImage = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7";
+const heroImages = [
+  { src: "https://placehold.co/1920x1080.png", hint: "fashion model" },
+  { src: "https://placehold.co/1920x1080.png", hint: "mens fashion" },
+  { src: "https://placehold.co/1920x1080.png", hint: "stylish apparel" },
+  { src: "https://placehold.co/1920x1080.png", hint: "urban fashion" },
+  { src: "https://placehold.co/1920x1080.png", hint: "modern clothing" },
+  { src: "https://placehold.co/1920x1080.png", hint: "fashion shoot" },
+];
 
 export default function HomePage() {
   const { products } = useStore();
@@ -76,16 +83,34 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] bg-background">
-        <div className="relative w-full h-full">
-          <Image
-            src={heroImage}
-            alt="Define Your Style"
-            fill
-            className="object-cover"
-            data-ai-hint="fashion models"
-            priority
-          />
-        </div>
+         <Carousel
+          className="w-full h-full"
+          plugins={[
+            Autoplay({
+              delay: 10000,
+            }),
+          ]}
+          opts={{
+            loop: true,
+          }}
+        >
+          <CarouselContent>
+            {heroImages.map((image, index) => (
+              <CarouselItem key={index}>
+                <div className="relative w-full h-[60vh]">
+                  <Image
+                    src={image.src}
+                    alt={image.hint}
+                    fill
+                    className="object-cover"
+                    data-ai-hint={image.hint}
+                    priority={index === 0}
+                  />
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+        </Carousel>
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4">
           <div className="flex flex-col items-center justify-center text-center">
