@@ -39,11 +39,13 @@ const LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-206
 export function AppHeader() {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { cart, wishlist } = useStore();
 
   useEffect(() => {
+    setIsMounted(true);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsAdmin(currentUser?.email === ADMIN_EMAIL);
@@ -69,6 +71,7 @@ export function AppHeader() {
   };
 
   const renderAuthButtons = () => {
+    if (!isMounted) return <div className="w-24 h-10" />; 
     if (user) {
       return (
         <DropdownMenu>
@@ -149,7 +152,7 @@ export function AppHeader() {
     <Button variant="ghost" size="icon" asChild>
       <Link href={href} className="relative">
         {children}
-        {count > 0 && (
+        {isMounted && count > 0 && (
           <Badge
             variant="destructive"
             className="absolute -top-1 -right-2 h-5 w-5 rounded-full flex items-center justify-center p-0 text-xs"
@@ -209,38 +212,40 @@ export function AppHeader() {
               <ShoppingBag className="h-5 w-5" />
               <span className="sr-only">Cart</span>
             </HeaderIcon>
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right">
-                <SheetHeader>
-                  <SheetTitle>
-                    <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline">
-                       <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
-                      <span>White Wolf</span>
-                    </Link>
-                  </SheetTitle>
-                </SheetHeader>
-                <div className="mt-6">
-                  <nav className="flex flex-col gap-4 text-lg">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        className="font-medium text-foreground hover:text-destructive"
-                      >
-                        {link.name}
+            {isMounted && (
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <Menu className="h-6 w-6" />
+                    <span className="sr-only">Open menu</span>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right">
+                  <SheetHeader>
+                    <SheetTitle>
+                      <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline">
+                         <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
+                        <span>White Wolf</span>
                       </Link>
-                    ))}
-                  </nav>
-                  {renderMobileAuthButtons()}
-                </div>
-              </SheetContent>
-            </Sheet>
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-6">
+                    <nav className="flex flex-col gap-4 text-lg">
+                      {navLinks.map((link) => (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          className="font-medium text-foreground hover:text-destructive"
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </nav>
+                    {renderMobileAuthButtons()}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            )}
           </div>
         </div>
       </div>
