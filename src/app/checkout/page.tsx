@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useStore, UserOrder } from "@/hooks/use-store";
-import { Edit, Loader2, MapPin } from "lucide-react";
+import { Edit, Loader2, MapPin, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,12 +19,20 @@ import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "../products/[id]/actions";
 import { adminOrders } from "@/lib/admin-data";
 import { getAddressFromCoordinates } from "../actions/geocoding";
+import { getShippingRates } from "../actions/shipping";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 declare global {
   interface Window {
     Razorpay: any;
   }
+}
+
+interface ShippingOption {
+    name: string;
+    rate: number;
+    estimated_delivery_days: string;
 }
 
 export default function CheckoutPage() {
@@ -38,6 +46,10 @@ export default function CheckoutPage() {
   const [newAddress, setNewAddress] = useState({
     name: "", street: "", city: "", state: "", pincode: "", mobile: "",
   });
+
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [isFetchingRates, setIsFetchingRates] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -55,6 +67,50 @@ export default function CheckoutPage() {
       router.replace('/products');
     }
   }, [cart, isClient, router]);
+  
+  const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+  const total = subtotal + (selectedShipping?.rate || 0);
+  
+  const fetchRates = useCallback(async (pincode: string) => {
+      if(pincode.length !== 6) {
+          setShippingOptions([]);
+          setSelectedShipping(null);
+          return;
+      };
+
+      setIsFetchingRates(true);
+      setSelectedShipping(null);
+      
+      const cartWeight = cart.reduce((acc, item) => acc + (item.product.name.includes("Jacket") ? 2 : 0.5) * item.quantity, 0);
+
+      const result = await getShippingRates({
+          delivery_postcode: pincode,
+          weight: cartWeight > 0 ? cartWeight : 0.5,
+          cod: '0',
+          subtotal: subtotal
+      });
+
+      if (result.success && result.options) {
+          setShippingOptions(result.options);
+      } else {
+          setShippingOptions([]);
+          toast({
+              title: "Shipping Not Available",
+              description: result.message || "Could not find shipping options for this pincode.",
+              variant: "destructive"
+          });
+      }
+      setIsFetchingRates(false);
+  }, [subtotal, cart, toast]);
+
+
+  useEffect(() => {
+    const deliveryPincode = addressOption === 'new' ? newAddress.pincode : profile.address.pincode;
+    if (deliveryPincode) {
+        fetchRates(deliveryPincode);
+    }
+  }, [addressOption, newAddress.pincode, profile.address.pincode, fetchRates]);
+
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -110,16 +166,17 @@ export default function CheckoutPage() {
     }
   };
 
-  const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  const shipping = cart.length > 0 ? 150 : 0;
-  const total = subtotal + shipping;
-
   const hasDefaultAddress = profile.address?.street && profile.address?.city && profile.address?.state && profile.address?.pincode && profile.mobile;
   const hasNewAddress = newAddress.name && newAddress.street && newAddress.city && newAddress.state && newAddress.pincode && newAddress.mobile;
   const isAddressValid = (addressOption === "default" && hasDefaultAddress) || (addressOption === "new" && hasNewAddress);
 
   const handlePayment = async (method: "Online" | "COD") => {
-    if (!isAddressValid || !user) return;
+    if (!isAddressValid || !user || !selectedShipping) {
+      if(!selectedShipping) {
+        toast({ title: "No shipping method", description: "Please select a shipping method.", variant: "destructive" });
+      }
+      return;
+    }
     
     const shippingAddress = addressOption === 'new' ? {
         name: newAddress.name,
@@ -294,15 +351,39 @@ export default function CheckoutPage() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Payment Method</CardTitle>
+                <CardTitle>Shipping Method</CardTitle>
             </CardHeader>
-            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid}>Pay Online</Button>
-                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid}>Cash on Delivery</Button>
+            <CardContent>
+                {isFetchingRates ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ) : shippingOptions.length > 0 ? (
+                    <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
+                        {shippingOptions.map(option => (
+                             <Label key={option.name} htmlFor={option.name} className="flex items-center justify-between rounded-lg border p-4 cursor-pointer hover:bg-accent has-[:checked]:border-primary">
+                                <div className="flex items-center gap-3">
+                                    <RadioGroupItem value={option.name} id={option.name} />
+                                    <div>
+                                        <p className="font-semibold">{option.name}</p>
+                                        <p className="text-sm text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
+                                    </div>
+                                </div>
+                                <p className="font-bold">₹{option.rate.toFixed(2)}</p>
+                            </Label>
+                        ))}
+                    </RadioGroup>
+                ) : (
+                    <div className="text-center text-muted-foreground p-4 border border-dashed rounded-lg">
+                        <Truck className="mx-auto h-8 w-8 mb-2" />
+                        <p>Enter a valid pincode to see shipping options.</p>
+                    </div>
+                )}
             </CardContent>
           </Card>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-6 md:sticky md:top-24">
           <Card>
             <CardHeader>
               <CardTitle>Order Summary</CardTitle>
@@ -329,13 +410,22 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>₹{shipping.toFixed(2)}</span>
+                <span>{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
                 <span>Total</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
+            </CardContent>
+          </Card>
+           <Card>
+            <CardHeader>
+              <CardTitle>Payment Method</CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid || !selectedShipping}>Pay Online</Button>
+                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid || !selectedShipping}>Cash on Delivery</Button>
             </CardContent>
           </Card>
         </div>
