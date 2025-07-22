@@ -30,7 +30,7 @@ export function Footer() {
           {/* Brand and Socials */}
           <div className="lg:col-span-4 flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2 mb-4">
-               <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
+               <Image src={LOGO_URL} alt="White Wolf Logo" width={48} height={48} />
               <h3 className="text-2xl font-headline font-bold">
                 White Wolf
               </h3>
