@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { User as UserIcon, Mail, Phone, Edit, MapPin } from "lucide-react";
+import { User as UserIcon, Mail, Phone, Edit, MapPin, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { auth } from "@/lib/firebase";
@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { useStore, UserProfile } from "@/hooks/use-store";
+import { getAddressFromCoordinates } from "../actions/geocoding";
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -27,6 +28,7 @@ export default function ProfilePage() {
   const [editedProfile, setEditedProfile] = useState<UserProfile>(profile);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -101,12 +103,36 @@ export default function ProfilePage() {
   };
   
   const handleFetchLocation = () => {
+    setIsFetchingLocation(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          // You would typically use a reverse geocoding API here
-          alert(`Location fetched: Lat: ${latitude}, Long: ${longitude}. API key needed to get address.`);
+          const result = await getAddressFromCoordinates(latitude, longitude);
+
+          if (result.success && result.address) {
+             setEditedProfile((prev) => ({
+              ...prev,
+              address: { 
+                ...prev.address,
+                street: result.address!.street,
+                city: result.address!.city,
+                state: result.address!.state,
+                pincode: result.address!.pincode
+              },
+            }));
+             toast({
+              title: "Address updated",
+              description: "Your address has been filled in.",
+            });
+          } else {
+             toast({
+              title: "Error fetching address",
+              description: result.message || "Could not retrieve address details.",
+              variant: "destructive",
+            });
+          }
+          setIsFetchingLocation(false);
         },
         (error) => {
           toast({
@@ -115,6 +141,7 @@ export default function ProfilePage() {
             variant: "destructive",
           });
           console.error("Geolocation error:", error);
+          setIsFetchingLocation(false);
         }
       );
     } else {
@@ -123,6 +150,7 @@ export default function ProfilePage() {
         description: "Your browser does not support geolocation.",
         variant: "destructive",
       });
+       setIsFetchingLocation(false);
     }
   };
 
@@ -185,8 +213,9 @@ export default function ProfilePage() {
               <div className="grid gap-2">
                  <div className="flex items-center justify-between">
                    <Label htmlFor="street">Address</Label>
-                   <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation}>
-                     <MapPin className="mr-1 h-4 w-4" /> Use my current location
+                   <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation} disabled={isFetchingLocation}>
+                     {isFetchingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <MapPin className="mr-1 h-4 w-4" />} 
+                     {isFetchingLocation ? 'Fetching...' : 'Use my current location'}
                    </Button>
                  </div>
                  <Input id="street" value={editedProfile.address.street} onChange={handleAddressChange} placeholder="Street" />

@@ -22,6 +22,7 @@ import {
   Zap,
   Edit,
   MapPin,
+  Loader2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
@@ -36,6 +37,8 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
 import { adminOrders } from "@/lib/admin-data";
+import { getAddressFromCoordinates } from "../actions/geocoding";
+
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -68,6 +71,7 @@ export default function ProductDetailClientPage({
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isPurchaseDialogOpen, setIsPurchaseDialogOpen] = useState(false);
+  const [isFetchingLocation, setIsFetchingLocation] = useState(false);
   const [addressOption, setAddressOption] = useState<"default" | "new">(
     "default"
   );
@@ -93,11 +97,33 @@ export default function ProductDetailClientPage({
   };
 
   const handleFetchLocation = () => {
+    setIsFetchingLocation(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude } = position.coords;
-          alert(`Location fetched: Lat: ${latitude}, Long: ${longitude}. API key needed to get address.`);
+          const result = await getAddressFromCoordinates(latitude, longitude);
+
+          if (result.success && result.address) {
+             setNewAddress((prev) => ({
+              ...prev,
+              street: result.address!.street,
+              city: result.address!.city,
+              state: result.address!.state,
+              pincode: result.address!.pincode
+            }));
+             toast({
+              title: "Address updated",
+              description: "Your address has been filled in.",
+            });
+          } else {
+             toast({
+              title: "Error fetching address",
+              description: result.message || "Could not retrieve address details.",
+              variant: "destructive",
+            });
+          }
+          setIsFetchingLocation(false);
         },
         (error) => {
           toast({
@@ -106,6 +132,7 @@ export default function ProductDetailClientPage({
             variant: "destructive",
           });
           console.error("Geolocation error:", error);
+          setIsFetchingLocation(false);
         }
       );
     } else {
@@ -114,6 +141,7 @@ export default function ProductDetailClientPage({
         description: "Your browser does not support geolocation.",
         variant: "destructive",
       });
+      setIsFetchingLocation(false);
     }
   };
 
@@ -519,8 +547,9 @@ export default function ProductDetailClientPage({
                     </Label>
                   </div>
                   {addressOption === "new" && (
-                     <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation}>
-                       <MapPin className="mr-1 h-4 w-4" /> Use my current location
+                     <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation} disabled={isFetchingLocation}>
+                       {isFetchingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <MapPin className="mr-1 h-4 w-4" />} 
+                       {isFetchingLocation ? 'Fetching...' : 'Use my current location'}
                      </Button>
                   )}
                 </div>
