@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -21,30 +21,57 @@ import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, PackageCheck, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useStore, OrderStatus, UserOrder } from "@/hooks/use-store";
+import { useStore, OrderStatus } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
 import type { AdminOrder } from "@/lib/admin-data";
-import { adminOrders } from "@/lib/admin-data";
+import { rtdb } from "@/lib/firebase";
+import { onValue, ref, update } from "firebase/database";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AdminReturnOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const { orders, updateOrderStatus, addNotification, getProductById } = useStore();
+  const [isLoading, setIsLoading] = useState(true);
+  const [allOrders, setAllOrders] = useState<AdminOrder[]>([]);
+  const { updateOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const ordersRef = ref(rtdb, 'orders');
+    const unsubscribe = onValue(ordersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const ordersData: AdminOrder[] = Object.keys(data).map(key => ({
+                ...data[key],
+                id: key,
+            }));
+            setAllOrders(ordersData);
+        } else {
+            setAllOrders([]);
+        }
+        setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
   
-  const returnOrders = useMemo(() => adminOrders.map(order => ({
-    ...order,
-    items: order.items.map(item => ({...item, product: getProductById(item.productId)}))
-  })).filter(o => 
-    o.items.every(i => i.product) && ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
-  ), [orders, getProductById]);
+  const returnOrders = useMemo(() => allOrders
+    .map(order => ({
+        ...order,
+        items: order.items.map(item => ({...item, product: getProductById(item.productId)}))
+    }))
+    .filter(o => 
+        o.items.every(i => i.product) && 
+        ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
+    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+  [allOrders, getProductById]);
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   
-  const handleReturnAction = (orderId: string, action: "accept-request" | "reject-request" | "confirm-collection") => {
+  const handleReturnAction = async (orderId: string, action: "accept-request" | "reject-request" | "confirm-collection") => {
     let newStatus: OrderStatus | null = null;
     let toastTitle = "";
     let userNotificationTitle = "";
@@ -55,45 +82,50 @@ export default function AdminReturnOrdersPage() {
         newStatus = 'Return Request Accepted';
         toastTitle = 'Return Request Accepted';
         userNotificationTitle = 'Return Request Accepted';
-        userNotificationDescription = `Your return request for order #${orderId} has been accepted. A pickup will be scheduled soon.`;
+        userNotificationDescription = `Your return request for order #${orderId.slice(-6).toUpperCase()} has been accepted. A pickup will be scheduled soon.`;
         userNotificationIcon = 'CheckCircle';
     } else if (action === "reject-request") {
         newStatus = 'Return Rejected';
         toastTitle = 'Return Request Rejected';
         userNotificationTitle = 'Return Request Rejected';
-        userNotificationDescription = `Your return request for order #${orderId} has been rejected.`;
+        userNotificationDescription = `Your return request for order #${orderId.slice(-6).toUpperCase()} has been rejected.`;
         userNotificationIcon = 'XCircle';
     } else if (action === "confirm-collection") {
         newStatus = 'Order Returned Successfully';
         toastTitle = 'Return Collected';
         userNotificationTitle = 'Return Collected';
-        userNotificationDescription = `The returned item(s) for order #${orderId} have been collected.`;
+        userNotificationDescription = `The returned item(s) for order #${orderId.slice(-6).toUpperCase()} have been collected.`;
         userNotificationIcon = 'PackageCheck';
     }
 
     if (!newStatus) return;
 
-    const orderInStaticList = adminOrders.find(o => o.id === orderId);
-    if(orderInStaticList) {
-        orderInStaticList.status = newStatus;
+    try {
+        const orderRef = ref(rtdb, `orders/${orderId}`);
+        await update(orderRef, { status: newStatus });
+
+        addNotification({
+            id: Date.now(),
+            type: 'user',
+            icon: userNotificationIcon,
+            title: userNotificationTitle,
+            description: userNotificationDescription,
+            time: 'Just now',
+            read: false,
+        });
+        
+        toast({
+          title: toastTitle,
+          description: `Order #${orderId.slice(-6).toUpperCase()} has been updated.`
+        });
+    } catch (error) {
+         console.error("Failed to update order status:", error);
+         toast({
+            title: "Error",
+            description: "Could not update order status. Please try again.",
+            variant: "destructive"
+        });
     }
-
-    updateOrderStatus(orderId, newStatus);
-
-    addNotification({
-        id: Date.now(),
-        type: 'user',
-        icon: userNotificationIcon,
-        title: userNotificationTitle,
-        description: userNotificationDescription,
-        time: 'Just now',
-        read: false,
-    });
-    
-    toast({
-      title: toastTitle,
-      description: `Order #${orderId} has been updated.`
-    });
   };
   
   const getBadgeVariant = (status: OrderStatus) => {
@@ -112,8 +144,8 @@ export default function AdminReturnOrdersPage() {
 
   const filteredOrders = returnOrders.filter(
     (order) =>
-      order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      order.customer.name.toLowerCase().includes(searchTerm.toLowerCase())
+      (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const getStatusIcon = (status: OrderStatus) => {
@@ -153,7 +185,13 @@ export default function AdminReturnOrdersPage() {
             </div>
           </CardHeader>
           <CardContent className="p-0">
-            {filteredOrders.length > 0 ? (
+            {isLoading ? (
+               <div className="p-4 space-y-4">
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                    <Skeleton className="h-16 w-full" />
+                </div>
+            ) : filteredOrders.length > 0 ? (
                 <div className="divide-y divide-border">
                 {filteredOrders.map((order) => (
                     <Collapsible
@@ -167,11 +205,11 @@ export default function AdminReturnOrdersPage() {
                             <div className="flex items-center gap-3">
                                {getStatusIcon(order.status)}
                                <div>
-                                <p className="font-mono text-sm font-semibold">{order.id}</p>
+                                <p className="font-mono text-sm font-semibold">{order.id.slice(-6).toUpperCase()}</p>
                                 <p className="text-xs text-muted-foreground">{format(new Date(order.date), 'dd/MM/yyyy')}</p>
                                </div>
                             </div>
-                            <div>
+                            <div className="hidden md:block">
                                <p className="font-semibold text-sm">{order.customer.name}</p>
                             </div>
                             <div className="flex items-center gap-4">
@@ -244,9 +282,9 @@ export default function AdminReturnOrdersPage() {
                                     </div>
                                  )}
                                  <Separator className="my-6"/>
-                                 <h4 className="font-semibold mb-4">Shipping & Payment</h4>
+                                 <h4 className="font-semibold mb-4">Shipping Address</h4>
                                  <div className="text-sm space-y-2 text-muted-foreground">
-                                    <p className="font-medium text-foreground">{order.customer.name}</p>
+                                    <p className="font-medium text-foreground">{order.shippingAddress.name}</p>
                                     <p>{order.shippingAddress.address}</p>
                                     <p>Phone: {order.shippingAddress.phone}</p>
                                     <p>Payment Method: <span className="font-semibold text-foreground">{order.paymentMethod}</span></p>
@@ -268,3 +306,5 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
+
+    
