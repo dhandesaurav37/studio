@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -120,7 +121,7 @@ export default function HomePage() {
               Timeless style, uncompromising quality, and conscious craftsmanship
               for the modern individual.
             </p>
-            <Button asChild size="lg" className="mt-8 bg-destructive hover:bg-destructive/90 text-destructive-foreground">
+            <Button asChild size="lg" className="mt-8">
               <Link href="/products">Shop New Arrivals</Link>
             </Button>
           </div>
@@ -133,7 +134,7 @@ export default function HomePage() {
          <div className="container mx-auto">
             <div className="flex flex-row justify-around md:justify-center md:items-center md:gap-12 text-center">
                 <div className="flex flex-col items-center gap-2 md:gap-4">
-                <Archive className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
+                <Archive className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                 <div className="flex flex-col items-center">
                     <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Exclusive Designs
@@ -144,7 +145,7 @@ export default function HomePage() {
                 </div>
                 </div>
                 <div className="flex flex-col items-center gap-2 md:gap-4">
-                <Shirt className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
+                <Shirt className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                 <div className="flex flex-col items-center">
                     <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Premium Quality
@@ -155,7 +156,7 @@ export default function HomePage() {
                 </div>
                 </div>
                 <div className="flex flex-col items-center gap-2 md:gap-4">
-                <Truck className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
+                <Truck className="h-8 w-8 md:h-10 md:w-10 text-primary" />
                 <div className="flex flex-col items-center">
                     <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Fast Shipping
