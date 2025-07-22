@@ -130,6 +130,7 @@ const initialOrders: UserOrder[] = [
 
 interface StoreState {
   products: Product[];
+  productMap: Map<string, Product>;
   shopProducts: Product[];
   premiumProducts: Product[];
   cart: CartItem[];
@@ -137,7 +138,6 @@ interface StoreState {
   profile: UserProfile;
   notifications: Notification[];
   orders: UserOrder[];
-  addProduct: (product: Product) => void;
   getProductById: (id: string) => Product | undefined;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
@@ -204,6 +204,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const shopProducts = useMemo(() => products.filter(p => p.price <= 4000), [products]);
   const premiumProducts = useMemo(() => products.filter(p => p.price > 4000), [products]);
+  const productMap = useMemo(() => new Map(products.map(p => [p.id, p])), [products]);
+
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('cart', JSON.stringify(cart));
@@ -225,13 +227,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     if (isMounted) localStorage.setItem('orders', JSON.stringify(orders));
   }, [orders, isMounted]);
   
-  const addProduct = (product: Product) => {
-    // This is now handled by Realtime DB, but we can keep it for optimistic UI updates if needed
-  };
-  
   const getProductById = useCallback((id: string) => {
-    return products.find(p => p.id === id);
-  }, [products]);
+    return productMap.get(id);
+  }, [productMap]);
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -308,6 +306,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   const value = {
     products,
+    productMap,
     shopProducts,
     premiumProducts,
     cart,
@@ -315,7 +314,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     profile,
     notifications,
     orders,
-    addProduct,
     getProductById,
     addToCart,
     removeFromCart,

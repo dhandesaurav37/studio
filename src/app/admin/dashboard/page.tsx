@@ -470,16 +470,16 @@ export default function AdminDashboardPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-name">Product Name</Label>
-                    <Input id="edit-name" value={editedProductData.name} onChange={handleEditInputChange} />
+                    <Input id="edit-name" value={editedProductData.name || ''} onChange={handleEditInputChange} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-price">Price (₹)</Label>
-                    <Input id="edit-price" type="number" value={editedProductData.price} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                    <Input id="edit-price" type="number" value={editedProductData.price || 0} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-description">Description</Label>
-                  <Textarea id="edit-description" value={editedProductData.description} onChange={handleEditInputChange} />
+                  <Textarea id="edit-description" value={editedProductData.description || ''} onChange={handleEditInputChange} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -495,7 +495,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-color">Colors (comma-separated)</Label>
-                    <Input id="edit-color" value={editedProductData.color} onChange={handleEditInputChange} />
+                    <Input id="edit-color" value={editedProductData.color || ''} onChange={handleEditInputChange} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
