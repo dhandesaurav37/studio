@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useStore } from "@/hooks/use-store";
 import { Badge } from "../ui/badge";
+import Image from "next/image";
 
 const navLinks = [
   { name: "Shop", href: "/products" },
@@ -33,6 +34,7 @@ const navLinks = [
 ];
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
+const LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/WhiteWolfLogo.png?alt=media&token=8b8f27e6-15ac-4c62-90e7-835455a376a3";
 
 export function AppHeader() {
   const [isMounted, setIsMounted] = useState(false);
@@ -185,6 +187,7 @@ export function AppHeader() {
         {/* --- Desktop Header --- */}
         <div className="hidden md:flex w-full items-center">
           <Link href="/" className="mr-8 flex items-center gap-2">
+            <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} className="rounded-full" />
             <span className="text-2xl font-bold font-headline tracking-wider">
               White Wolf
             </span>
@@ -216,8 +219,9 @@ export function AppHeader() {
 
         {/* --- Mobile Header --- */}
         <div className="flex w-full items-center justify-between md:hidden">
-          <Link href="/" className="text-xl font-bold font-headline">
-            White Wolf
+          <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline">
+             <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} className="rounded-full" />
+            <span>White Wolf</span>
           </Link>
 
           <div className="flex items-center">
@@ -235,8 +239,9 @@ export function AppHeader() {
               <SheetContent side="right">
                 <SheetHeader>
                   <SheetTitle>
-                    <Link href="/" className="text-2xl font-bold font-headline">
-                      White Wolf
+                    <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline">
+                       <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} className="rounded-full" />
+                      <span>White Wolf</span>
                     </Link>
                   </SheetTitle>
                 </SheetHeader>
