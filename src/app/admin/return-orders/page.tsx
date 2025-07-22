@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -33,9 +33,9 @@ export default function AdminReturnOrdersPage() {
   const { orders, updateOrderStatus, addNotification } = useStore();
   const { toast } = useToast();
   
-  const returnOrders: AdminOrder[] = adminOrders.filter(o => 
+  const returnOrders = useMemo(() => adminOrders.filter(o => 
     ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
-  );
+  ), [orders]);
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
@@ -243,7 +243,7 @@ export default function AdminReturnOrdersPage() {
                                  <Separator className="my-6"/>
                                  <h4 className="font-semibold mb-4">Shipping & Payment</h4>
                                  <div className="text-sm space-y-2 text-muted-foreground">
-                                    <p className="font-medium text-foreground">{order.shippingAddress.name}</p>
+                                    <p className="font-medium text-foreground">{order.customer.name}</p>
                                     <p>{order.shippingAddress.address}</p>
                                     <p>Phone: {order.shippingAddress.phone}</p>
                                     <p>Payment Method: <span className="font-semibold text-foreground">{order.paymentMethod}</span></p>
@@ -265,3 +265,5 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
+
+    
