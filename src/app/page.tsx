@@ -19,14 +19,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { Card } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
 
-const heroImages = [
-  { src: "https://placehold.co/1600x900.png", hint: "fashion models" },
-  { src: "https://placehold.co/1600x900.png", hint: "mens fashion" },
-  { src: "https://placehold.co/1600x900.png", hint: "stylish clothing" },
-  { src: "https://placehold.co/1600x900.png", hint: "modern apparel" },
-  { src: "https://placehold.co/1600x900.png", hint: "urban fashion" },
-  { src: "https://placehold.co/1600x900.png", hint: "premium fabric" },
-];
+const heroImage = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7";
 
 export default function HomePage() {
   const { products } = useStore();
@@ -83,36 +76,16 @@ export default function HomePage() {
     <div className="flex flex-col">
       {/* Hero Section */}
       <section className="relative w-full h-[60vh] bg-background">
-        <Carousel
-          className="w-full h-full"
-          plugins={[
-            Autoplay({
-              delay: 10000,
-              stopOnInteraction: true,
-              stopOnMouseEnter: true,
-            }),
-          ]}
-          opts={{ loop: true }}
-        >
-          <CarouselContent className="h-full">
-            {heroImages.map((image, index) => (
-              <CarouselItem key={index} className="h-full">
-                <div className="relative w-full h-full">
-                  <Image
-                    src={image.src}
-                    alt={`Hero image ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={image.hint}
-                    priority={index === 0}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-30 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-30 text-white bg-black/20 hover:bg-black/40 h-10 w-10" />
-        </Carousel>
+        <div className="relative w-full h-full">
+          <Image
+            src={heroImage}
+            alt="Define Your Style"
+            fill
+            className="object-cover"
+            data-ai-hint="fashion models"
+            priority
+          />
+        </div>
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center text-white p-4">
           <div className="flex flex-col items-center justify-center text-center">
