@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { updateOrderStatus: updateUserOrderStatus, addNotification } = useStore();
+  const { updateOrderStatus: updateUserOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -62,6 +62,17 @@ export default function AdminOrdersPage() {
 
     return () => unsubscribe();
   }, []);
+  
+  const hydratedOrders = useMemo(() => orders.map(order => ({
+    ...order,
+    items: order.items.map(item => {
+        const product = getProductById(item.productId);
+        return {
+            ...item,
+            product
+        }
+    }).filter(item => item.product) // Filter out items where product is not found
+  })), [orders, getProductById]);
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
@@ -131,7 +142,7 @@ export default function AdminOrdersPage() {
     }
   };
   
-  const filteredOrders = orders.filter(
+  const filteredOrders = hydratedOrders.filter(
     (order) =>
       (order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -254,13 +265,13 @@ export default function AdminOrdersPage() {
                                             <TableRow key={item.productId}>
                                                 <TableCell className="flex items-center gap-3">
                                                     <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
-                                                        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" data-ai-hint={item.product.dataAiHint}/>
+                                                        <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
                                                     </div>
-                                                    <span className="font-medium">{item.product.name}</span>
+                                                    <span className="font-medium">{item.product!.name}</span>
                                                 </TableCell>
                                                 <TableCell>{item.size}</TableCell>
                                                 <TableCell>{item.quantity}</TableCell>
-                                                <TableCell className="text-right font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</TableCell>
+                                                <TableCell className="text-right font-medium">₹{(item.product!.price * item.quantity).toFixed(2)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -304,5 +315,3 @@ export default function AdminOrdersPage() {
     </div>
   );
 }
-
-    

@@ -3,9 +3,10 @@ import { Product, initialProducts } from "./data";
 import type { OrderStatus } from "@/hooks/use-store";
 
 interface AdminOrderItem {
-  product: Product;
+  productId: string;
   size: string;
   quantity: number;
+  product?: Product; // product is optional now, will be hydrated
 }
 
 export interface AdminOrder {
@@ -44,7 +45,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Cancelled",
     total: 5499.00,
     items: [
-      { product: initialProducts[1], quantity: 1, size: "S" },
+      { productId: "2", quantity: 1, size: "S", product: initialProducts[1] },
     ],
   },
   {
@@ -64,8 +65,8 @@ export const adminOrders: AdminOrder[] = [
     deliveryDate: "2024-07-20T10:00:00.000Z",
     total: 18498.00,
     items: [
-      { product: initialProducts[2], quantity: 1, size: "L" },
-      { product: initialProducts[1], quantity: 1, size: "M" },
+      { productId: "3", quantity: 1, size: "L", product: initialProducts[2] },
+      { productId: "2", quantity: 1, size: "M", product: initialProducts[1] },
     ],
   },
   {
@@ -84,8 +85,8 @@ export const adminOrders: AdminOrder[] = [
     status: "Return Request Accepted",
     total: 20498.00,
     items: [
-        { product: initialProducts[4], quantity: 1, size: "32" },
-        { product: initialProducts[0], quantity: 1, size: "M" }
+        { productId: "5", quantity: 1, size: "32", product: initialProducts[4] },
+        { productId: "1", quantity: 1, size: "M", product: initialProducts[0] }
     ],
   },
     {
@@ -104,7 +105,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Return Requested",
     total: 15999.00,
     items: [
-        { product: initialProducts[5], quantity: 1, size: "34" },
+        { productId: "6", quantity: 1, size: "34", product: initialProducts[5] },
     ],
   },
   {
@@ -123,7 +124,7 @@ export const adminOrders: AdminOrder[] = [
     status: "Return Rejected",
     total: 12999.00,
     items: [
-        { product: initialProducts[2], quantity: 1, size: "XL" }
+        { productId: "3", quantity: 1, size: "XL", product: initialProducts[2] }
     ],
   }
 ];

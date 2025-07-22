@@ -30,12 +30,15 @@ import { adminOrders } from "@/lib/admin-data";
 export default function AdminReturnOrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const { orders, updateOrderStatus, addNotification } = useStore();
+  const { orders, updateOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
   
-  const returnOrders = useMemo(() => adminOrders.filter(o => 
-    ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
-  ), [orders]);
+  const returnOrders = useMemo(() => adminOrders.map(order => ({
+    ...order,
+    items: order.items.map(item => ({...item, product: getProductById(item.productId)}))
+  })).filter(o => 
+    o.items.every(i => i.product) && ['Return Requested', 'Return Request Accepted', 'Order Returned Successfully', 'Return Rejected'].includes(o.status)
+  ), [orders, getProductById]);
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
@@ -196,15 +199,15 @@ export default function AdminReturnOrdersPage() {
                                     </TableHeader>
                                     <TableBody>
                                         {order.items.map(item => (
-                                            <TableRow key={item.product.id}>
+                                            <TableRow key={item.product!.id}>
                                                 <TableCell className="flex items-center gap-3">
                                                     <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
-                                                        <Image src={item.product.images[0]} alt={item.product.name} fill className="object-cover" data-ai-hint={item.product.dataAiHint}/>
+                                                        <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
                                                     </div>
-                                                    <span className="font-medium">{item.product.name}</span>
+                                                    <span className="font-medium">{item.product!.name}</span>
                                                 </TableCell>
                                                 <TableCell>{item.quantity}</TableCell>
-                                                <TableCell className="text-right font-medium">₹{(item.product.price * item.quantity).toFixed(2)}</TableCell>
+                                                <TableCell className="text-right font-medium">₹{(item.product!.price * item.quantity).toFixed(2)}</TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -265,5 +268,3 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
-
-    
