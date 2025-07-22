@@ -64,8 +64,9 @@ declare global {
 
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
-const clothingSizes = ["S", "M", "L", "XL", "XXL"];
 
+// Helper to determine if a size is alphabetical (non-numeric)
+const isAlphaSize = (size: string) => isNaN(parseInt(size));
 
 export default function ProductDetailClientPage({
   product,
@@ -489,7 +490,7 @@ export default function ProductDetailClientPage({
             </div>
             <div className="flex flex-wrap gap-2">
               {product.sizes
-                .filter(size => clothingSizes.includes(size))
+                .filter(isAlphaSize)
                 .map((size) => (
                 <Button
                   key={size}
