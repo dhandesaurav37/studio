@@ -23,7 +23,7 @@ const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage2.png.jpg?alt=media&token=93103ea4-dfb7-4138-8427-5100004cf391", hint: "mens fashion" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage.3.jpg?alt=media&token=8a311781-b466-41bf-b57b-ef5fdf229d0e", hint: "stylish apparel" },
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.4.jpg?alt=media&token=439923c8-1f23-435c-aa34-3adcb5a3fc62", hint: "urban fashion" },
-  { src: "https://placehold.co/1920x1080.png", hint: "modern clothing" },
+  { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage5.png.jpg?alt=media&token=cb8c1725-4cc0-4c7d-9417-1d155023ac31", hint: "modern clothing" },
   { src: "https://placehold.co/1920x1080.png", hint: "fashion shoot" },
 ];
 
