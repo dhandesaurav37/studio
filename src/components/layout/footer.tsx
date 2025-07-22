@@ -38,9 +38,11 @@ export function Footer() {
             </p>
             <div className="flex items-center space-x-4">
               <Link
-                href="#"
+                href="https://www.instagram.com/thewhitewolf0501/"
                 aria-label="Instagram"
                 className="text-muted-foreground hover:text-foreground transition-colors"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 <Instagram className="h-5 w-5" />
               </Link>
