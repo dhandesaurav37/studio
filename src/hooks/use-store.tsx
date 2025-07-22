@@ -4,7 +4,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { Product } from '@/lib/data';
 import { rtdb } from '@/lib/firebase';
-import { ref, onValue } from 'firebase/database';
+import { ref, onValue, update } from 'firebase/database';
 
 
 export interface CartItem {
@@ -152,7 +152,7 @@ interface StoreState {
   markAsRead: (notificationId: number) => void;
   markAllAsRead: (type: 'user' | 'admin') => void;
   addOrder: (order: UserOrder) => void;
-  updateOrderStatus: (orderId: string, status: OrderStatus, deliveryDate?: string) => void;
+  updateOrderStatus: (orderId: string, status: OrderStatus, deliveryDate?: string) => Promise<void>;
   submitRating: (newRating: number) => void;
 }
 
@@ -314,11 +314,24 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setOrdersState(prevOrders => [order, ...prevOrders]);
   };
   
-  const updateOrderStatus = (orderId: string, status: OrderStatus, deliveryDate?: string) => {
-    setOrdersState(prevOrders =>
-      prevOrders.map(o => (o.id === orderId ? { ...o, status, deliveryDate: deliveryDate !== undefined ? deliveryDate : o.deliveryDate } : o))
-    );
+  const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
+    try {
+      const orderRef = ref(rtdb, `orders/${orderId}`);
+      const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
+      if (deliveryDate !== undefined) {
+        updates.deliveryDate = deliveryDate;
+      }
+      await update(orderRef, updates);
+      // Update local state after successful DB update
+      setOrdersState(prevOrders =>
+        prevOrders.map(o => (o.id === orderId ? { ...o, status, deliveryDate: deliveryDate !== undefined ? deliveryDate : o.deliveryDate } : o))
+      );
+    } catch (error) {
+        console.error("Failed to update order status:", error);
+        // Optionally re-throw or handle error state in UI
+    }
   };
+
 
   const submitRating = (newRating: number) => {
     const newTotalRatings = totalRatings + 1;
