@@ -66,7 +66,7 @@ export default function HomePage() {
         {products.map((product) => (
           <CarouselItem
             key={product.id}
-            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+            className="basis-1/2 md:basis-1/3 lg:basis-1/4"
           >
             <div className="p-1 h-full">
               <ProductCard product={product} className="h-full" />
