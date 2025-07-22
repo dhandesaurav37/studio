@@ -37,7 +37,7 @@ export default function HomePage() {
   const allCategories = [...new Set(products.map((p) => p.category))];
 
   const categoryImages: { [key: string]: { src: string; hint: string } } = {
-    "T-Shirts": { src: "https://placehold.co/600x400.png", hint: "t-shirts" },
+    "T-Shirts": { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/C-Tshirt.png.jpg?alt=media&token=799d63b7-65be-4925-91b1-641152f4cea7", hint: "t-shirts" },
     "Shirts": { src: "https://placehold.co/600x400.png", hint: "dress shirts" },
     "Jeans": { src: "https://placehold.co/600x400.png", hint: "denim jeans" },
     "Sweater": { src: "https://placehold.co/600x400.png", hint: "knit sweater" },
@@ -124,7 +124,7 @@ export default function HomePage() {
               Timeless style, uncompromising quality, and conscious craftsmanship
               for the modern individual.
             </p>
-            <Button asChild size="lg" className="mt-8">
+            <Button asChild size="lg" className="mt-8 bg-primary hover:bg-primary/90 text-primary-foreground">
               <Link href="/products">Shop New Arrivals</Link>
             </Button>
           </div>
