@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import { useStore } from "@/hooks/use-store";
 import { ScrollArea } from "../ui/scroll-area";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
 
 export function Footer() {
   const { averageRating } = useStore();
@@ -199,12 +201,55 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="#"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Size Guide
-                  </Link>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground transition-colors text-left">Size Guide</button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-lg">
+                      <DialogHeader>
+                        <DialogTitle className="font-headline">Size Guide</DialogTitle>
+                        <DialogDescription>
+                          Find your perfect fit with our sizing chart. All measurements are in inches and centimeters.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="font-bold">Size</TableHead>
+                            <TableHead>Chest (inches)</TableHead>
+                            <TableHead>Chest (cm)</TableHead>
+                            <TableHead>Recommended for</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          <TableRow>
+                            <TableCell className="font-bold">S</TableCell>
+                            <TableCell>36 – 38 in</TableCell>
+                            <TableCell>91 – 96 cm</TableCell>
+                            <TableCell>Slim / lean build</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-bold">M</TableCell>
+                            <TableCell>38 – 40 in</TableCell>
+                            <TableCell>96 – 101 cm</TableCell>
+                            <TableCell>Average build</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-bold">L</TableCell>
+                            <TableCell>40 – 42 in</TableCell>
+                            <TableCell>101 – 106 cm</TableCell>
+                            <TableCell>Broad shoulders / athletic build</TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell className="font-bold">XL</TableCell>
+                            <TableCell>42 – 44 in</TableCell>
+                            <TableCell>106 – 112 cm</TableCell>
+                            <TableCell>Heavier / muscular build</TableCell>
+                          </TableRow>
+                        </TableBody>
+                      </Table>
+                    </DialogContent>
+                  </Dialog>
                 </li>
                 <li>
                   <Link
@@ -249,5 +294,3 @@ export function Footer() {
     </footer>
   );
 }
-
-    
