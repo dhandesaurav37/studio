@@ -32,7 +32,7 @@ export default function HomePage() {
   const { products } = useStore();
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
-  const premiumCollection = products.filter(p => ["Belts", "Bags", "Wallets", "Shoes", "Jackets"].includes(p.category) && p.price > 4000);
+  const premiumCollection = products.filter(p => p.price > 4000);
 
   const allCategories = [...new Set(products.map((p) => p.category))];
 
@@ -274,7 +274,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
-
-    
