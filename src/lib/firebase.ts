@@ -24,3 +24,4 @@ const rtdb = getDatabase(app);
 const storage = getStorage(app);
 
 export { app, auth, db, rtdb, storage };
+
