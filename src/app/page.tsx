@@ -252,7 +252,7 @@ export default function HomePage() {
                 key={category}
                 className="group"
               >
-                <Card className="overflow-hidden relative h-48">
+                <Card className="overflow-hidden relative h-64">
                   <Image
                     src={categoryImages[category]?.src || "https://placehold.co/600x400.png"}
                     alt={category}
