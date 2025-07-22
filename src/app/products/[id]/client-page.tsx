@@ -562,7 +562,7 @@ export default function ProductDetailClientPage({
           </div>
 
           {/* Quantity and Actions */}
-          <div className="flex items-center gap-4 mt-4">
+          <div className="grid grid-cols-2 gap-4 mt-4">
             <Button
               size="lg"
               className="flex-1"
@@ -588,7 +588,7 @@ export default function ProductDetailClientPage({
         <h2 className="text-2xl font-bold font-headline mb-6">
           You Might Also Like
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {relatedProducts.map((p) => (
             <ProductCard key={p.id} product={p} />
           ))}
