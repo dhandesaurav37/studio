@@ -42,8 +42,12 @@ export default function ProductDetailPage() {
   };
 
   const productNameRoot = getProductNameRoot(product.name);
+  
+  const potentialProducts = product.price <= 4000 
+    ? products.filter(p => p.price <= 4000)
+    : products;
 
-  const relatedProducts = products
+  const relatedProducts = potentialProducts
     .filter((p) => p.id !== product.id)
     .sort((a, b) => {
         const aIsSimilarName = getProductNameRoot(a.name) === productNameRoot;
