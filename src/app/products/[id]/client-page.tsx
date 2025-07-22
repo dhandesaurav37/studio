@@ -476,6 +476,12 @@ export default function ProductDetailClientPage({
                         <TableCell>106 – 112 cm</TableCell>
                         <TableCell>Heavier / muscular build</TableCell>
                       </TableRow>
+                       <TableRow>
+                        <TableCell className="font-bold">XXL</TableCell>
+                        <TableCell>44 – 46 in</TableCell>
+                        <TableCell>112 – 117 cm</TableCell>
+                        <TableCell>Larger build</TableCell>
+                      </TableRow>
                     </TableBody>
                   </Table>
                 </DialogContent>
@@ -771,5 +777,3 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
-
-    
