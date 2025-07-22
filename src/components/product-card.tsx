@@ -98,8 +98,8 @@ export function ProductCard({
         className
       )}
     >
-      <Link href={`/products/${product.id}`} className="block">
-        <CardContent className="p-0">
+      <CardContent className="p-0 relative">
+        <Link href={`/products/${product.id}`} className="block">
           <div className="relative aspect-[3/4] w-full">
             <Image
               src={product.images[currentImageIndex]}
@@ -110,29 +110,65 @@ export function ProductCard({
               data-ai-hint={product.dataAiHint}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
-            {product.images.length > 1 && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
-                  onClick={handlePrevImage}
-                >
-                  <ChevronLeft className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
-                  onClick={handleNextImage}
-                >
-                  <ChevronRight className="h-5 w-5" />
-                </Button>
-              </>
-            )}
           </div>
-        </CardContent>
-      </Link>
+        </Link>
+        {product.images.length > 1 && (
+          <>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
+              onClick={handlePrevImage}
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-background/50 text-foreground opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background/80"
+              onClick={handleNextImage}
+            >
+              <ChevronRight className="h-5 w-5" />
+            </Button>
+          </>
+        )}
+         <div className="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            {variant === "wishlist" ? (
+                <Button
+                    variant="destructive"
+                    size="icon"
+                    className="h-9 w-9"
+                    onClick={handleRemoveClick}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+            ) : (
+                <>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 bg-background/50 hover:bg-background/80"
+                        onClick={handleWishlistToggle}
+                    >
+                        <Heart
+                            className={cn(
+                                "h-5 w-5 text-foreground",
+                                isWishlisted && "fill-destructive text-destructive"
+                            )}
+                        />
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 bg-background/50 hover:bg-background/80"
+                        onClick={handleAddToCart}
+                    >
+                        <ShoppingBag className="h-5 w-5 text-foreground" />
+                    </Button>
+                </>
+            )}
+        </div>
+      </CardContent>
       <CardFooter className="p-4 flex flex-col items-start bg-card mt-auto">
         <p className="text-sm font-semibold text-muted-foreground">{product.brand}</p>
         <Link href={`/products/${product.id}`} className="w-full">
@@ -141,38 +177,8 @@ export function ProductCard({
         <p className="text-muted-foreground text-sm capitalize">
           {product.category.replace("-", " ")}
         </p>
-        <div className="flex items-center justify-between w-full mt-4">
+        <div className="flex items-center justify-between w-full mt-2">
           <p className="font-bold text-xl">₹{product.price.toFixed(2)}</p>
-          {variant === "wishlist" ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleRemoveClick}
-            >
-              <X className="mr-2 h-4 w-4" /> Remove
-            </Button>
-          ) : (
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hover:bg-accent/20"
-                onClick={handleWishlistToggle}
-              >
-                <Heart
-                  className={cn(
-                    "h-5 w-5 text-muted-foreground",
-                    isWishlisted && "fill-destructive text-destructive"
-                  )}
-                />
-                <span className="sr-only">Add to Wishlist</span>
-              </Button>
-              <Button variant="outline" size="icon" onClick={handleAddToCart}>
-                <ShoppingBag className="h-5 w-5" />
-                <span className="sr-only">Add to Cart</span>
-              </Button>
-            </div>
-          )}
         </div>
       </CardFooter>
     </Card>
