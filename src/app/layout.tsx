@@ -40,8 +40,8 @@ export default function RootLayout({
         <StoreProvider>
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
-            enableSystem
+            defaultTheme="dark"
+            enableSystem={false}
             disableTransitionOnChange
           >
             <div className="flex flex-col min-h-screen">
