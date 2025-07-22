@@ -53,6 +53,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 
 interface ProductDetailClientPageProps {
   product: Product;
+  similarProducts: Product[];
   relatedProducts: Product[];
 }
 
@@ -81,6 +82,7 @@ const categoryImages: { [key: string]: { src: string; hint: string } } = {
 
 export default function ProductDetailClientPage({
   product,
+  similarProducts,
   relatedProducts,
 }: ProductDetailClientPageProps) {
   const {
@@ -388,6 +390,28 @@ export default function ProductDetailClientPage({
   
   const alphaSizes = useMemo(() => product.sizes.filter(s => isNaN(parseInt(s))), [product.sizes]);
 
+  const ProductCarousel = ({ products }: { products: Product[] }) => (
+    <Carousel
+      opts={{
+        align: "start",
+        loop: products.length > 4,
+      }}
+      className="w-full"
+    >
+      <CarouselContent>
+        {products.map((p) => (
+          <CarouselItem key={p.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4">
+            <div className="p-1 h-full">
+              <ProductCard product={p} className="h-full" />
+            </div>
+          </CarouselItem>
+        ))}
+      </CarouselContent>
+      <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+      <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+    </Carousel>
+  );
+
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
@@ -582,6 +606,17 @@ export default function ProductDetailClientPage({
           </div>
         </div>
       </div>
+      
+       {/* Similar Products */}
+       {similarProducts.length > 0 && (
+        <div className="mt-16 md:mt-20">
+          <h2 className="text-2xl font-bold font-headline mb-6">
+            Similar Products
+          </h2>
+          <ProductCarousel products={similarProducts} />
+        </div>
+      )}
+
 
       {/* Related Products */}
       <div className="mt-16 md:mt-20">

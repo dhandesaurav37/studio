@@ -31,43 +31,36 @@ export default function ProductDetailPage() {
   }
 
   const getProductNameRoot = (name: string) => {
-    // Simple logic to get a "base" name, e.g., "Charcoal Crew-Neck Tee" -> "Crew-Neck Tee"
-    const commonWords = ["t-shirt", "tee", "shirt", "jeans", "sweater", "jacket", "pants", "overcoat", "loafers", "belt", "wallet", "bag"];
+    const commonWords = ["t-shirt", "tee", "shirt", "jeans", "sweater", "jacket", "pants", "overcoat", "loafers", "belt", "wallet", "bag", "chinos", "polo"];
+    const nameLower = name.toLowerCase();
     for (const word of commonWords) {
-        if (name.toLowerCase().includes(word)) {
-            return name.substring(name.toLowerCase().indexOf(word));
+        if (nameLower.includes(word)) {
+            return name.substring(nameLower.indexOf(word));
         }
+    }
+    // Fallback for names without common words, e.g., "Classic Leather Belt" -> "Leather Belt"
+    const words = name.split(" ");
+    if (words.length > 1) {
+      return words.slice(1).join(" ");
     }
     return name;
   };
 
   const productNameRoot = getProductNameRoot(product.name);
   
-  const potentialProducts = product.price <= 4000 
-    ? products.filter(p => p.price <= 4000)
-    : products;
+  const similarProducts = products
+    .filter((p) => p.id !== product.id && getProductNameRoot(p.name) === productNameRoot)
+    .slice(0, 4);
 
-  const relatedProducts = potentialProducts
-    .filter((p) => p.id !== product.id)
-    .sort((a, b) => {
-        const aIsSimilarName = getProductNameRoot(a.name) === productNameRoot;
-        const bIsSimilarName = getProductNameRoot(b.name) === productNameRoot;
-        const aIsSameCategory = a.category === product.category;
-        const bIsSameCategory = b.category === product.category;
-
-        if (aIsSimilarName && !bIsSimilarName) return -1;
-        if (!aIsSimilarName && bIsSimilarName) return 1;
-        if (aIsSameCategory && !bIsSameCategory) return -1;
-        if (!aIsSameCategory && bIsSameCategory) return 1;
-        
-        return 0; // Or other fallback sorting like rating
-    })
+  const relatedProducts = products
+    .filter((p) => p.id !== product.id && !similarProducts.some(sp => sp.id === p.id) && p.category === product.category)
     .slice(0, 4);
 
 
   return (
     <ProductDetailClientPage
       product={product}
+      similarProducts={similarProducts}
       relatedProducts={relatedProducts}
     />
   );
