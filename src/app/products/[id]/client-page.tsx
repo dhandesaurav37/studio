@@ -25,7 +25,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useStore, UserOrder } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
@@ -38,7 +38,14 @@ import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
 import { adminOrders } from "@/lib/admin-data";
 import { getAddressFromCoordinates } from "@/app/actions/geocoding";
-
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface ProductDetailClientPageProps {
   product: Product;
@@ -46,10 +53,14 @@ interface ProductDetailClientPageProps {
 }
 
 declare global {
-    interface Window {
-      Razorpay: any;
-    }
+  interface Window {
+    Razorpay: any;
+  }
 }
+
+const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
+const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
+
 
 export default function ProductDetailClientPage({
   product,
@@ -64,6 +75,7 @@ export default function ProductDetailClientPage({
     profile,
     addNotification,
     addOrder,
+    products: allProducts,
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -83,6 +95,20 @@ export default function ProductDetailClientPage({
     pincode: "",
     mobile: "",
   });
+  
+  const complementaryProducts = useMemo(() => {
+    const isTop = topCategories.includes(product.category);
+    const isBottom = bottomCategories.includes(product.category);
+
+    if (isTop) {
+      return allProducts.filter(p => bottomCategories.includes(p.category)).slice(0, 10);
+    }
+    if (isBottom) {
+      return allProducts.filter(p => topCategories.includes(p.category)).slice(0, 10);
+    }
+    return [];
+  }, [product.category, allProducts]);
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -477,6 +503,54 @@ export default function ProductDetailClientPage({
           ))}
         </div>
       </div>
+      
+      {/* Complete The Look */}
+      {complementaryProducts.length > 0 && (
+        <div className="mt-16 md:mt-20">
+          <h2 className="text-2xl font-bold font-headline mb-6">
+            Complete The Look
+          </h2>
+           <Carousel
+              opts={{
+                align: "start",
+                loop: complementaryProducts.length > 5,
+              }}
+              className="w-full"
+            >
+              <CarouselContent>
+                {complementaryProducts.map((p) => (
+                  <CarouselItem
+                    key={p.id}
+                    className="sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                  >
+                    <Link href={`/products/${p.id}`} className="block group">
+                       <Card className="overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative aspect-[3/4] w-full">
+                               <Image
+                                src={p.images[0]}
+                                alt={p.name}
+                                fill
+                                style={{ objectFit: "cover" }}
+                                className="group-hover:scale-105 transition-transform duration-500"
+                                data-ai-hint={p.dataAiHint}
+                                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 20vw"
+                              />
+                            </div>
+                          </CardContent>
+                       </Card>
+                       <h3 className="font-semibold text-sm truncate mt-2">{p.name}</h3>
+                       <p className="text-sm text-muted-foreground">₹{p.price.toFixed(2)}</p>
+                    </Link>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+              <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+            </Carousel>
+        </div>
+      )}
+
       {/* Purchase Confirmation Dialog */}
       <Dialog
         open={isPurchaseDialogOpen}
