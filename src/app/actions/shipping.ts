@@ -3,83 +3,64 @@
 
 import { z } from 'zod';
 
-const shiprocketAuthResponseSchema = z.object({
-  token: z.string(),
-});
-
-const getShiprocketToken = async () => {
-  const email = process.env.SHIPROCKET_EMAIL;
-  const password = process.env.SHIPROCKET_PASSWORD;
-
-  if (!email || !password) {
-    throw new Error('Shiprocket credentials are not configured.');
+const getDelhiveryToken = () => {
+  const token = process.env.DELHIVERY_API_KEY;
+  if (!token) {
+    throw new Error('Delhivery API key is not configured.');
   }
-
-  const res = await fetch("https://apiv2.shiprocket.in/v1/external/auth/login", {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const data = await res.json();
-  const parsed = shiprocketAuthResponseSchema.safeParse(data);
-
-  if (!parsed.success) {
-    console.error("Shiprocket auth error:", parsed.error);
-    throw new Error('Failed to authenticate with Shiprocket.');
-  }
-
-  return parsed.data.token;
+  return token;
 };
 
 const serviceabilitySchema = z.object({
   delivery_postcode: z.string().min(6).max(6),
   weight: z.number().positive(),
-  cod: z.enum(['0', '1']),
   subtotal: z.number().positive(),
 });
 
 export async function getShippingRates(input: z.infer<typeof serviceabilitySchema>) {
   try {
     const validatedInput = serviceabilitySchema.parse(input);
-    const token = await getShiprocketToken();
-    const pickupPincode = "442401"; // Replace with your actual pickup pincode or make it dynamic
+    const token = getDelhiveryToken();
+    const pickupPincode = "442401"; 
+
+    // Note: Delhivery API expects weight in kilograms.
+    const weightInKg = validatedInput.weight; 
 
     const queryParams = new URLSearchParams({
-      pickup_postcode: pickupPincode,
-      delivery_postcode: validatedInput.delivery_postcode,
-      cod: validatedInput.cod,
-      weight: validatedInput.weight.toString(),
-      declared_value: validatedInput.subtotal.toString(),
+      md: 'S', // Surface shipping mode
+      ss: 'DTO', // Shipping strategy
+      d_pin: validatedInput.delivery_postcode,
+      o_pin: pickupPincode,
+      cgm: weightInKg.toString(),
+      pt: 'Pre-paid',
+      cod_amount: validatedInput.cod === '1' ? validatedInput.subtotal.toString() : '0',
     });
-    
-    const res = await fetch(`https://apiv2.shiprocket.in/v1/external/courier/serviceability/?${queryParams.toString()}`, {
+
+    const res = await fetch(`https://track.delhivery.com/api/kinko/v1/invoice/charges.json?${queryParams.toString()}`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Token ${token}`
       },
     });
 
     const data = await res.json();
     
-    if (data.status !== 200 || !data.data?.available_courier_companies) {
-       return { success: false, message: data.message || "No couriers available for this pincode.", options: [] };
+    if (!res.ok || !data || data.length === 0) {
+       return { success: false, message: "No couriers available for this pincode.", options: [] };
     }
     
-    const availableOptions = data.data.available_courier_companies;
+    const firstOption = data[0];
+    const option = {
+      name: 'Delhivery Surface',
+      rate: firstOption.total_amount,
+      estimated_delivery_days: firstOption.etd,
+    };
 
-    const options = availableOptions.map((courier: any) => ({
-      name: courier.courier_name,
-      rate: courier.rate,
-      estimated_delivery_days: courier.etd,
-    })).sort((a: any, b: any) => a.rate - b.rate);
-
-    return { success: true, options };
+    return { success: true, options: [option] };
 
   } catch (error) {
-    console.error("Error fetching shipping rates:", error);
+    console.error("Error fetching Delhivery shipping rates:", error);
     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
     return { success: false, message: `Failed to fetch shipping rates. ${errorMessage}`, options: [] };
   }
 }
-
