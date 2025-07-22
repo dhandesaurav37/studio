@@ -252,12 +252,79 @@ export function Footer() {
                   </Dialog>
                 </li>
                 <li>
-                  <Link
-                    href="#"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Privacy Policy
-                  </Link>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground transition-colors text-left">Privacy Policy</button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-2xl">
+                      <DialogHeader>
+                        <DialogTitle className="font-headline text-2xl">Privacy Policy</DialogTitle>
+                         <DialogDescription>
+                          Effective Date: July 22, 2024
+                        </DialogDescription>
+                      </DialogHeader>
+                      <ScrollArea className="h-96 w-full pr-6">
+                        <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-4">
+                           <p>At The White Wolf, your privacy is important to us. This Privacy Policy outlines how we collect, use, store, and protect your information when you use our website and services.</p>
+                          
+                           <h3 className="font-semibold text-foreground">1. Information We Collect</h3>
+                           <p>We collect personal information to improve your shopping experience, process your orders, and communicate with you. This may include:</p>
+                           <ul className="list-disc pl-5">
+                            <li>Name</li>
+                            <li>Email address</li>
+                            <li>Phone number</li>
+                            <li>Shipping and billing address</li>
+                            <li>Payment details (processed securely via third-party providers)</li>
+                            <li>Order history</li>
+                            <li>IP address and browser/device data (for analytics & optimization)</li>
+                           </ul>
+
+                           <h3 className="font-semibold text-foreground">2. How We Use Your Information</h3>
+                           <p>We use your information to:</p>
+                           <ul className="list-disc pl-5">
+                            <li>Process and deliver orders</li>
+                            <li>Send order confirmations and shipping updates</li>
+                            <li>Respond to your customer service requests</li>
+                            <li>Personalize your shopping experience</li>
+                            <li>Improve website functionality and user experience</li>
+                            <li>Send marketing emails and promotional offers (only if you opt in)</li>
+                           </ul>
+
+                           <h3 className="font-semibold text-foreground">3. Sharing Your Information</h3>
+                           <p>We do not sell your personal data. Your information may be shared only with:</p>
+                           <ul className="list-disc pl-5">
+                            <li>Trusted third-party services (e.g., payment gateways, delivery partners)</li>
+                            <li>Analytics and marketing platforms (e.g., Google Analytics, Meta Ads) — only for tracking and performance</li>
+                            <li>Legal authorities, if required by law or to protect our rights</li>
+                           </ul>
+
+                           <h3 className="font-semibold text-foreground">4. Cookies & Tracking</h3>
+                           <p>We use cookies to remember your login or cart status, analyze website traffic, and improve personalization. You can disable cookies in your browser, but some features may not function as intended.</p>
+
+                           <h3 className="font-semibold text-foreground">5. Data Security</h3>
+                           <p>We use secure servers, SSL encryption, and trusted third-party platforms to protect your data. However, no system is 100% foolproof, so we encourage you to use strong passwords.</p>
+                           
+                           <h3 className="font-semibold text-foreground">6. Your Rights</h3>
+                           <p>You have the right to access, correct, or request deletion of your data (except when required for legal compliance). You can unsubscribe from marketing emails anytime.</p>
+
+                           <h3 className="font-semibold text-foreground">7. Third-Party Links</h3>
+                           <p>Our site may contain links to external websites. We are not responsible for their privacy practices.</p>
+
+                           <h3 className="font-semibold text-foreground">8. Children's Privacy</h3>
+                           <p>Our website is intended for users aged 16 and above. We do not knowingly collect data from minors.</p>
+
+                           <h3 className="font-semibold text-foreground">9. Changes to This Policy</h3>
+                           <p>We may update this Privacy Policy from time to time. Changes will be reflected on this page.</p>
+
+                           <h3 className="font-semibold text-foreground">10. Contact Us</h3>
+                           <p>If you have any questions or concerns about your privacy, feel free to contact us at:</p>
+                           <p>
+                            <strong>Email:</strong> <a href="mailto:thewhitewolf0501@gmail.com" className="text-primary hover:underline">thewhitewolf0501@gmail.com</a>
+                           </p>
+                        </div>
+                      </ScrollArea>
+                    </DialogContent>
+                  </Dialog>
                 </li>
               </ul>
             </div>
