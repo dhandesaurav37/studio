@@ -37,7 +37,6 @@ const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 const LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/WhiteWolfLogo.png?alt=media&token=8b8f27e6-15ac-4c62-90e7-835455a376a3";
 
 export function AppHeader() {
-  const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const router = useRouter();
@@ -45,7 +44,6 @@ export function AppHeader() {
   const { cart, wishlist } = useStore();
 
   useEffect(() => {
-    setIsMounted(true);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setIsAdmin(currentUser?.email === ADMIN_EMAIL);
@@ -69,24 +67,6 @@ export function AppHeader() {
       });
     }
   };
-
-  if (!isMounted) {
-    return (
-       <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-sm">
-        <div className="w-full flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
-            <div className="w-1/3"></div>
-            <div className="w-1/3 flex justify-center">
-                 <Link href="/" className="mr-8 flex items-center gap-2">
-                    <span className="text-2xl font-bold font-headline tracking-wider">
-                    White Wolf
-                    </span>
-                </Link>
-            </div>
-            <div className="w-1/3"></div>
-        </div>
-      </header>
-    );
-  }
 
   const renderAuthButtons = () => {
     if (user) {
