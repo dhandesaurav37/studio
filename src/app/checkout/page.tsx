@@ -58,6 +58,31 @@ export default function CheckoutPage() {
     setNewAddress((prev) => ({ ...prev, [id]: value }));
   };
 
+  const handleFetchLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          alert(`Location fetched: Lat: ${latitude}, Long: ${longitude}. API key needed to get address.`);
+        },
+        (error) => {
+          toast({
+            title: "Could not fetch location",
+            description: "Please ensure location services are enabled.",
+            variant: "destructive",
+          });
+          console.error("Geolocation error:", error);
+        }
+      );
+    } else {
+      toast({
+        title: "Geolocation not supported",
+        description: "Your browser does not support geolocation.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const shipping = cart.length > 0 ? 150 : 0;
   const total = subtotal + shipping;
@@ -212,9 +237,16 @@ export default function CheckoutPage() {
                   </div>
                 </div>
                 <div className="rounded-lg border p-4">
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem value="new" id="new-address" />
-                    <Label htmlFor="new-address" className="font-semibold cursor-pointer">Ship to a New Address</Label>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="new" id="new-address-radio" />
+                      <Label htmlFor="new-address-radio" className="font-semibold cursor-pointer">Ship to a New Address</Label>
+                    </div>
+                    {addressOption === "new" && (
+                       <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation}>
+                         <MapPin className="mr-1 h-4 w-4" /> Use my current location
+                       </Button>
+                    )}
                   </div>
                   {addressOption === "new" && (
                     <div className="space-y-3 mt-4 pl-8">

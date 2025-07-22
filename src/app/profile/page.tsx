@@ -99,6 +99,33 @@ export default function ProfilePage() {
       address: { ...prev.address, [id]: value },
     }));
   };
+  
+  const handleFetchLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // You would typically use a reverse geocoding API here
+          alert(`Location fetched: Lat: ${latitude}, Long: ${longitude}. API key needed to get address.`);
+        },
+        (error) => {
+          toast({
+            title: "Could not fetch location",
+            description: "Please ensure location services are enabled.",
+            variant: "destructive",
+          });
+          console.error("Geolocation error:", error);
+        }
+      );
+    } else {
+      toast({
+        title: "Geolocation not supported",
+        description: "Your browser does not support geolocation.",
+        variant: "destructive",
+      });
+    }
+  };
+
 
   if (isLoading) {
     return (
@@ -156,7 +183,12 @@ export default function ProfilePage() {
                 <Input id="mobile" type="tel" value={editedProfile.mobile} onChange={handleInputChange} placeholder="Enter your mobile number" />
               </div>
               <div className="grid gap-2">
-                 <Label htmlFor="street">Address</Label>
+                 <div className="flex items-center justify-between">
+                   <Label htmlFor="street">Address</Label>
+                   <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation}>
+                     <MapPin className="mr-1 h-4 w-4" /> Use my current location
+                   </Button>
+                 </div>
                  <Input id="street" value={editedProfile.address.street} onChange={handleAddressChange} placeholder="Street" />
                  <div className="grid grid-cols-3 gap-2">
                    <Input id="city" value={editedProfile.address.city} onChange={handleAddressChange} placeholder="City" />
