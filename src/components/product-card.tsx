@@ -130,11 +130,6 @@ export function ProductCard({
                 </Button>
               </>
             )}
-             <div className="absolute top-3 left-3 flex flex-wrap gap-1">
-                {product.sizes && product.sizes.map(size => (
-                  <Badge key={size} variant="secondary" className="text-xs">{size}</Badge>
-                ))}
-             </div>
           </div>
         </CardContent>
       </Link>
