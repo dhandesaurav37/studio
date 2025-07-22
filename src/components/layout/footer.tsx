@@ -67,7 +67,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/#new-arrivals"
+                    href="/products"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     New Arrivals
@@ -75,7 +75,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/products?category=t-shirts"
+                    href="/products?category=T-Shirts"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     T-Shirts
@@ -83,7 +83,7 @@ export function Footer() {
                 </li>
                 <li>
                   <Link
-                    href="/products?category=jeans"
+                    href="/products?category=Jeans"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Jeans
@@ -258,5 +258,3 @@ export function Footer() {
     </footer>
   );
 }
-
-    
