@@ -16,7 +16,9 @@ import {
 import { useStore } from "@/hooks/use-store";
 import { ScrollArea } from "../ui/scroll-area";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Image from "next/image";
 
+const LOGO_URL = "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/WhiteWolfLogo.png?alt=media&token=8b8f27e6-15ac-4c62-90e7-835455a376a3";
 
 export function Footer() {
   const { averageRating } = useStore();
@@ -28,6 +30,7 @@ export function Footer() {
           {/* Brand and Socials */}
           <div className="lg:col-span-4 flex flex-col items-start">
             <Link href="/" className="flex items-center gap-2 mb-4">
+               <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
               <h3 className="text-2xl font-headline font-bold">
                 White Wolf
               </h3>
@@ -249,7 +252,7 @@ export function Footer() {
                                 <p>Email us at <a href="mailto:support@thewhitewolf.in" className="text-primary hover:underline">support@thewhitewolf.in</a> within 7 days of delivery with your Order ID and reason. We’ll guide you through the process.</p>
 
                                 <h4 className="font-semibold text-foreground">📌 Important Notes:</h4>
-                                <ul className="list-disc pl-5">
+                                <ul className="list-disc pl_5">
                                     <li>Unauthorized returns will not be accepted.</li>
                                     <li>Refunds are initiated after a successful quality check.</li>
                                 </ul>
@@ -332,7 +335,7 @@ export function Footer() {
                           
                            <h3 className="font-semibold text-foreground">1. Information We Collect</h3>
                            <p>We collect personal information to improve your shopping experience, process your orders, and communicate with you. This may include:</p>
-                           <ul className="list-disc pl-5">
+                           <ul className="list-disc pl_5">
                             <li>Name</li>
                             <li>Email address</li>
                             <li>Phone number</li>
@@ -344,7 +347,7 @@ export function Footer() {
 
                            <h3 className="font-semibold text-foreground">2. How We Use Your Information</h3>
                            <p>We use your information to:</p>
-                           <ul className="list-disc pl-5">
+                           <ul className="list-disc pl_5">
                             <li>Process and deliver orders</li>
                             <li>Send order confirmations and shipping updates</li>
                             <li>Respond to your customer service requests</li>
@@ -355,7 +358,7 @@ export function Footer() {
 
                            <h3 className="font-semibold text-foreground">3. Sharing Your Information</h3>
                            <p>We do not sell your personal data. Your information may be shared only with:</p>
-                           <ul className="list-disc pl-5">
+                           <ul className="list-disc pl_5">
                             <li>Trusted third-party services (e.g., payment gateways, delivery partners)</li>
                             <li>Analytics and marketing platforms (e.g., Google Analytics, Meta Ads) — only for tracking and performance</li>
                             <li>Legal authorities, if required by law or to protect our rights</li>
