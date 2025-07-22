@@ -32,13 +32,13 @@ import { ProductCard } from "@/components/product-card";
 import { useStore, UserOrder } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { auth } from "@/lib/firebase";
+import { auth, rtdb } from "@/lib/firebase";
+import { ref, push, set } from "firebase/database";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
-import { adminOrders } from "@/lib/admin-data";
 import { getAddressFromCoordinates } from "@/app/actions/geocoding";
 import {
   Carousel,
@@ -246,9 +246,8 @@ export default function ProductDetailClientPage({
     setIsPurchaseDialogOpen(true);
   };
 
-  const handlePayment = async (method: "Online" | "COD") => {
-    if (method === "COD") {
-       if (!user || !selectedSize) return;
+  const placeOrder = async (method: "Online" | "COD") => {
+      if (!user || !selectedSize) return;
 
       const shippingAddress = addressOption === 'new' ? {
         name: newAddress.name,
@@ -279,65 +278,74 @@ export default function ProductDetailClientPage({
           email: user.email || 'N/A',
         },
         shippingAddress: shippingAddress,
-        paymentMethod: "COD",
+        paymentMethod: method,
         status: "Pending" as const,
         total: product.price * quantity,
-        items: [{ product, quantity, size: selectedSize }],
+        items: [{ 
+            productId: product.id,
+            quantity: quantity, 
+            size: selectedSize 
+        }],
       };
+      
+      try {
+        const ordersRef = ref(rtdb, 'orders');
+        const newOrderRef = push(ordersRef);
+        await set(newOrderRef, { ...newAdminOrder, id: newOrderRef.key });
 
-      adminOrders.unshift(newAdminOrder);
-      addOrder(newUserOrder);
+        addOrder({ ...newUserOrder, id: newOrderRef.key! });
 
-      addNotification({
-        id: Date.now(),
-        type: 'admin',
-        icon: 'Package',
-        title: 'New COD Order Received',
-        description: `Order #${newAdminOrderId} for ${product.name} has been placed by ${user.displayName || user.email}.`,
-        time: 'Just now',
-        read: false,
-        orderId: newAdminOrderId,
-      });
+        addNotification({
+            id: Date.now(),
+            type: 'admin',
+            icon: 'Package',
+            title: `New ${method} Order Received`,
+            description: `Order #${newAdminOrderId} for ${product.name} has been placed.`,
+            time: 'Just now',
+            read: false,
+            orderId: newOrderRef.key!,
+        });
 
-      setIsPurchaseDialogOpen(false);
-      toast({
-        title: "Order Placed!",
-        description: `Your order for ${product.name} will be processed shortly. Payment via COD.`,
-      });
-      router.push("/orders");
-      return;
-    }
-    
-    // Handle Online Payment
-    try {
-      const order = await createRazorpayOrder(product.price * quantity);
-       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: order.amount,
-        currency: order.currency,
-        name: "White Wolf",
-        description: `Purchase of ${product.name}`,
-        order_id: order.id,
-        handler: function (response: any) {
-            toast({
-                title: "Payment Successful!",
-                description: `Your payment for order ${response.razorpay_order_id} was successful.`,
-            });
-            setIsPurchaseDialogOpen(false);
-            router.push("/orders");
-        },
-        prefill: {
-            name: profile.name,
-            email: profile.email,
-            contact: profile.mobile,
-        },
-        notes: {
-            address: `${profile.address.street}, ${profile.address.city}, ${profile.address.pincode}`,
-        },
-        theme: {
-            color: "#333333",
-        },
-       };
+        setIsPurchaseDialogOpen(false);
+        toast({
+            title: "Order Placed!",
+            description: `Your order for ${product.name} will be processed shortly.`,
+        });
+        router.push("/orders");
+      } catch (error) {
+        console.error("Error placing order:", error);
+        toast({ title: "Error", description: "Failed to save order. Please try again.", variant: "destructive" });
+      }
+  };
+
+  const handlePayment = async (method: "Online" | "COD") => {
+    if (method === "COD") {
+       placeOrder(method);
+    } else { // Handle Online Payment
+      try {
+        const order = await createRazorpayOrder(product.price * quantity);
+        const options = {
+            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+            amount: order.amount,
+            currency: order.currency,
+            name: "White Wolf",
+            description: `Purchase of ${product.name}`,
+            order_id: order.id,
+            handler: function (response: any) {
+                placeOrder(method);
+            },
+            prefill: {
+                name: profile.name,
+                email: profile.email,
+                contact: profile.mobile,
+            },
+            notes: {
+                address: `${profile.address.street}, ${profile.address.city}, ${profile.address.pincode}`,
+            },
+            theme: {
+                color: "#333333",
+            },
+        };
        
        const rzp1 = new window.Razorpay(options);
        rzp1.on('payment.failed', function (response: any) {
@@ -355,6 +363,7 @@ export default function ProductDetailClientPage({
             variant: "destructive",
         })
     }
+  }
   };
 
   const hasDefaultAddress =

@@ -41,12 +41,14 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/services/storage";
-import { getDatabase, ref, push, set, update } from "firebase/database";
+import { ref, push, set, update, onValue } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
+import type { AdminOrder } from "@/lib/admin-data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const staticCategories = [
   "Shirts",
@@ -69,6 +71,8 @@ const staticCategories = [
 export default function AdminDashboardPage() {
   const { products } = useStore();
   const { toast } = useToast();
+  const [orders, setOrders] = useState<AdminOrder[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editedProductData, setEditedProductData] = useState<Partial<Product> | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -80,6 +84,38 @@ export default function AdminDashboardPage() {
   const [newProductCategory, setNewProductCategory] = useState('');
   
   const allCategoriesForFilter = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
+
+  useEffect(() => {
+    const ordersRef = ref(rtdb, 'orders');
+    const unsubscribe = onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const ordersData: AdminOrder[] = Object.keys(data).map(key => ({
+            id: key,
+            ...data[key]
+        })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        setOrders(ordersData);
+      } else {
+        setOrders([]);
+      }
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const dashboardStats = useMemo(() => {
+    const totalRevenue = orders
+      .filter(o => o.status === 'Delivered')
+      .reduce((sum, order) => sum + order.total, 0);
+
+    const newOrders = orders.filter(o => o.status === 'Pending').length;
+
+    const totalUsers = new Set(orders.map(o => o.customer.email)).size;
+    
+    return { totalRevenue, newOrders, totalUsers };
+  }, [orders]);
+
 
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
@@ -219,9 +255,11 @@ export default function AdminDashboardPage() {
             <BarChart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">₹4,523,189</div>
+            {isLoading ? <Skeleton className="h-8 w-3/4" /> : (
+                <div className="text-2xl font-bold">₹{dashboardStats.totalRevenue.toLocaleString('en-IN')}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              Based on delivered orders
             </p>
           </CardContent>
         </Card>
@@ -233,9 +271,11 @@ export default function AdminDashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+1,234</div>
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : (
+                <div className="text-2xl font-bold">{dashboardStats.newOrders}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +15% from last month
+              Orders pending fulfillment
             </p>
           </CardContent>
         </Card>
@@ -249,7 +289,7 @@ export default function AdminDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{products.length}</div>
             <p className="text-xs text-muted-foreground">
-              12 products are low on stock
+              Total active products
             </p>
           </CardContent>
         </Card>
@@ -261,9 +301,11 @@ export default function AdminDashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">1,257</div>
+            {isLoading ? <Skeleton className="h-8 w-1/2" /> : (
+              <div className="text-2xl font-bold">{dashboardStats.totalUsers}</div>
+            )}
             <p className="text-xs text-muted-foreground">
-              +10 since last week
+              Unique customers with orders
             </p>
           </CardContent>
         </Card>

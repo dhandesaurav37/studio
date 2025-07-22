@@ -12,12 +12,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { auth, rtdb } from "@/lib/firebase";
+import { ref, push, set } from "firebase/database";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "../products/[id]/actions";
-import { adminOrders } from "@/lib/admin-data";
 import { getAddressFromCoordinates } from "../actions/geocoding";
 import { getShippingRates } from "../actions/shipping";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
     const newAdminOrderId = `WW-${Math.floor(Math.random() * 90000) + 10000}`;
     const productNames = cart.map(item => item.product.name).join(', ');
 
-    const placeOrder = () => {
+    const placeOrder = async () => {
         const newUserOrder: UserOrder = {
           id: newAdminOrderId,
           date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
@@ -209,29 +209,42 @@ export default function CheckoutPage() {
           paymentMethod: method,
           status: "Pending" as const,
           total: total,
-          items: cart.map(item => ({ product: item.product, quantity: item.quantity, size: item.size })),
+          items: cart.map(item => ({ 
+              productId: item.product.id,
+              quantity: item.quantity, 
+              size: item.size 
+          })),
         };
         
-        adminOrders.unshift(newAdminOrder);
-        addOrder(newUserOrder);
+        try {
+            const ordersRef = ref(rtdb, 'orders');
+            const newOrderRef = push(ordersRef);
+            await set(newOrderRef, { ...newAdminOrder, id: newOrderRef.key });
 
-        addNotification({
-            id: Date.now(),
-            type: 'admin',
-            icon: 'Package',
-            title: `New ${method} Order Received`,
-            description: `Order #${newAdminOrderId} for ${productNames} has been placed.`,
-            time: 'Just now',
-            read: false,
-            orderId: newAdminOrderId,
-        });
+            addOrder({ ...newUserOrder, id: newOrderRef.key! });
+        
+            addNotification({
+                id: Date.now(),
+                type: 'admin',
+                icon: 'Package',
+                title: `New ${method} Order Received`,
+                description: `Order #${newAdminOrderId} for ${productNames} has been placed.`,
+                time: 'Just now',
+                read: false,
+                orderId: newOrderRef.key!,
+            });
 
-        clearCart();
-        toast({
-            title: "Order Placed!",
-            description: `Your order will be processed shortly.`,
-        });
-        router.push("/orders");
+            clearCart();
+            toast({
+                title: "Order Placed!",
+                description: `Your order will be processed shortly.`,
+            });
+            router.push("/orders");
+
+        } catch (error) {
+            console.error("Error placing order:", error);
+            toast({ title: "Error", description: "Failed to save order. Please try again.", variant: "destructive" });
+        }
     }
 
     if (method === "COD") {
