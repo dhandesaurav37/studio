@@ -81,12 +81,20 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="/contact"
+                  <a
+                    href="mailto:thewhitewolf0501@gmail.com"
                     className="text-muted-foreground hover:text-foreground transition-colors"
                   >
-                    Contact Us
-                  </Link>
+                    thewhitewolf0501@gmail.com
+                  </a>
+                </li>
+                 <li>
+                  <a
+                    href="tel:+917219789870"
+                    className="text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    +91 7219789870
+                  </a>
                 </li>
                 <li>
                   <Link
