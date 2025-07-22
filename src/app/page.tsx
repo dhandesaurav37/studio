@@ -134,36 +134,36 @@ export default function HomePage() {
       <section className="bg-card w-full">
         <div className="py-16 md:py-20">
          <div className="container mx-auto">
-            <div className="flex flex-col md:flex-row justify-center items-center gap-12 text-center">
-                <div className="flex flex-col items-center gap-4">
-                <Archive className="h-10 w-10 text-destructive" />
+            <div className="flex flex-row justify-around items-start md:justify-center md:items-center md:gap-12 text-center">
+                <div className="flex flex-col items-center gap-2 md:gap-4">
+                <Archive className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
                 <div>
-                    <h3 className="text-xl font-semibold font-headline mb-2">
+                    <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Exclusive Designs
                     </h3>
-                    <p className="text-muted-foreground max-w-xs">
+                    <p className="text-muted-foreground max-w-xs text-xs md:text-sm">
                     Curated pieces you won&apos;t find anywhere else.
                     </p>
                 </div>
                 </div>
-                <div className="flex flex-col items-center gap-4">
-                <Shirt className="h-10 w-10 text-destructive" />
+                <div className="flex flex-col items-center gap-2 md:gap-4">
+                <Shirt className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
                 <div>
-                    <h3 className="text-xl font-semibold font-headline mb-2">
+                    <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Premium Quality
                     </h3>
-                    <p className="text-muted-foreground max-w-xs">
+                    <p className="text-muted-foreground max-w-xs text-xs md:text-sm">
                     Crafted from the finest materials for lasting comfort.
                     </p>
                 </div>
                 </div>
-                <div className="flex flex-col items-center gap-4">
-                <Truck className="h-10 w-10 text-destructive" />
+                <div className="flex flex-col items-center gap-2 md:gap-4">
+                <Truck className="h-8 w-8 md:h-10 md:w-10 text-destructive" />
                 <div>
-                    <h3 className="text-xl font-semibold font-headline mb-2">
+                    <h3 className="text-base md:text-xl font-semibold font-headline mb-1 md:mb-2">
                     Fast Shipping
                     </h3>
-                    <p className="text-muted-foreground max-w-xs">
+                    <p className="text-muted-foreground max-w-xs text-xs md:text-sm">
                     Get your new look delivered to your door in days.
                     </p>
                 </div>
