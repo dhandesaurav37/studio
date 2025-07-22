@@ -20,7 +20,7 @@ import { Card } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
 
 const heroImages = [
-  { src: "https://placehold.co/1920x1080.png", hint: "fashion model" },
+  { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7", hint: "fashion model" },
   { src: "https://placehold.co/1920x1080.png", hint: "mens fashion" },
   { src: "https://placehold.co/1920x1080.png", hint: "stylish apparel" },
   { src: "https://placehold.co/1920x1080.png", hint: "urban fashion" },
