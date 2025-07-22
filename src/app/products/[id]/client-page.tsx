@@ -37,7 +37,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
 import { adminOrders } from "@/lib/admin-data";
-import { getAddressFromCoordinates } from "../actions/geocoding";
+import { getAddressFromCoordinates } from "@/app/actions/geocoding";
 
 
 interface ProductDetailClientPageProps {
