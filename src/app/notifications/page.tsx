@@ -4,19 +4,22 @@
 import { Bell, CheckCircle, Package, Tag, Truck, XCircle as XCircleIcon, Undo2, PackageCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/hooks/use-store";
-import { auth } from "@/lib/firebase";
+import { auth, rtdb } from "@/lib/firebase";
 import { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import type { OrderStatus, Notification as NotificationType } from "@/hooks/use-store";
-import { adminOrders } from "@/lib/admin-data";
+import { ref, update } from "firebase/database";
+import { useToast } from "@/hooks/use-toast";
+
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead, addNotification, updateOrderStatus, orders } = useStore();
+  const { notifications, markAsRead, markAllAsRead, addNotification } = useStore();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -26,7 +29,7 @@ export default function NotificationsPage() {
     return () => unsubscribe();
   }, []);
 
-  const handleOrderAction = (
+  const handleOrderAction = async (
     notification: NotificationType,
     action: "accept" | "reject"
   ) => {
@@ -37,46 +40,56 @@ export default function NotificationsPage() {
     let userNotificationTitle: string;
     let userNotificationDescription: string;
     let userNotificationIcon: string;
-
-    const orderInStaticList = adminOrders.find(o => o.id === orderId);
+    const orderShortId = orderId.slice(-6).toUpperCase();
 
     if (notification.title.includes('Return Requested')) {
         // Handling a return request
         newStatus = action === 'accept' ? 'Return Request Accepted' : 'Return Rejected';
         userNotificationTitle = `Return ${action === 'accept' ? 'Accepted' : 'Rejected'}`;
-        userNotificationDescription = `Your return request for order #${orderId} has been ${action === 'accept' ? 'accepted. A pickup will be scheduled soon' : 'rejected'}.`;
+        userNotificationDescription = `Your return request for order #${orderShortId} has been ${action === 'accept' ? 'accepted. A pickup will be scheduled soon' : 'rejected'}.`;
         userNotificationIcon = action === 'accept' ? 'CheckCircle' : 'XCircleIcon';
     } else {
         // Handling a new order
         newStatus = action === 'accept' ? 'Shipped' : 'Cancelled';
         userNotificationTitle = `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`;
-        userNotificationDescription = `Your order #${orderId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`;
+        userNotificationDescription = `Your order #${orderShortId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`;
         userNotificationIcon = action === 'accept' ? 'Truck' : 'XCircleIcon';
     }
     
-    if (orderInStaticList) {
-        orderInStaticList.status = newStatus;
-    }
+    try {
+        const orderRef = ref(rtdb, `orders/${orderId}`);
+        await update(orderRef, { status: newStatus });
+        
+        // Add a notification for the user
+        addNotification({
+          id: Date.now(),
+          type: 'user',
+          icon: userNotificationIcon,
+          title: userNotificationTitle,
+          description: userNotificationDescription,
+          time: 'Just now',
+          read: false,
+        });
+        
+        markAsRead(notification.id);
+        
+        toast({
+            title: 'Action Successful',
+            description: `Order #${orderShortId} has been updated to ${newStatus}.`
+        });
 
-    // Update the user's order status in the global state
-    updateOrderStatus(orderId, newStatus);
-    
-    // Add a notification for the user
-    addNotification({
-      id: Date.now(),
-      type: 'user',
-      icon: userNotificationIcon,
-      title: userNotificationTitle,
-      description: userNotificationDescription,
-      time: 'Just now',
-      read: false,
-    });
-    
-    markAsRead(notification.id);
+    } catch (error) {
+        console.error("Failed to update order status from notification:", error);
+        toast({
+            title: "Error",
+            description: "Could not update order status. Please try again.",
+            variant: "destructive"
+        });
+    }
   };
   
   const userNotifications = notifications.filter(n => n.type !== 'admin');
-  const adminNotifications = notifications.filter(n => n.type === 'admin');
+  const adminNotifications = notifications.filter(n => n.type === 'admin').sort((a,b) => b.id - a.id);
   
   const displayedNotifications = isAdmin ? adminNotifications : userNotifications;
 
@@ -110,7 +123,7 @@ export default function NotificationsPage() {
               <li
                 key={notification.id}
                 className={`flex flex-col sm:flex-row items-start gap-4 p-4 sm:p-6 ${
-                  !notification.read ? "bg-card" : ""
+                  !notification.read ? "bg-card" : "bg-muted/30"
                 }`}
               >
                 <div
@@ -156,7 +169,9 @@ export default function NotificationsPage() {
                   )}
                 </div>
                 {!notification.read && (
-                  <div className="mt-1.5 h-2.5 w-2.5 rounded-full bg-destructive flex-shrink-0"></div>
+                   <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => markAsRead(notification.id)}>
+                    <div className="h-2.5 w-2.5 rounded-full bg-destructive flex-shrink-0"></div>
+                   </Button>
                 )}
               </li>
             )) : (
@@ -170,3 +185,5 @@ export default function NotificationsPage() {
     </div>
   );
 }
+
+    
