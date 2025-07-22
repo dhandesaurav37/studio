@@ -1,7 +1,18 @@
+
+"use client";
+
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Instagram } from "lucide-react";
+import { Instagram, Mail, Phone } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 export function Footer() {
   return (
@@ -81,20 +92,33 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <a
-                    href="mailto:thewhitewolf0501@gmail.com"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    thewhitewolf0501@gmail.com
-                  </a>
-                </li>
-                 <li>
-                  <a
-                    href="tel:+917219789870"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    +91 7219789870
-                  </a>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground transition-colors text-left">Contact Us</button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="font-headline">Contact Information</DialogTitle>
+                        <DialogDescription>
+                          Get in touch with us through the channels below.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div className="flex items-center gap-4">
+                          <Mail className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                          <a href="mailto:thewhitewolf0501@gmail.com" className="hover:underline">
+                            thewhitewolf0501@gmail.com
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <Phone className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                          <a href="tel:+917219789870" className="hover:underline">
+                            +91 7219789870
+                          </a>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </li>
                 <li>
                   <Link
