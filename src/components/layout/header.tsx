@@ -187,7 +187,7 @@ export function AppHeader() {
         {/* --- Desktop Header --- */}
         <div className="hidden md:flex w-full items-center">
           <Link href="/" className="mr-8 flex items-center gap-2">
-            <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} className="rounded-full" />
+            <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
             <span className="text-2xl font-bold font-headline tracking-wider">
               White Wolf
             </span>
@@ -220,7 +220,7 @@ export function AppHeader() {
         {/* --- Mobile Header --- */}
         <div className="flex w-full items-center justify-between md:hidden">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline">
-             <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} className="rounded-full" />
+             <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} />
             <span>White Wolf</span>
           </Link>
 
@@ -240,7 +240,7 @@ export function AppHeader() {
                 <SheetHeader>
                   <SheetTitle>
                     <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline">
-                       <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} className="rounded-full" />
+                       <Image src={LOGO_URL} alt="White Wolf Logo" width={32} height={32} />
                       <span>White Wolf</span>
                     </Link>
                   </SheetTitle>
