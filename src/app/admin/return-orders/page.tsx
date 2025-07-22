@@ -103,6 +103,8 @@ export default function AdminReturnOrdersPage() {
     try {
         const orderRef = ref(rtdb, `orders/${orderId}`);
         await update(orderRef, { status: newStatus });
+        
+        updateOrderStatus(orderId, newStatus);
 
         addNotification({
             id: Date.now(),
@@ -306,5 +308,3 @@ export default function AdminReturnOrdersPage() {
     </div>
   );
 }
-
-    
