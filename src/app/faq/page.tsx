@@ -54,6 +54,10 @@ export default function FaqPage() {
   const [hoverRating, setHoverRating] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { toast } = useToast();
+  
+  // State for average rating and total count
+  const [averageRating, setAverageRating] = useState(4.7);
+  const [totalRatings, setTotalRatings] = useState(256);
 
   const handleRatingSubmit = () => {
     if (rating === 0) {
@@ -64,6 +68,14 @@ export default function FaqPage() {
       });
       return;
     }
+    
+    // Update average and total ratings
+    const newTotalRatings = totalRatings + 1;
+    const newAverageRating = (averageRating * totalRatings + rating) / newTotalRatings;
+    
+    setTotalRatings(newTotalRatings);
+    setAverageRating(newAverageRating);
+
     toast({
       title: "Thank you for your feedback!",
       description: `You gave us a rating of ${rating} out of 5.`,
@@ -82,6 +94,23 @@ export default function FaqPage() {
           <p className="mt-4 text-lg text-muted-foreground">
             Have a question? We're here to help.
           </p>
+          <div className="flex items-center justify-center gap-4 mt-6">
+            <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-6 w-6 ${
+                        i < Math.round(averageRating)
+                          ? "text-amber-400 fill-amber-400"
+                          : "text-muted-foreground/30"
+                      }`}
+                    />
+                ))}
+            </div>
+            <p className="text-muted-foreground">
+                <span className="font-bold text-foreground">{averageRating.toFixed(1)}</span> ({totalRatings} ratings)
+            </p>
+          </div>
         </div>
         <Accordion type="single" collapsible className="w-full">
           {faqs.map((faq, index) => (
