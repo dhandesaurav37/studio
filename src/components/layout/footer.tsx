@@ -193,12 +193,73 @@ export function Footer() {
               <h4 className="font-semibold mb-4 tracking-wider uppercase text-sm">Support</h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link
-                    href="#"
-                    className="text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Shipping & Returns
-                  </Link>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground transition-colors text-left">Shipping &amp; Returns</button>
+                    </DialogTrigger>
+                     <DialogContent className="sm:max-w-2xl">
+                        <DialogHeader>
+                          <DialogTitle className="font-headline text-2xl">Shipping &amp; Returns Policy</DialogTitle>
+                          <DialogDescription>
+                            Effective Date: July 22, 2024
+                          </DialogDescription>
+                        </DialogHeader>
+                        <ScrollArea className="h-96 w-full pr-6">
+                           <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-4">
+                                <p>At The White Wolf, we take pride in delivering high-quality products swiftly and securely. Please read our shipping and return terms carefully before placing your order.</p>
+
+                                <h3 className="font-semibold text-foreground">🚚 Shipping Policy</h3>
+                                <p><strong className="text-foreground">Delivery Locations:</strong> We currently ship across India.</p>
+                                <p><strong className="text-foreground">Delivery Time:</strong> Metro Cities: 2–5 business days. Other Locations: 4–7 business days. Note: Delivery timelines are estimates and may vary.</p>
+                                <p><strong className="text-foreground">Shipping Charges:</strong> Free shipping on prepaid orders above ₹999. A fee of ₹49–₹99 applies to orders below ₹999. COD orders may have an additional ₹50 fee.</p>
+
+                                <h3 className="font-semibold text-foreground pt-4">🔁 Return &amp; Exchange Policy</h3>
+                                <p>We want you to be happy with your purchase. If you're not satisfied, here’s our policy:</p>
+                                
+                                <h4 className="font-semibold text-foreground">✅ Eligibility:</h4>
+                                <ul className="list-disc pl-5">
+                                    <li>Return requests must be made within 7 days of receiving your order.</li>
+                                    <li>Products must be unused, unwashed, and in original condition with tags and packaging intact.</li>
+                                </ul>
+
+                                <h4 className="font-semibold text-foreground">🚫 Non-Returnable Items:</h4>
+                                <ul className="list-disc pl-5">
+                                    <li>Innerwear/personal wear</li>
+                                    <li>Items marked "Final Sale" or discounted over 40%</li>
+                                    <li>Gift cards and customized pieces</li>
+                                </ul>
+
+                                <h4 className="font-semibold text-foreground">🔄 Returns &amp; Exchanges:</h4>
+                                <ul className="list-disc pl-5">
+                                    <li>Shipping charges are non-refundable.</li>
+                                    <li>For size or personal reason returns, shipping charges will be deducted from the refund.</li>
+                                    <li>Full refunds (including shipping) for damaged, defective, or wrong items.</li>
+                                    <li>Exchanges for size are subject to availability and may incur a shipping charge.</li>
+                                </ul>
+                                
+                                <h4 className="font-semibold text-foreground">💸 Refunds:</h4>
+                                <ul className="list-disc pl-5">
+                                    <li>Prepaid orders: Refunded to original payment method within 5–7 business days after quality check.</li>
+                                    <li>COD orders: Refunded via UPI or store credit.</li>
+                                </ul>
+                                
+                                <h4 className="font-semibold text-foreground">📝 How to Request a Return/Exchange:</h4>
+                                <p>Email us at <a href="mailto:support@thewhitewolf.in" className="text-primary hover:underline">support@thewhitewolf.in</a> within 7 days of delivery with your Order ID and reason. We’ll guide you through the process.</p>
+
+                                <h4 className="font-semibold text-foreground">📌 Important Notes:</h4>
+                                <ul className="list-disc pl-5">
+                                    <li>Unauthorized returns will not be accepted.</li>
+                                    <li>Refunds are initiated after a successful quality check.</li>
+                                </ul>
+                                
+                                <h4 className="font-semibold text-foreground">📞 Need Help?</h4>
+                                <p><strong>Email:</strong> <a href="mailto:support@thewhitewolf.in" className="text-primary hover:underline">support@thewhitewolf.in</a><br/><strong>Phone:</strong> <a href="tel:+917219789870" className="text-primary hover:underline">+91 7219789870</a> (Mon–Sat | 10:00 AM – 6:00 PM)</p>
+                                
+                                <p className="text-center italic pt-4">Wear it. Love it. Or return it (we’ll still treat you like family — just minus the shipping costs 😉).</p>
+                           </div>
+                        </ScrollArea>
+                      </DialogContent>
+                  </Dialog>
                 </li>
                 <li>
                   <Dialog>
