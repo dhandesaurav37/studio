@@ -2,6 +2,7 @@
 export interface Product {
   id: string;
   name: string;
+  brand: string;
   price: number;
   description: string;
   images: string[];
@@ -19,6 +20,7 @@ export const initialProducts: Product[] = [
   {
     id: "1",
     name: "Charcoal Crew-Neck Tee",
+    brand: "White Wolf",
     price: 1999,
     description:
       "A classic crew-neck t-shirt made from premium Peruvian Pima cotton. Ultra-soft, durable, and perfect for any occasion.",
@@ -37,6 +39,7 @@ export const initialProducts: Product[] = [
   {
     id: "2",
     name: "Slate Grey V-Neck",
+    brand: "White Wolf",
     price: 2499,
     description:
       "Elevate your basics with our V-neck tee. Made from a unique blend of cotton and modal for a silky smooth feel and a flattering drape.",
@@ -55,6 +58,7 @@ export const initialProducts: Product[] = [
   {
     id: "3",
     name: "Midnight Blue Oxford Shirt",
+    brand: "White Wolf",
     price: 3999,
     description:
       "A timeless Oxford shirt in a deep midnight blue. Expertly tailored for a modern fit, featuring a button-down collar and mother-of-pearl buttons.",
@@ -73,6 +77,7 @@ export const initialProducts: Product[] = [
   {
     id: "4",
     name: "Classic White Dress Shirt",
+    brand: "White Wolf",
     price: 3899,
     description:
       "The quintessential white dress shirt. Woven from 2-ply Egyptian cotton for a crisp, smooth finish that resists wrinkling.",
@@ -91,6 +96,7 @@ export const initialProducts: Product[] = [
   {
     id: "5",
     name: "Urban Slim-Fit Jeans",
+    brand: "White Wolf",
     price: 4999,
     description:
       "Our signature slim-fit jeans in a versatile dark wash. Crafted from premium Japanese selvedge denim with a touch of stretch for comfort.",
@@ -109,6 +115,7 @@ export const initialProducts: Product[] = [
   {
     id: "6",
     name: "Vintage Straight-Leg Jeans",
+    brand: "White Wolf",
     price: 5999,
     description:
       "A nod to classic Americana, these straight-leg jeans are made from rigid 14oz denim that will break in beautifully over time.",
@@ -127,6 +134,7 @@ export const initialProducts: Product[] = [
   {
     id: "7",
     name: "Graphite Henley Tee",
+    brand: "White Wolf",
     price: 2999,
     description:
       "A sophisticated take on the classic Henley. Features a three-button placket and is crafted from a soft, textured slub cotton.",
@@ -145,6 +153,7 @@ export const initialProducts: Product[] = [
   {
     id: "8",
     name: "Linen Casual Shirt",
+    brand: "White Wolf",
     price: 4299,
     description:
       "Stay cool and stylish in our lightweight linen shirt. Perfect for warm weather, it offers a relaxed fit and exceptional breathability.",
@@ -163,6 +172,7 @@ export const initialProducts: Product[] = [
    {
     id: "9",
     name: "Tech-Knit Sweater",
+    brand: "White Wolf",
     price: 8999,
     description:
       "A modern sweater knitted from a technical merino wool blend. It's temperature-regulating, soft, and has a clean, minimalist design.",
@@ -181,6 +191,7 @@ export const initialProducts: Product[] = [
   {
     id: "10",
     name: "Classic Leather Jacket",
+    brand: "White Wolf",
     price: 19999,
     description:
       "An iconic investment piece. This jacket is crafted from full-grain lambskin leather that gets better with every wear.",
@@ -199,6 +210,7 @@ export const initialProducts: Product[] = [
   {
     id: "11",
     name: "Oversized Graphic Tee",
+    brand: "White Wolf",
     price: 3499,
     description:
       "Make a statement with this oversized t-shirt featuring a vintage-inspired wolf graphic. Made from heavyweight cotton for a structured drape.",
@@ -217,6 +229,7 @@ export const initialProducts: Product[] = [
     {
     id: "12",
     name: "Performance Track Pants",
+    brand: "White Wolf",
     price: 3999,
     description:
       "Engineered for movement, these track pants are made from a water-repellent, four-way stretch fabric. Perfect for the gym or the street.",
@@ -235,6 +248,7 @@ export const initialProducts: Product[] = [
   {
     id: "13",
     name: "Classic Leather Belt",
+    brand: "White Wolf",
     price: 8999,
     description: "A timeless belt crafted from genuine full-grain leather, finished with a classic silver-tone buckle. An essential accessory for any wardrobe.",
     images: [
@@ -252,6 +266,7 @@ export const initialProducts: Product[] = [
   {
     id: "14",
     name: "Canvas Messenger Bag",
+    brand: "White Wolf",
     price: 7999,
     description: "A durable and stylish messenger bag made from heavy-duty canvas with leather accents. Features a padded laptop sleeve and multiple pockets for organization.",
     images: [
@@ -269,6 +284,7 @@ export const initialProducts: Product[] = [
   {
     id: "15",
     name: "Minimalist Card Holder",
+    brand: "White Wolf",
     price: 5999,
     description: "A slim and modern card holder wallet, handcrafted from premium leather. Designed to hold your essential cards and a few folded bills without the bulk.",
     images: [
@@ -286,6 +302,7 @@ export const initialProducts: Product[] = [
   {
     id: "16",
     name: "Suede Tassel Loafers",
+    brand: "White Wolf",
     price: 12999,
     description: "Sophisticated loafers crafted from rich brown suede, featuring elegant tassels. A perfect blend of comfort and style for the discerning gentleman.",
     images: [
@@ -303,6 +320,7 @@ export const initialProducts: Product[] = [
   {
     id: "17",
     name: "Woven Leather Belt",
+    brand: "White Wolf",
     price: 9999,
     description: "An intricately woven leather belt in black, offering a touch of texture and sophistication to any outfit. Finished with a sleek, minimalist buckle.",
     images: [
@@ -320,6 +338,7 @@ export const initialProducts: Product[] = [
   {
     id: "18",
     name: "Italian Leather Bifold Wallet",
+    brand: "White Wolf",
     price: 12999,
     description: "A classic bifold wallet made from supple Italian leather. Features multiple card slots, a bill compartment, and a subtle embossed logo.",
     images: [
@@ -337,6 +356,7 @@ export const initialProducts: Product[] = [
   {
     id: "19",
     name: "Wool Cashmere Overcoat",
+    brand: "White Wolf",
     price: 25999,
     description: "A luxurious overcoat crafted from a fine wool and cashmere blend. Its timeless design and superior warmth make it an essential winter garment.",
     images: [
@@ -354,6 +374,7 @@ export const initialProducts: Product[] = [
    {
     id: "20",
     name: "Striped Crew-Neck Tee",
+    brand: "White Wolf",
     price: 2199,
     description: "A timeless striped t-shirt made from our signature soft Pima cotton. A versatile piece for any casual look.",
     images: [
@@ -371,6 +392,7 @@ export const initialProducts: Product[] = [
   {
     id: "21",
     name: "Relaxed Fit Chinos",
+    brand: "White Wolf",
     price: 3999,
     description: "Comfortable and stylish relaxed-fit chinos, perfect for smart-casual occasions. Made from a durable cotton twill.",
     images: [
@@ -388,6 +410,7 @@ export const initialProducts: Product[] = [
   {
     id: "22",
     name: "Polo Shirt",
+    brand: "White Wolf",
     price: 2999,
     description: "A classic polo shirt crafted from breathable cotton pique. A wardrobe staple for a polished yet casual look.",
     images: [

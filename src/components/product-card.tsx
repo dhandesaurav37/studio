@@ -139,6 +139,7 @@ export function ProductCard({
         </CardContent>
       </Link>
       <CardFooter className="p-4 flex flex-col items-start bg-card mt-auto">
+        <p className="text-sm font-semibold text-muted-foreground">{product.brand}</p>
         <Link href={`/products/${product.id}`} className="w-full">
           <h3 className="font-semibold text-lg truncate">{product.name}</h3>
         </Link>

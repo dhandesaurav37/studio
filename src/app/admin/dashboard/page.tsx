@@ -120,6 +120,7 @@ export default function AdminDashboardPage() {
 
         const newProductData = {
             name: formValues['product-name'] as string,
+            brand: formValues['brand-name'] as string,
             price: Number(formValues['price']),
             description: formValues['description'] as string,
             category: newProductCategory,
@@ -279,16 +280,16 @@ export default function AdminDashboardPage() {
                   <Label htmlFor="product-name">Product Name</Label>
                   <Input id="product-name" name="product-name" placeholder="e.g. Charcoal Crew-Neck Tee" required/>
                 </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="brand-name">Brand Name</Label>
+                  <Input id="brand-name" name="brand-name" placeholder="e.g. White Wolf" required/>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="price">Price</Label>
                   <Input id="price" name="price" type="number" placeholder="e.g. 4999" required/>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
-                <Textarea id="description" name="description" placeholder="e.g. A classic crew-neck t-shirt..." required/>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                  <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
                   <Select name="category" required value={newProductCategory} onValueChange={setNewProductCategory}>
@@ -300,16 +301,22 @@ export default function AdminDashboardPage() {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Textarea id="description" name="description" placeholder="e.g. A classic crew-neck t-shirt..." required/>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="colors">Colors (comma-separated)</Label>
                   <Input id="colors" name="colors" placeholder="e.g., Black, White, Blue" required/>
                 </div>
-              </div>
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
+                 <div className="space-y-2">
                   <Label htmlFor="text-sizes">Text-based Sizes (comma-separated)</Label>
                   <Input id="text-sizes" name="text-sizes" placeholder="e.g., S, M, L, XL, XXL" />
                 </div>
+              </div>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <Label htmlFor="numeric-sizes">Numeric Sizes (comma-separated)</Label>
                   <Input id="numeric-sizes" name="numeric-sizes" placeholder="e.g., 28, 30, 32" />
@@ -403,6 +410,7 @@ export default function AdminDashboardPage() {
                     <span className="sr-only">Image</span>
                   </TableHead>
                   <TableHead>Name</TableHead>
+                  <TableHead>Brand</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Category</TableHead>
@@ -426,6 +434,7 @@ export default function AdminDashboardPage() {
                         </div>
                     </TableCell>
                     <TableCell className="font-medium">{product.name}</TableCell>
+                    <TableCell>{product.brand}</TableCell>
                     <TableCell>
                       <Badge variant="outline">In Stock</Badge>
                     </TableCell>
@@ -473,36 +482,42 @@ export default function AdminDashboardPage() {
                     <Input id="edit-name" value={editedProductData.name || ''} onChange={handleEditInputChange} />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-price">Price (₹)</Label>
-                    <Input id="edit-price" type="number" value={editedProductData.price || 0} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                    <Label htmlFor="edit-brand">Brand Name</Label>
+                    <Input id="edit-brand" value={editedProductData.brand || ''} onChange={handleEditInputChange} />
                   </div>
                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <Label htmlFor="edit-price">Price (₹)</Label>
+                        <Input id="edit-price" type="number" value={editedProductData.price || 0} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="edit-category">Category</Label>
+                        <Select value={editedProductData.category} onValueChange={handleEditSelectChange}>
+                          <SelectTrigger id="edit-category">
+                            <SelectValue placeholder="Select a category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                          </SelectContent>
+                        </Select>
+                    </div>
+                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="edit-description">Description</Label>
                   <Textarea id="edit-description" value={editedProductData.description || ''} onChange={handleEditInputChange} />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-category">Category</Label>
-                    <Select value={editedProductData.category} onValueChange={handleEditSelectChange}>
-                      <SelectTrigger id="edit-category">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
                     <Label htmlFor="edit-color">Colors (comma-separated)</Label>
                     <Input id="edit-color" value={editedProductData.color || ''} onChange={handleEditInputChange} />
                   </div>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
                     <Input id="edit-text-sizes" value={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
                   </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
                     <Input id="edit-numeric-sizes" value={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>

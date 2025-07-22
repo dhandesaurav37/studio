@@ -33,8 +33,10 @@ export default function PremiumProductsPage() {
 
   const allCategories = [...new Set(premiumProducts.map((p) => p.category))];
   const allColors = [...new Set(premiumProducts.flatMap((p) => p.color).filter(Boolean) as string[])];
+  const allBrands = [...new Set(premiumProducts.map((p) => p.brand))];
 
   const category = searchParams.get("category") || "All";
+  const brand = searchParams.get("brand") || "All";
   const color = searchParams.get("color") || "All";
   const alphaSize = searchParams.get("alphaSize") || "All";
   const numericSize = searchParams.get("numericSize") || "All";
@@ -64,10 +66,14 @@ export default function PremiumProductsPage() {
 
   const filteredProducts = premiumProducts
     .filter((p: Product) => (category !== "All" ? p.category === category : true))
+    .filter((p: Product) => (brand !== "All" ? p.brand === brand : true))
     .filter((p: Product) => (color !== "All" ? p.color === color : true))
     .filter((p: Product) => (alphaSize !== "All" ? p.sizes.includes(alphaSize) : true))
     .filter((p: Product) => (numericSize !== "All" ? p.sizes.includes(numericSize) : true))
-    .filter((p: Product) => p.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter((p: Product) => 
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        p.brand.toLowerCase().includes(searchTerm.toLowerCase())
+    )
     .sort((a, b) => {
       switch (sort) {
         case "price-desc":
@@ -97,7 +103,7 @@ export default function PremiumProductsPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="search"
-            placeholder="Search premium products..."
+            placeholder="Search premium products or brands..."
             className="pl-10 w-full h-12 text-base"
             value={searchTerm}
             onChange={handleSearchChange}
@@ -116,6 +122,22 @@ export default function PremiumProductsPage() {
               {allCategories.map((cat) => (
                 <SelectItem key={cat} value={cat}>
                   {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+           <Select
+            value={brand}
+            onValueChange={(val) => handleFilterChange("brand", val)}
+          >
+            <SelectTrigger className="w-auto min-w-[140px] flex-grow sm:flex-grow-0">
+              <SelectValue placeholder="All Brands" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Brands</SelectItem>
+              {allBrands.map((b) => (
+                <SelectItem key={b} value={b}>
+                  {b}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -209,5 +231,3 @@ export default function PremiumProductsPage() {
     </div>
   );
 }
-
-    
