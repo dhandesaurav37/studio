@@ -4,26 +4,53 @@
 import { useStore } from "@/hooks/use-store";
 import { notFound, useParams } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Product } from "@/lib/data";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProductDetailPage() {
   const params = useParams();
   const { getProductById, products } = useStore();
-  const [product, setProduct] = useState<Product | null | undefined>(undefined);
   
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  
+  const product = useMemo(() => {
+    if (!id || products.length === 0) return undefined;
+    return getProductById(id);
+  }, [id, getProductById, products]);
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
-      setProduct(getProductById(id));
+    if (products.length > 0) {
+      setIsLoading(false);
     }
-  }, [id, getProductById]);
+  }, [products]);
 
 
-  if (product === undefined) {
-    // Loading state, maybe return a skeleton loader here
-    return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+        <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+                <Skeleton className="aspect-[3/4] w-full rounded-lg" />
+                <div className="space-y-6">
+                    <Skeleton className="h-10 w-3/4" />
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-6 w-1/4 mb-4" />
+                    <div className="flex flex-wrap gap-2">
+                        <Skeleton className="h-10 w-16" />
+                        <Skeleton className="h-10 w-16" />
+                        <Skeleton className="h-10 w-16" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
   }
 
   if (!product) {
@@ -38,7 +65,6 @@ export default function ProductDetailPage() {
             return name.substring(nameLower.indexOf(word));
         }
     }
-    // Fallback for names without common words, e.g., "Classic Leather Belt" -> "Leather Belt"
     const words = name.split(" ");
     if (words.length > 1) {
       return words.slice(1).join(" ");
@@ -65,5 +91,3 @@ export default function ProductDetailPage() {
     />
   );
 }
-
-    
