@@ -8,5 +8,6 @@
   },
   "storage": {
     "rules": "storage.rules"
-  }
+  },
+  "apphosting": {}
 }
