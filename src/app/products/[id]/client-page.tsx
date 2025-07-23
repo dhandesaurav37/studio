@@ -53,6 +53,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 interface ProductDetailClientPageProps {
@@ -776,7 +777,7 @@ export default function ProductDetailClientPage({
         open={isPurchaseDialogOpen}
         onOpenChange={setIsPurchaseDialogOpen}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">
               Confirm Purchase
@@ -785,176 +786,180 @@ export default function ProductDetailClientPage({
               Confirm your shipping details for "{product.name}".
             </DialogDescription>
           </DialogHeader>
-          <RadioGroup
-            value={addressOption}
-            onValueChange={(value) =>
-              setAddressOption(value as "default" | "new")
-            }
-            className="space-y-4"
-          >
-            <div className="rounded-lg border p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value="default" id="default-address" />
-                  <Label
-                    htmlFor="default-address"
-                    className="font-semibold cursor-pointer"
-                  >
-                    Use Default Address
-                  </Label>
-                </div>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/profile">
-                    <Edit className="mr-2 h-3 w-3" />
-                    Change
-                  </Link>
-                </Button>
-              </div>
-              <div className="text-sm text-muted-foreground mt-3 pl-8 space-y-1">
-                {hasDefaultAddress ? (
-                  <>
-                    <div className="flex items-start">
-                      <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-                      <span>
-                        {profile.address.street}, {profile.address.city},{" "}
-                        {profile.address.state} - {profile.address.pincode}
-                      </span>
+          <ScrollArea className="pr-6 -mr-6">
+            <div className="space-y-4 pr-6">
+              <RadioGroup
+                value={addressOption}
+                onValueChange={(value) =>
+                  setAddressOption(value as "default" | "new")
+                }
+                className="space-y-4"
+              >
+                <div className="rounded-lg border p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <RadioGroupItem value="default" id="default-address" />
+                      <Label
+                        htmlFor="default-address"
+                        className="font-semibold cursor-pointer"
+                      >
+                        Use Default Address
+                      </Label>
                     </div>
-                  </>
-                ) : (
-                  <p className="text-destructive">
-                    No default address and/or phone number found. Please add
-                    them in your profile.
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="rounded-lg border p-4">
-               <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem value="new" id="new-address-radio" />
-                    <Label
-                      htmlFor="new-address-radio"
-                      className="font-semibold cursor-pointer"
-                    >
-                      Ship to a New Address
-                    </Label>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/profile">
+                        <Edit className="mr-2 h-3 w-3" />
+                        Change
+                      </Link>
+                    </Button>
                   </div>
+                  <div className="text-sm text-muted-foreground mt-3 pl-8 space-y-1">
+                    {hasDefaultAddress ? (
+                      <>
+                        <div className="flex items-start">
+                          <MapPin className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                          <span>
+                            {profile.address.street}, {profile.address.city},{" "}
+                            {profile.address.state} - {profile.address.pincode}
+                          </span>
+                        </div>
+                      </>
+                    ) : (
+                      <p className="text-destructive">
+                        No default address and/or phone number found. Please add
+                        them in your profile.
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="rounded-lg border p-4">
+                   <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <RadioGroupItem value="new" id="new-address-radio" />
+                        <Label
+                          htmlFor="new-address-radio"
+                          className="font-semibold cursor-pointer"
+                        >
+                          Ship to a New Address
+                        </Label>
+                      </div>
+                      {addressOption === "new" && (
+                         <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation} disabled={isFetchingLocation}>
+                           {isFetchingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <MapPin className="mr-1 h-4 w-4" />} 
+                           {isFetchingLocation ? 'Fetching...' : 'Use my current location'}
+                         </Button>
+                      )}
+                    </div>
                   {addressOption === "new" && (
-                     <Button variant="link" size="sm" className="p-0 h-auto" onClick={handleFetchLocation} disabled={isFetchingLocation}>
-                       {isFetchingLocation ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <MapPin className="mr-1 h-4 w-4" />} 
-                       {isFetchingLocation ? 'Fetching...' : 'Use my current location'}
-                     </Button>
+                    <div className="space-y-3 mt-4 pl-8">
+                      <Input
+                        id="name"
+                        placeholder="Full Name"
+                        value={newAddress.name}
+                        onChange={handleNewAddressChange}
+                      />
+                      <Input
+                        id="mobile"
+                        placeholder="Mobile Number"
+                        value={newAddress.mobile}
+                        onChange={handleNewAddressChange}
+                      />
+                      <Input
+                        id="street"
+                        placeholder="Street Address"
+                        value={newAddress.street}
+                        onChange={handleNewAddressChange}
+                      />
+                      <div className="grid grid-cols-3 gap-2">
+                        <Input
+                          id="city"
+                          placeholder="City"
+                          value={newAddress.city}
+                          onChange={handleNewAddressChange}
+                        />
+                        <Input
+                          id="state"
+                          placeholder="State"
+                          value={newAddress.state}
+                          onChange={handleNewAddressChange}
+                        />
+                        <Input
+                          id="pincode"
+                          placeholder="Pincode"
+                          value={newAddress.pincode}
+                          onChange={handleNewAddressChange}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
-              {addressOption === "new" && (
-                <div className="space-y-3 mt-4 pl-8">
-                  <Input
-                    id="name"
-                    placeholder="Full Name"
-                    value={newAddress.name}
-                    onChange={handleNewAddressChange}
-                  />
-                  <Input
-                    id="mobile"
-                    placeholder="Mobile Number"
-                    value={newAddress.mobile}
-                    onChange={handleNewAddressChange}
-                  />
-                  <Input
-                    id="street"
-                    placeholder="Street Address"
-                    value={newAddress.street}
-                    onChange={handleNewAddressChange}
-                  />
-                  <div className="grid grid-cols-3 gap-2">
-                    <Input
-                      id="city"
-                      placeholder="City"
-                      value={newAddress.city}
-                      onChange={handleNewAddressChange}
-                    />
-                    <Input
-                      id="state"
-                      placeholder="State"
-                      value={newAddress.state}
-                      onChange={handleNewAddressChange}
-                    />
-                    <Input
-                      id="pincode"
-                      placeholder="Pincode"
-                      value={newAddress.pincode}
-                      onChange={handleNewAddressChange}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </RadioGroup>
-          <Separator />
-          
-          {/* Shipping Options */}
-          <div className="space-y-2">
-            <h4 className="font-semibold">Shipping Method</h4>
-             {isFetchingRates ? (
-                <div className="space-y-2">
-                    <Skeleton className="h-10 w-full" />
-                </div>
-            ) : shippingOptions.length > 0 ? (
-                <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
-                    {shippingOptions.map(option => (
-                          <Label key={option.name} htmlFor={`buynow-${option.name}`} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent has-[:checked]:border-primary text-sm">
-                            <div className="flex items-center gap-3">
-                                <RadioGroupItem value={option.name} id={`buynow-${option.name}`} />
-                                <div>
-                                    <p className="font-medium">{option.name}</p>
-                                    <p className="text-xs text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
+              </RadioGroup>
+              <Separator />
+              
+              {/* Shipping Options */}
+              <div className="space-y-2">
+                <h4 className="font-semibold">Shipping Method</h4>
+                 {isFetchingRates ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                ) : shippingOptions.length > 0 ? (
+                    <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
+                        {shippingOptions.map(option => (
+                              <Label key={option.name} htmlFor={`buynow-${option.name}`} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent has-[:checked]:border-primary text-sm">
+                                <div className="flex items-center gap-3">
+                                    <RadioGroupItem value={option.name} id={`buynow-${option.name}`} />
+                                    <div>
+                                        <p className="font-medium">{option.name}</p>
+                                        <p className="text-xs text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="font-bold">₹{option.rate.toFixed(2)}</p>
-                        </Label>
-                    ))}
-                </RadioGroup>
-            ) : (
-                <div className="text-center text-muted-foreground p-3 border border-dashed rounded-lg text-sm">
-                    <Truck className="mx-auto h-6 w-6 mb-1" />
-                    <p>Enter a valid pincode to see shipping options.</p>
-                </div>
-            )}
-          </div>
-          
-          <Separator />
-          <div className="flex justify-between items-center text-sm">
-            <span>Subtotal</span>
-            <span className="font-medium">₹{subtotal.toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between items-center text-sm">
-            <span>Shipping</span>
-            <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
-          </div>
-          <Separator />
-          <div className="flex justify-between font-bold">
-            <span>Total Amount</span>
-            <span>₹{total.toFixed(2)}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button
-              variant="destructive"
-              onClick={() => handlePayment("Online")}
-              disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
-            >
-              {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-              Pay Online
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => handlePayment("COD")}
-              disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
-            >
-              {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
-              Cash on Delivery
-            </Button>
-          </div>
+                                <p className="font-bold">₹{option.rate.toFixed(2)}</p>
+                            </Label>
+                        ))}
+                    </RadioGroup>
+                ) : (
+                    <div className="text-center text-muted-foreground p-3 border border-dashed rounded-lg text-sm">
+                        <Truck className="mx-auto h-6 w-6 mb-1" />
+                        <p>Enter a valid pincode to see shipping options.</p>
+                    </div>
+                )}
+              </div>
+              
+              <Separator />
+              <div className="flex justify-between items-center text-sm">
+                <span>Subtotal</span>
+                <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span>Shipping</span>
+                <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
+              </div>
+              <Separator />
+              <div className="flex justify-between font-bold">
+                <span>Total Amount</span>
+                <span>₹{total.toFixed(2)}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Button
+                  variant="destructive"
+                  onClick={() => handlePayment("Online")}
+                  disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
+                >
+                  {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                  Pay Online
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => handlePayment("COD")}
+                  disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
+                >
+                  {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                  Cash on Delivery
+                </Button>
+              </div>
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
