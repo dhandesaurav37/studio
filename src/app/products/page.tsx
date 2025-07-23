@@ -23,7 +23,7 @@ import { ProductCard } from "@/components/product-card";
 import { useStore } from "@/hooks/use-store";
 
 const alphaSizes = ["S", "M", "L", "XL", "XXL"];
-const numericSizes = ["30", "32", "34", "36", "38"];
+const numericSizes = ["30", "32", "34", "36", "38", "8", "9", "10", "11", "12", "One Size"];
 
 export default function ProductsPage() {
   const { shopProducts } = useStore();
@@ -179,10 +179,10 @@ export default function ProductsPage() {
             onValueChange={(val) => handleFilterChange("numericSize", val)}
           >
             <SelectTrigger className="w-auto min-w-[170px] flex-grow sm:flex-grow-0">
-              <SelectValue placeholder="Numeric Sizes" />
+              <SelectValue placeholder="Other Sizes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="All">All Numeric Sizes</SelectItem>
+              <SelectItem value="All">All Other Sizes</SelectItem>
               {numericSizes.map((size, index) => (
                 <SelectItem key={`${size}-${index}`} value={size}>
                   {size}
@@ -212,7 +212,7 @@ export default function ProductsPage() {
         </div>
       </div>
 
-      <main className="mt-12 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-center">
+      <main className="mt-12 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
         {filteredProducts.length > 0 ? (
           <>
             {filteredProducts.map((product) => (

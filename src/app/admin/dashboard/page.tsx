@@ -16,7 +16,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
   Dialog,
@@ -269,8 +268,11 @@ export default function AdminDashboardPage() {
   
   const handleEditSizesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
      const { id, value } = e.target;
-     const textSizes = (id === 'edit-text-sizes' ? value : (document.getElementById('edit-text-sizes') as HTMLInputElement).value).split(',').map(s => s.trim()).filter(Boolean);
-     const numericSizes = (id === 'edit-numeric-sizes' ? value : (document.getElementById('edit-numeric-sizes') as HTMLInputElement).value).split(',').map(s => s.trim()).filter(Boolean);
+     const currentTextSizes = (document.getElementById('edit-text-sizes') as HTMLInputElement)?.value || editedProductData?.sizes?.filter(s => isNaN(parseInt(s))).join(', ') || '';
+     const currentNumericSizes = (document.getElementById('edit-numeric-sizes') as HTMLInputElement)?.value || editedProductData?.sizes?.filter(s => !isNaN(parseInt(s))).join(', ') || '';
+
+     const textSizes = (id === 'edit-text-sizes' ? value : currentTextSizes).split(',').map(s => s.trim()).filter(Boolean);
+     const numericSizes = (id === 'edit-numeric-sizes' ? value : currentNumericSizes).split(',').map(s => s.trim()).filter(Boolean);
      setEditedProductData(prev => ({ ...prev, sizes: [...textSizes, ...numericSizes] }));
   }
 
@@ -601,13 +603,13 @@ export default function AdminDashboardPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
-                    <Input id="edit-text-sizes" value={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
+                    <Input id="edit-text-sizes" defaultValue={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
-                    <Input id="edit-numeric-sizes" value={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>
+                    <Input id="edit-numeric-sizes" defaultValue={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">

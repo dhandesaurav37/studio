@@ -29,11 +29,15 @@ export function ProductCard({
     wishlist,
     addToWishlist,
     removeFromWishlist,
+    calculateDiscountedPrice,
+    getApplicableOffer,
   } = useStore();
   const { toast } = useToast();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const isWishlisted = wishlist.some((item) => item.id === product.id);
+  const discountedPrice = calculateDiscountedPrice(product);
+  const hasOffer = getApplicableOffer(product);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault(); // prevent link navigation
@@ -168,6 +172,11 @@ export function ProductCard({
                 </>
             )}
         </div>
+        {hasOffer && (
+           <Badge variant="destructive" className="absolute top-2 left-2">
+                {hasOffer.discountType === 'percentage' ? `${hasOffer.discountValue}% OFF` : `₹${hasOffer.discountValue} OFF`}
+           </Badge>
+        )}
       </CardContent>
       <CardFooter className="p-4 flex flex-col items-start bg-card mt-auto">
         <p className="text-sm font-semibold text-muted-foreground">{product.brand}</p>
@@ -177,8 +186,11 @@ export function ProductCard({
         <p className="text-muted-foreground text-sm capitalize">
           {product.category.replace("-", " ")}
         </p>
-        <div className="flex items-center justify-between w-full mt-2">
-          <p className="font-bold text-xl">₹{product.price.toFixed(2)}</p>
+        <div className="flex items-baseline gap-2 w-full mt-2">
+           <p className="font-bold text-xl">₹{discountedPrice.toFixed(2)}</p>
+           {hasOffer && (
+             <p className="text-muted-foreground line-through text-sm">₹{product.price.toFixed(2)}</p>
+           )}
         </div>
       </CardFooter>
     </Card>
