@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/collapsible";
 import { AdminOrder } from "@/lib/admin-data";
 import Image from "next/image";
+import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp, Search, CheckCircle, Truck, XCircle as XCircleIcon, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -218,11 +219,13 @@ export default function AdminOrdersPage() {
                                     <TableBody>
                                         {order.items.map(item => (
                                             <TableRow key={item.productId}>
-                                                <TableCell className="flex items-center gap-3">
-                                                    <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
-                                                        <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
-                                                    </div>
-                                                    <span className="font-medium">{item.product!.name}</span>
+                                                <TableCell>
+                                                    <Link href={`/products/${item.product!.id}`} className="flex items-center gap-3 hover:underline">
+                                                        <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
+                                                            <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
+                                                        </div>
+                                                        <span className="font-medium">{item.product!.name}</span>
+                                                    </Link>
                                                 </TableCell>
                                                 <TableCell>{item.size}</TableCell>
                                                 <TableCell>{item.quantity}</TableCell>

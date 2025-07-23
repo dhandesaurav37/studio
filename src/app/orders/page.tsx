@@ -168,19 +168,21 @@ export default function OrdersPage() {
                       <h4 className="font-semibold mb-4">Order Items</h4>
                       <ul className="space-y-4">
                         {order.items.map((item) => (
-                          <li
-                            key={item.product!.id}
+                           <li
+                            key={`${item.product!.id}-${item.size}`}
                             className="flex items-start gap-4"
                           >
-                            <div className="relative h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
-                              <Image
-                                src={item.product!.images[0]}
-                                alt={item.product!.name}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={item.product!.dataAiHint}
-                              />
-                            </div>
+                            <Link href={`/products/${item.product!.id}`} className="flex-shrink-0">
+                                <div className="relative h-20 w-20 rounded-md overflow-hidden">
+                                <Image
+                                    src={item.product!.images[0]}
+                                    alt={item.product!.name}
+                                    fill
+                                    className="object-cover"
+                                    data-ai-hint={item.product!.dataAiHint}
+                                />
+                                </div>
+                            </Link>
                             <div className="flex-1">
                               <Link
                                 href={`/products/${item.product!.id}`}

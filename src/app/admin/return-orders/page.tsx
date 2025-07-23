@@ -17,6 +17,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import Image from "next/image";
+import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown, ChevronUp, Search, CheckCircle, XCircle, PackageCheck, HelpCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -215,11 +216,13 @@ export default function AdminReturnOrdersPage() {
                                     <TableBody>
                                         {order.items.map(item => (
                                             <TableRow key={item.product!.id}>
-                                                <TableCell className="flex items-center gap-3">
-                                                    <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
-                                                        <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
-                                                    </div>
-                                                    <span className="font-medium">{item.product!.name}</span>
+                                                <TableCell>
+                                                    <Link href={`/products/${item.product!.id}`} className="flex items-center gap-3 hover:underline">
+                                                        <div className="relative h-12 w-12 rounded-md overflow-hidden flex-shrink-0">
+                                                            <Image src={item.product!.images[0]} alt={item.product!.name} fill className="object-cover" data-ai-hint={item.product!.dataAiHint}/>
+                                                        </div>
+                                                        <span className="font-medium">{item.product!.name}</span>
+                                                    </Link>
                                                 </TableCell>
                                                 <TableCell>{item.quantity}</TableCell>
                                                 <TableCell className="text-right font-medium">₹{(item.product!.price * item.quantity).toFixed(2)}</TableCell>
