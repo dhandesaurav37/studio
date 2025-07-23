@@ -1,6 +1,12 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
+# This section is required to tell App Hosting how to build and run your app.
+backend:
+  # The 'framework' property lets App Hosting know you're deploying a Next.js app.
+  # It will automatically use the correct build and start commands.
+  framework: next
+
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
