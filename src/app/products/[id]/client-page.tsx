@@ -406,9 +406,9 @@ export default function ProductDetailClientPage({
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
+      <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
         {/* Product Images */}
-        <Carousel className="w-full">
+        <Carousel className="w-full md:col-span-3">
           <CarouselContent>
             {product.images.map((img, index) => (
               <CarouselItem key={index}>
@@ -430,7 +430,7 @@ export default function ProductDetailClientPage({
         </Carousel>
 
         {/* Product Details */}
-        <div>
+        <div className="md:col-span-2 md:mt-8">
           <h1 className="text-3xl md:text-4xl font-bold font-headline">
             {product.name}
           </h1>
