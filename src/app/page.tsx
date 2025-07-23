@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { Product, Reel } from "@/lib/data";
-import { Archive, PlayCircle, Shirt, Sparkles, Truck, VideoIcon } from "lucide-react";
+import { Archive, ChevronLeft, ChevronRight, PlayCircle, Shirt, Sparkles, Truck, VideoIcon, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -21,6 +21,7 @@ import { useStore } from "@/hooks/use-store";
 import { ref, onValue } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 import type { Offer } from "@/app/admin/ads-and-offers/page";
+import { cn } from "@/lib/utils";
 
 const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7", hint: "fashion model" },
@@ -31,9 +32,12 @@ const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage6.png.jpg?alt=media&token=d708f6bb-3105-4a8e-a3db-51d9c23119ad", hint: "fashion shoot" },
 ];
 
-const ReelCard = ({ reel }: { reel: Reel }) => {
+const ReelCard = ({ reel, onClick }: { reel: Reel, onClick: () => void }) => {
   return (
-    <Card className="overflow-hidden relative group aspect-[9/16] border-2 border-transparent hover:border-primary transition-colors duration-300">
+    <Card 
+      className="overflow-hidden relative group aspect-[9/16] border-2 border-transparent hover:border-primary transition-colors duration-300 cursor-pointer"
+      onClick={onClick}
+    >
       <video
         src={reel.videoUrl}
         loop
@@ -44,8 +48,8 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
-      <CardFooter className="absolute bottom-0 left-0 right-0 p-4 bg-transparent">
-        <Link href={`/products/${reel.productId}`} className="w-full">
+      <CardFooter className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 bg-transparent">
+        <div className="w-full">
             <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg flex items-center gap-3">
                 <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
                     <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" data-ai-hint={reel.product!.dataAiHint}/>
@@ -55,17 +59,118 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
                     <p className="text-sm font-bold text-foreground">₹{reel.product!.price.toFixed(2)}</p>
                 </div>
             </div>
-        </Link>
+        </div>
       </CardFooter>
     </Card>
   );
 };
 
+const ReelViewer = ({
+  reels,
+  startIndex,
+  onClose,
+}: {
+  reels: Reel[];
+  startIndex: number;
+  onClose: () => void;
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(startIndex);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % reels.length);
+  };
+
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + reels.length) % reels.length);
+  };
+
+  useEffect(() => {
+    videoRef.current?.load();
+  }, [currentIndex]);
+
+  const currentReel = reels[currentIndex];
+  if (!currentReel) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/90 z-[100] flex flex-col items-center justify-center" onClick={onClose}>
+      <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+        {/* Close Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 z-20 text-white hover:text-white bg-white/20 hover:bg-white/30 rounded-full"
+          onClick={onClose}
+        >
+          <X className="h-6 w-6" />
+        </Button>
+
+        {/* Previous Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 text-white hover:text-white bg-white/20 hover:bg-white/30 rounded-full"
+          onClick={goToPrev}
+        >
+          <ChevronLeft className="h-8 w-8" />
+        </Button>
+
+        {/* Video Player */}
+        <div className="relative h-full max-h-[90vh] aspect-[9/16]">
+          <video
+            ref={videoRef}
+            src={currentReel.videoUrl}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-contain"
+          />
+           <div className="absolute bottom-4 left-4 right-4 p-2">
+              <Link href={`/products/${currentReel.productId}`} className="w-full" onClick={onClose}>
+                <div className="bg-background/80 backdrop-blur-sm p-3 rounded-lg flex items-center gap-4">
+                  <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+                    <Image
+                      src={currentReel.product!.images[0]}
+                      alt={currentReel.product!.name}
+                      fill
+                      className="object-cover"
+                      data-ai-hint={currentReel.product!.dataAiHint}
+                    />
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <p className="font-semibold text-lg truncate">{currentReel.product!.name}</p>
+                    <p className="text-md font-bold text-foreground">
+                      ₹{currentReel.product!.price.toFixed(2)}
+                    </p>
+                  </div>
+                  <Button variant="secondary" size="icon" className="h-10 w-10">
+                    <ChevronRight className="h-5 w-5"/>
+                  </Button>
+                </div>
+              </Link>
+          </div>
+        </div>
+
+        {/* Next Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 text-white hover:text-white bg-white/20 hover:bg-white/30 rounded-full"
+          onClick={goToNext}
+        >
+          <ChevronRight className="h-8 w-8" />
+        </Button>
+      </div>
+    </div>
+  );
+};
 
 export default function HomePage() {
   const { products, getProductById } = useStore();
   const [offers, setOffers] = useState<Offer[]>([]);
-  const [reels, setReels] = useState<Reel[]>([]);
+  const [reels, setReels] = useState<(Reel & { product: Product })[]>([]);
+  const [selectedReelIndex, setSelectedReelIndex] = useState<number | null>(null);
 
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
@@ -347,13 +452,13 @@ export default function HomePage() {
                     className="w-full"
                 >
                     <CarouselContent>
-                    {reels.map((reel) => (
+                    {reels.map((reel, index) => (
                         <CarouselItem
                         key={reel.id}
                         className="basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                         >
                         <div className="p-1">
-                            <ReelCard reel={reel} />
+                            <ReelCard reel={reel} onClick={() => setSelectedReelIndex(index)} />
                         </div>
                         </CarouselItem>
                     ))}
@@ -404,6 +509,14 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {selectedReelIndex !== null && (
+        <ReelViewer
+          reels={reels}
+          startIndex={selectedReelIndex}
+          onClose={() => setSelectedReelIndex(null)}
+        />
+      )}
     </div>
   );
 }
