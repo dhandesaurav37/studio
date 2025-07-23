@@ -350,7 +350,7 @@ export default function HomePage() {
                     {reels.map((reel) => (
                         <CarouselItem
                         key={reel.id}
-                        className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                        className="basis-1/2 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                         >
                         <div className="p-1">
                             <ReelCard reel={reel} />
