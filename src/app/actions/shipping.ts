@@ -15,6 +15,7 @@ const serviceabilitySchema = z.object({
   delivery_postcode: z.string().min(6).max(6),
   weight: z.number().positive(),
   subtotal: z.number().positive(),
+  cod: z.enum(['0', '1']),
 });
 
 export async function getShippingRates(input: z.infer<typeof serviceabilitySchema>) {
@@ -64,3 +65,5 @@ export async function getShippingRates(input: z.infer<typeof serviceabilitySchem
     return { success: false, message: `Failed to fetch shipping rates. ${errorMessage}`, options: [] };
   }
 }
+
+    

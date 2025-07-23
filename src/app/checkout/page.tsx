@@ -50,6 +50,7 @@ export default function CheckoutPage() {
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
   const [isFetchingRates, setIsFetchingRates] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -88,11 +89,15 @@ export default function CheckoutPage() {
       const result = await getShippingRates({
           delivery_postcode: pincode,
           weight: cartWeight > 0 ? cartWeight : 0.5,
-          subtotal: discountedSubtotal
+          subtotal: discountedSubtotal,
+          cod: '0'
       });
 
       if (result.success && result.options) {
           setShippingOptions(result.options);
+          if (result.options.length > 0) {
+            setSelectedShipping(result.options[0]);
+          }
       } else {
           setShippingOptions([]);
           toast({
@@ -171,6 +176,50 @@ export default function CheckoutPage() {
   const hasNewAddress = newAddress.name && newAddress.street && newAddress.city && newAddress.state && newAddress.pincode && newAddress.mobile;
   const isAddressValid = (addressOption === "default" && hasDefaultAddress) || (addressOption === "new" && hasNewAddress);
 
+  const placeOrder = async (orderId: string, method: "Online" | "COD") => {
+      const shippingAddress = addressOption === 'new' ? {
+          name: newAddress.name,
+          address: `${newAddress.street}, ${newAddress.city}, ${newAddress.state} ${newAddress.pincode}`,
+          phone: newAddress.mobile
+        } : {
+          name: profile.name,
+          address: `${profile.address.street}, ${profile.address.city}, ${profile.address.state} ${profile.address.pincode}`,
+          phone: profile.mobile
+        };
+      
+      const newAdminOrder = {
+        id: orderId,
+        date: new Date().toISOString(),
+        deliveryDate: null,
+        customer: { name: user!.displayName || 'N/A', email: user!.email || 'N/A' },
+        shippingAddress: shippingAddress,
+        paymentMethod: method,
+        status: "Pending" as const,
+        total: total,
+        items: cart.map(item => ({ 
+            productId: item.product.id,
+            quantity: item.quantity, 
+            size: item.size 
+        })),
+      };
+      
+      try {
+          await set(ref(rtdb, `orders/${orderId}`), newAdminOrder);
+          clearCart();
+          toast({
+              title: "Order Placed!",
+              description: `Your order will be processed shortly.`,
+          });
+          router.push("/orders");
+
+      } catch (error) {
+          console.error("Error placing order:", error);
+          toast({ title: "Error", description: "Failed to save order. Please try again.", variant: "destructive" });
+      } finally {
+        setIsPlacingOrder(false);
+      }
+  }
+
   const handlePayment = async (method: "Online" | "COD") => {
     if (!isAddressValid || !user || !selectedShipping) {
       if(!selectedShipping) {
@@ -180,71 +229,26 @@ export default function CheckoutPage() {
       }
       return;
     }
+
+    setIsPlacingOrder(true);
     
-    const shippingAddress = addressOption === 'new' ? {
-        name: newAddress.name,
-        address: `${newAddress.street}, ${newAddress.city}, ${newAddress.state} ${newAddress.pincode}`,
-        phone: newAddress.mobile
-      } : {
-        name: profile.name,
-        address: `${profile.address.street}, ${profile.address.city}, ${profile.address.state} ${profile.address.pincode}`,
-        phone: profile.mobile
-      };
-
-    const placeOrder = async (orderId?: string) => {
-        const ordersRef = ref(rtdb, 'orders');
-        const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
-        const finalOrderId = newOrderRef.key!;
-
-        const newAdminOrder = {
-          id: finalOrderId,
-          date: new Date().toISOString(),
-          deliveryDate: null,
-          customer: { name: user.displayName || 'N/A', email: user.email || 'N/A' },
-          shippingAddress: shippingAddress,
-          paymentMethod: method,
-          status: "Pending" as const,
-          total: total,
-          items: cart.map(item => ({ 
-              productId: item.product.id,
-              quantity: item.quantity, 
-              size: item.size 
-          })),
-        };
-        
-        try {
-            await set(newOrderRef, newAdminOrder);
-        
-            clearCart();
-            toast({
-                title: "Order Placed!",
-                description: `Your order will be processed shortly.`,
-            });
-            router.push("/orders");
-
-        } catch (error) {
-            console.error("Error placing order:", error);
-            toast({ title: "Error", description: "Failed to save order. Please try again.", variant: "destructive" });
-        }
-    }
+    const newOrderRef = push(ref(rtdb, 'orders'));
+    const orderId = newOrderRef.key!;
 
     if (method === "COD") {
-       placeOrder();
+       placeOrder(orderId, method);
     } else { // Online Payment
-      const ordersRef = ref(rtdb, 'orders');
-      const newOrderRef = push(ordersRef);
-      const tempOrderId = newOrderRef.key!;
       try {
-        const order = await createRazorpayOrder(total, tempOrderId);
+        const order = await createRazorpayOrder(total, orderId);
         const options = {
           key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
           amount: order.amount,
           currency: order.currency,
           name: "White Wolf",
-          description: `Order #${tempOrderId.slice(-6).toUpperCase()}`,
+          description: `Order #${orderId.slice(-6).toUpperCase()}`,
           order_id: order.id,
           handler: function (response: any) {
-              placeOrder(order.receipt.replace('receipt_order_', ''));
+              placeOrder(order.receipt.replace('receipt_order_', ''), 'Online');
           },
           prefill: {
               name: profile.name,
@@ -252,7 +256,7 @@ export default function CheckoutPage() {
               contact: profile.mobile,
           },
           notes: {
-              address: shippingAddress.address,
+              address: (addressOption === 'new' ? `${newAddress.street}, ${newAddress.city}` : `${profile.address.street}, ${profile.address.city}`),
           },
           theme: {
               color: "#333333",
@@ -266,6 +270,7 @@ export default function CheckoutPage() {
                   description: "Something went wrong. Please try again.",
                   variant: "destructive",
               });
+              setIsPlacingOrder(false);
         });
         rzp1.open();
       } catch(error) {
@@ -274,13 +279,20 @@ export default function CheckoutPage() {
               description: "Could not connect to payment gateway. Please try again later.",
               variant: "destructive",
           })
+          setIsPlacingOrder(false);
       }
     }
   };
 
 
   if (!isClient || !user) {
-    return <div>Loading...</div>; // Or a skeleton loader
+    return (
+      <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -427,8 +439,14 @@ export default function CheckoutPage() {
               <CardTitle>Payment Method</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid || !selectedShipping}>Pay Online</Button>
-                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid || !selectedShipping}>Cash on Delivery</Button>
+                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid || !selectedShipping || isPlacingOrder}>
+                    {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                    Pay Online
+                </Button>
+                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid || !selectedShipping || isPlacingOrder}>
+                    {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                    Cash on Delivery
+                </Button>
             </CardContent>
           </Card>
         </div>
@@ -436,3 +454,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
+    
