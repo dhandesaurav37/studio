@@ -777,7 +777,7 @@ export default function ProductDetailClientPage({
         open={isPurchaseDialogOpen}
         onOpenChange={setIsPurchaseDialogOpen}
       >
-        <DialogContent className="sm:max-w-lg max-h-[90vh]">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">
               Confirm Purchase
@@ -787,7 +787,7 @@ export default function ProductDetailClientPage({
             </DialogDescription>
           </DialogHeader>
           <ScrollArea className="pr-6 -mr-6">
-            <div className="space-y-4 pr-6">
+            <div className="space-y-4 py-4 pr-6">
               <RadioGroup
                 value={addressOption}
                 onValueChange={(value) =>
@@ -965,3 +965,6 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
+
+
+    
