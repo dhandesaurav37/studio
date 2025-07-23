@@ -3,9 +3,10 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { Product } from '@/lib/data';
-import { rtdb } from '@/lib/firebase';
+import { rtdb, auth } from '@/lib/firebase';
 import { ref, onValue, update } from 'firebase/database';
 import type { Offer } from '@/app/admin/ads-and-offers/page';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 
 export interface CartItem {
@@ -55,6 +56,10 @@ export interface UserOrder {
     status: OrderStatus;
     total: number;
     items: OrderItem[];
+    customer?: { // Can be optional on the client-side UserOrder
+        name: string;
+        email: string;
+    };
 }
 
 const initialProfile: UserProfile = {
@@ -79,55 +84,8 @@ const initialNotifications: Notification[] = [
     time: "2 hours ago",
     read: false,
   },
-  {
-    id: 2,
-    type: 'user',
-    icon: 'Truck',
-    title: "Your order #WW-84521 has been delivered.",
-    description: "We hope you enjoy your new gear!",
-    time: "1 day ago",
-    read: true,
-  },
-  {
-    id: 3,
-    type: 'user',
-    icon: 'Bell',
-    title: "New Arrivals: The Linen Collection",
-    description: "Stay cool this summer with our new breathable linen shirts.",
-    time: "3 days ago",
-    read: true,
-  },
 ];
 
-const initialOrders: UserOrder[] = [
-  {
-    id: "WW-84521",
-    date: "June 15, 2024",
-    deliveryDate: "2024-06-20T12:00:00.000Z",
-    status: "Delivered",
-    total: 18498,
-    items: [
-      { productId: "3", quantity: 1, size: "L" },
-      { productId: "2", quantity: 1, size: "M" },
-    ],
-  },
-  {
-    id: "WW-84199",
-    date: "May 28, 2024",
-    deliveryDate: "2024-06-02T12:00:00.000Z",
-    status: "Delivered",
-    total: 5499,
-    items: [{ productId: "2", quantity: 1, size: "L" }],
-  },
-  {
-    id: "WW-83712",
-    date: "April 5, 2024",
-    deliveryDate: null,
-    status: "Cancelled",
-    total: 12999,
-    items: [{ productId: "3", quantity: 1, size: "XL" }],
-  },
-];
 
 interface StoreState {
   products: Product[];
@@ -182,9 +140,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [averageRating, setAverageRating] = useState(4.7);
   const [totalRatings, setTotalRatings] = useState(256);
   const [isMounted, setIsMounted] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    
     // Fetch products from Realtime Database
     const productsRef = ref(rtdb, 'products');
     const unsubscribeProducts = onValue(productsRef, (snapshot) => {
@@ -223,16 +186,42 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
-    setOrdersState(safelyParseJSON(localStorage.getItem('orders'), initialOrders));
     setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
     setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
 
 
     return () => {
+      unsubscribeAuth();
       unsubscribeProducts();
       unsubscribeOffers();
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+        setOrdersState([]); // Clear orders on logout
+        return;
+    };
+
+    const ordersRef = ref(rtdb, 'orders');
+    const unsubscribeOrders = onValue(ordersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const allOrders: UserOrder[] = Object.keys(data).map(key => ({
+                id: key,
+                ...data[key]
+            }));
+            const userOrders = allOrders.filter(order => order.customer?.email === user.email);
+            setOrdersState(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        } else {
+            setOrdersState([]);
+        }
+    }, (error) => {
+        console.error("Orders DB error:", error);
+    });
+
+    return () => unsubscribeOrders();
+  }, [user]);
 
   const shopProducts = useMemo(() => products.filter(p => p.price <= 4000), [products]);
   const premiumProducts = useMemo(() => products.filter(p => p.price > 4000), [products]);
@@ -254,10 +243,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isMounted) localStorage.setItem('notifications', JSON.stringify(notifications));
   }, [notifications, isMounted]);
-
-   useEffect(() => {
-    if (isMounted) localStorage.setItem('orders', JSON.stringify(orders));
-  }, [orders, isMounted]);
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating));
@@ -361,7 +346,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const addOrder = (order: UserOrder) => {
-    setOrdersState(prevOrders => [order, ...prevOrders]);
+    // This function will now be handled by the Realtime Database listener.
+    // The component placing the order should write directly to RTDB.
+    // The local state will update automatically.
+    // We can keep this function for optimistic updates if needed, but for now it's not necessary.
   };
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
@@ -370,15 +358,15 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
       if (deliveryDate !== undefined) {
         updates.deliveryDate = deliveryDate;
+      } else if (status === 'Delivered') { // Automatically set delivery date if not provided
+        updates.deliveryDate = new Date().toISOString();
       }
       await update(orderRef, updates);
-      // Update local state after successful DB update
-      setOrdersState(prevOrders =>
-        prevOrders.map(o => (o.id === orderId ? { ...o, status, deliveryDate: deliveryDate !== undefined ? deliveryDate : o.deliveryDate } : o))
-      );
+      // Local state updates via onValue listener
     } catch (error) {
         console.error("Failed to update order status:", error);
         // Optionally re-throw or handle error state in UI
+        throw error;
     }
   };
 

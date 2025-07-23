@@ -80,7 +80,6 @@ export default function ProductDetailClientPage({
     removeFromWishlist,
     profile,
     addNotification,
-    addOrder,
     products: allProducts,
     calculateDiscountedPrice,
     getApplicableOffer,
@@ -278,18 +277,10 @@ export default function ProductDetailClientPage({
       
       const total = discountedPrice * quantity;
       
-      const newUserOrder: UserOrder = {
-        id: finalOrderId,
-        date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
-        deliveryDate: null,
-        status: "Pending",
-        total: total,
-        items: [{ productId: product.id, quantity, size: selectedSize }]
-      }
-      
       const newAdminOrder = {
         id: finalOrderId,
-        date: new Date().toISOString().split('T')[0],
+        date: new Date().toISOString(),
+        deliveryDate: null,
         customer: {
           name: user.displayName || 'N/A',
           email: user.email || 'N/A',
@@ -307,7 +298,6 @@ export default function ProductDetailClientPage({
       
       try {
         await set(newOrderRef, newAdminOrder);
-        addOrder(newUserOrder);
 
         addNotification({
             id: Date.now(),

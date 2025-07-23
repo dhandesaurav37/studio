@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -21,7 +21,7 @@ import {
 import { useStore, UserOrder } from "@/hooks/use-store";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown, ChevronUp, XCircle, Undo2 } from "lucide-react";
+import { ChevronDown, ChevronUp, XCircle, Undo2, Loader2 } from "lucide-react";
 import type { OrderStatus } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
@@ -32,45 +32,64 @@ export default function OrdersPage() {
   const { orders, getProductById, updateOrderStatus, addNotification, addToCart } = useStore();
   const { toast } = useToast();
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   
-  const handleCancelOrder = (orderId: string) => {
-    updateOrderStatus(orderId, "Cancelled");
-    addNotification({
-        id: Date.now(),
-        type: 'admin',
-        icon: 'XCircleIcon',
-        title: 'Order Cancelled by User',
-        description: `User has cancelled order #${orderId.slice(-6).toUpperCase()}.`,
-        time: 'Just now',
-        read: false,
-        orderId: orderId,
-    });
-    toast({
-        title: "Order Cancelled",
-        description: "Your order has been successfully cancelled.",
-    })
-  }
+  const handleOrderAction = async (orderId: string, status: OrderStatus, actionType: 'cancel' | 'return') => {
+      setIsLoading(true);
+      try {
+        await updateOrderStatus(orderId, status);
 
-  const handleReturnOrder = (orderId: string) => {
-    updateOrderStatus(orderId, 'Return Requested');
-    addNotification({
-        id: Date.now(),
-        type: 'admin',
-        icon: 'Undo2',
-        title: 'Return Requested',
-        description: `User has requested a return for order #${orderId.slice(-6).toUpperCase()}.`,
-        time: 'Just now',
-        read: false,
-        orderId: orderId,
-    });
-    toast({
-        title: "Return Requested",
-        description: "Your return request has been submitted.",
-    });
+        let adminNotification: any;
+        let userToast: any;
+
+        if (actionType === 'cancel') {
+            adminNotification = {
+                id: Date.now(),
+                type: 'admin',
+                icon: 'XCircle',
+                title: 'Order Cancelled by User',
+                description: `User has cancelled order #${orderId.slice(-6).toUpperCase()}.`,
+                time: 'Just now',
+                read: false,
+                orderId: orderId,
+            };
+            userToast = {
+                title: "Order Cancelled",
+                description: "Your order has been successfully cancelled.",
+            };
+        } else { // return
+             adminNotification = {
+                id: Date.now(),
+                type: 'admin',
+                icon: 'Undo2',
+                title: 'Return Requested',
+                description: `User has requested a return for order #${orderId.slice(-6).toUpperCase()}.`,
+                time: 'Just now',
+                read: false,
+                orderId: orderId,
+            };
+            userToast = {
+                title: "Return Requested",
+                description: "Your return request has been submitted.",
+            };
+        }
+
+        addNotification(adminNotification);
+        toast(userToast);
+
+      } catch (error) {
+          toast({
+              title: "Error",
+              description: "There was a problem updating your order. Please try again.",
+              variant: "destructive",
+          });
+      } finally {
+          setIsLoading(false);
+      }
   }
 
   const handleReorder = (order: UserOrder) => {
@@ -139,7 +158,7 @@ export default function OrdersPage() {
                       <CardTitle className="font-headline">
                         Order #{order.id.slice(-6).toUpperCase()}
                       </CardTitle>
-                      <CardDescription>Date: {order.date}</CardDescription>
+                      <CardDescription>Date: {new Date(order.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</CardDescription>
                     </div>
                     <div className="flex items-center gap-4">
                       <Badge
@@ -218,14 +237,14 @@ export default function OrdersPage() {
                       <Button variant="secondary" size="sm" onClick={() => handleReorder(order)}>Reorder</Button>
                        <div className="flex gap-2">
                         {order.status === 'Pending' && (
-                            <Button variant="destructive" size="sm" onClick={() => handleCancelOrder(order.id)}>
-                                <XCircle className="mr-2 h-4 w-4"/>
+                            <Button variant="destructive" size="sm" onClick={() => handleOrderAction(order.id, 'Cancelled', 'cancel')} disabled={isLoading}>
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <XCircle className="mr-2 h-4 w-4"/>}
                                 Cancel Order
                             </Button>
                         )}
                          {isReturnable && (
-                            <Button variant="outline" size="sm" onClick={() => handleReturnOrder(order.id)}>
-                                <Undo2 className="mr-2 h-4 w-4"/>
+                            <Button variant="outline" size="sm" onClick={() => handleOrderAction(order.id, 'Return Requested', 'return')} disabled={isLoading}>
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Undo2 className="mr-2 h-4 w-4"/>}
                                 Return Order
                             </Button>
                         )}

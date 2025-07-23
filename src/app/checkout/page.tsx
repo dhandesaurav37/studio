@@ -36,7 +36,7 @@ interface ShippingOption {
 }
 
 export default function CheckoutPage() {
-  const { cart, profile, addOrder, addNotification, clearCart, calculateDiscountedPrice } = useStore();
+  const { cart, profile, addNotification, clearCart, calculateDiscountedPrice } = useStore();
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
@@ -196,18 +196,10 @@ export default function CheckoutPage() {
         const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
         const finalOrderId = newOrderRef.key!;
 
-        const newUserOrder: UserOrder = {
-          id: finalOrderId,
-          date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
-          deliveryDate: null,
-          status: "Pending",
-          total: total,
-          items: cart.map(item => ({ productId: item.product.id, quantity: item.quantity, size: item.size }))
-        };
-
         const newAdminOrder = {
           id: finalOrderId,
-          date: new Date().toISOString().split('T')[0],
+          date: new Date().toISOString(),
+          deliveryDate: null,
           customer: { name: user.displayName || 'N/A', email: user.email || 'N/A' },
           shippingAddress: shippingAddress,
           paymentMethod: method,
@@ -222,7 +214,6 @@ export default function CheckoutPage() {
         
         try {
             await set(newOrderRef, newAdminOrder);
-            addOrder(newUserOrder);
         
             addNotification({
                 id: Date.now(),
