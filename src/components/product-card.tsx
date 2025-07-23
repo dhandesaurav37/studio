@@ -108,7 +108,7 @@ export function ProductCard({
               style={{ objectFit: "cover" }}
               className="group-hover:scale-105 transition-transform duration-500"
               data-ai-hint={product.dataAiHint}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             />
           </div>
         </Link>

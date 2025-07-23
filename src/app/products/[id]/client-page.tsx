@@ -420,7 +420,7 @@ export default function ProductDetailClientPage({
           <CarouselContent>
             {product.images.map((img, index) => (
               <CarouselItem key={index}>
-                <div className="relative aspect-square w-full h-auto rounded-lg overflow-hidden">
+                <div className="relative aspect-[3/4] w-full h-auto rounded-lg overflow-hidden">
                   <Image
                     src={img}
                     alt={`${product.name} ${index + 1}`}
