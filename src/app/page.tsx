@@ -155,9 +155,9 @@ export default function HomePage() {
 
       {/* Offers Marquee */}
       {offers.length > 0 && (
-        <div className="bg-primary text-primary-foreground py-3 overflow-hidden">
+        <div className="bg-primary text-primary-foreground py-2 overflow-hidden">
             <div className="marquee whitespace-nowrap">
-                <div className="flex items-center text-md font-semibold tracking-wider">
+                <div className="flex items-center text-sm font-semibold tracking-wider">
                 {offers.map(offer => (
                     <React.Fragment key={offer.id}>
                         <Sparkles className="h-4 w-4 mx-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
