@@ -4,7 +4,7 @@
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import { Product } from "@/lib/data";
-import { Archive, Shirt, Truck } from "lucide-react";
+import { Archive, Shirt, Sparkles, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,10 +14,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import Autoplay from "embla-carousel-autoplay";
 import { Card } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
+import { ref, onValue } from "firebase/database";
+import { rtdb } from "@/lib/firebase";
+import type { Offer } from "@/app/admin/ads-and-offers/page";
 
 const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/HomePage.png.jpg?alt=media&token=db086dc0-ef13-456a-a1ff-d618f247b4c7", hint: "fashion model" },
@@ -30,11 +33,27 @@ const heroImages = [
 
 export default function HomePage() {
   const { products } = useStore();
+  const [offers, setOffers] = useState<Offer[]>([]);
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
   const premiumCollection = products.filter(p => p.price > 4000);
 
   const allCategories = [...new Set(products.map((p) => p.category))];
+
+   useEffect(() => {
+    const offersRef = ref(rtdb, 'offers');
+    const unsubscribe = onValue(offersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const offersData: Offer[] = Object.keys(data)
+                .map(key => ({ id: key, ...data[key] }))
+                .filter(offer => offer.isActive); // Only show active offers
+            setOffers(offersData);
+        }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const categoryImages = useMemo(() => {
     const images: { [key: string]: { src: string; hint: string } } = {};
@@ -133,6 +152,27 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Offers Marquee */}
+      {offers.length > 0 && (
+        <div className="bg-primary text-primary-foreground py-3 overflow-hidden">
+            <div className="marquee whitespace-nowrap">
+                <span className="flex items-center text-md font-semibold tracking-wider mx-4">
+                {offers.map(offer => (
+                    <React.Fragment key={offer.id}>
+                        <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
+                    </React.Fragment>
+                ))}
+                 {offers.map(offer => (
+                    <React.Fragment key={`${offer.id}-clone`}>
+                        <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
+                    </React.Fragment>
+                ))}
+                </span>
+            </div>
+        </div>
+      )}
+
 
       {/* Features Section */}
       <section className="bg-card w-full">

@@ -53,6 +53,7 @@ export {
   Share,
   ShoppingBag,
   ShoppingCart,
+  Sparkles,
   Star,
   Sun,
   Trash,
