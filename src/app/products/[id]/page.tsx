@@ -1,33 +1,25 @@
 
-import { useStore } from "@/hooks/use-store";
 import { notFound } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
 import { Product, initialProducts } from "@/lib/data";
+import { useStore } from "@/hooks/use-store";
 
 // This page now works in a standard Next.js environment (not static export)
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
   // NOTE: In a real-world scenario with a server, you'd fetch this data from your database here.
-  // For this project, we simulate this by combining initial static data with client-side store data.
-  // This approach is not ideal for production but works for this project's setup.
-  const { products } = useStore.getState();
+  // For this project's setup, we can only rely on the initialProducts for the server render.
+  // The client-side component will then hydrate with the full, live data from Firebase.
   
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   
-  // Create a comprehensive map of all products (from store and initial data)
-  // to find the product. This ensures the page works both during build and on the client.
-  const allProducts = (() => {
-      const productMap = new Map<string, Product>();
-      initialProducts.forEach(p => productMap.set(p.id, p));
-      // The `products` from `useStore` will be populated on the client side
-      products.forEach(p => productMap.set(p.id, p));
-      return Array.from(productMap.values());
-  })();
-
-  const product = allProducts.find(p => p.id === id);
+  // Find the product from the static list available at build time.
+  const product = initialProducts.find(p => p.id === id);
+  const allProducts = initialProducts;
 
   if (!product) {
-    // This will show a 404 page if a product ID is invalid.
+    // This will show a 404 page if a product ID is invalid based on initial data.
+    // The client page will handle showing products that are only in the live database.
     notFound();
   }
 
