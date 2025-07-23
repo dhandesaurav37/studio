@@ -4,9 +4,6 @@ import type {NextConfig} from 'next';
 const nextConfig: NextConfig = {
   /* config options here */
   output: 'export',
-  // Allow dynamic parameters for static export. This is needed for product pages
-  // that are not known at build time.
-  dynamicParams: true, 
   typescript: {
     ignoreBuildErrors: true,
   },

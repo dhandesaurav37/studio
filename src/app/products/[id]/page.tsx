@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
 import { Product, initialProducts } from "@/lib/data";
 
+export const dynamicParams = true; 
+
 // This function is required for static export with dynamic routes.
 // It tells Next.js which pages to generate at build time.
 // NOTE: This uses the `initialProducts` list as a fallback for build-time generation.
