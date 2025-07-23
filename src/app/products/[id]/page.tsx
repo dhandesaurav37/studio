@@ -4,23 +4,13 @@ import { notFound } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
 import { Product, initialProducts } from "@/lib/data";
 
-export const dynamicParams = false; 
-
-// This function is required for static export with dynamic routes.
-// It tells Next.js which pages to generate at build time based on the initial static data.
-export async function generateStaticParams() {
-  // At build time, we only have access to the initialProducts.
-  const allIds = initialProducts.map((p) => p.id);
-
-  return allIds.map((id) => ({
-    id: id,
-  }));
-}
+// This page now works in a standard Next.js environment (not static export)
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  // The store is initialized on the client, but for build we need a source of truth.
-  // We combine the store's products with the initial static products.
-  const { products } = useStore();
+  // NOTE: In a real-world scenario with a server, you'd fetch this data from your database here.
+  // For this project, we simulate this by combining initial static data with client-side store data.
+  // This approach is not ideal for production but works for this project's setup.
+  const { products } = useStore.getState();
   
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   

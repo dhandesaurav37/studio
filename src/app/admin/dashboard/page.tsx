@@ -16,10 +16,10 @@ const AdminDashboardClientPage = dynamic(() => import('./client-page'), {
                 <Skeleton className="h-28 w-full" />
             </div>
             <div className="mt-8">
-                <Skeleton className="h-96 w-full" />
+                <Skeleton className="h-[600px] w-full" />
             </div>
              <div className="mt-8">
-                <Skeleton className="h-96 w-full" />
+                <Skeleton className="h-[500px] w-full" />
             </div>
         </div>
     )
@@ -28,5 +28,3 @@ const AdminDashboardClientPage = dynamic(() => import('./client-page'), {
 export default function AdminDashboardPage() {
   return <AdminDashboardClientPage />;
 }
-
-    
