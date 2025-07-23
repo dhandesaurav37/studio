@@ -25,9 +25,10 @@ import {
   MapPin,
   Loader2,
   Ruler,
+  Truck,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { ProductCard } from "@/components/product-card";
 import { useStore, UserOrder } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +41,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
 import { getAddressFromCoordinates } from "@/app/actions/geocoding";
+import { getShippingRates } from "@/app/actions/shipping";
 import {
   Carousel,
   CarouselContent,
@@ -50,6 +52,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface ProductDetailClientPageProps {
@@ -63,6 +66,13 @@ declare global {
     Razorpay: any;
   }
 }
+
+interface ShippingOption {
+    name: string;
+    rate: number;
+    estimated_delivery_days: string;
+}
+
 
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
@@ -102,8 +112,15 @@ export default function ProductDetailClientPage({
     mobile: "",
   });
 
+  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
+  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
+  const [isFetchingRates, setIsFetchingRates] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+
   const discountedPrice = calculateDiscountedPrice(product);
   const hasOffer = getApplicableOffer(product);
+  const subtotal = discountedPrice * quantity;
+  const total = subtotal + (selectedShipping?.rate || 0);
   
   const complementaryProducts = useMemo(() => {
     const isTop = topCategories.includes(product.category);
@@ -146,6 +163,52 @@ export default function ProductDetailClientPage({
     });
     return () => unsubscribe();
   }, []);
+
+  const fetchRates = useCallback(async (pincode: string) => {
+      if(pincode.length !== 6) {
+          setShippingOptions([]);
+          setSelectedShipping(null);
+          return;
+      };
+
+      setIsFetchingRates(true);
+      setShippingOptions([]);
+      setSelectedShipping(null);
+      
+      const productWeight = (product.category.includes("Jacket") ? 2 : 0.5) * quantity;
+
+      const result = await getShippingRates({
+          delivery_postcode: pincode,
+          weight: productWeight > 0 ? productWeight : 0.5,
+          subtotal: subtotal,
+          cod: '0'
+      });
+
+      if (result.success && result.options && result.options.length > 0) {
+          setShippingOptions(result.options);
+          setSelectedShipping(result.options[0]);
+      } else {
+          setShippingOptions([]);
+          toast({
+              title: "Shipping Not Available",
+              description: result.message || "Could not find shipping options for this pincode.",
+              variant: "destructive"
+          });
+      }
+      setIsFetchingRates(false);
+  }, [subtotal, product.category, quantity, toast]);
+
+  useEffect(() => {
+    if(!isPurchaseDialogOpen) return;
+
+    const deliveryPincode = addressOption === 'new' ? newAddress.pincode : profile.address.pincode;
+    if (deliveryPincode) {
+        fetchRates(deliveryPincode);
+    } else {
+        setShippingOptions([]);
+        setSelectedShipping(null);
+    }
+  }, [addressOption, newAddress.pincode, profile.address.pincode, fetchRates, isPurchaseDialogOpen]);
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -274,8 +337,6 @@ export default function ProductDetailClientPage({
       const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
       const finalOrderId = newOrderRef.key!;
       
-      const total = discountedPrice * quantity;
-      
       const newAdminOrder = {
         id: finalOrderId,
         date: new Date().toISOString(),
@@ -307,11 +368,23 @@ export default function ProductDetailClientPage({
       } catch (error) {
         console.error("Error placing order:", error);
         toast({ title: "Error", description: "Failed to save order. Please try again.", variant: "destructive" });
+      } finally {
+        setIsPlacingOrder(false);
       }
   };
 
   const handlePayment = async (method: "Online" | "COD") => {
-    const total = discountedPrice * quantity;
+    if (!isAddressValid || !selectedShipping) {
+      if(!selectedShipping) {
+        toast({ title: "No shipping method", description: "Please select a shipping method.", variant: "destructive" });
+      } else {
+        toast({ title: "Invalid Address", description: "Please provide a valid shipping address.", variant: "destructive" });
+      }
+      return;
+    }
+    
+    setIsPlacingOrder(true);
+
     if (method === "COD") {
        placeOrder(method);
     } else { // Handle Online Payment
@@ -349,6 +422,7 @@ export default function ProductDetailClientPage({
                 description: "Something went wrong. Please try again.",
                 variant: "destructive",
             });
+            setIsPlacingOrder(false);
        });
        rzp1.open();
     } catch(error) {
@@ -357,6 +431,7 @@ export default function ProductDetailClientPage({
             description: "Could not connect to payment gateway. Please try again later.",
             variant: "destructive",
         })
+        setIsPlacingOrder(false);
     }
   }
   };
@@ -408,29 +483,32 @@ export default function ProductDetailClientPage({
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
         {/* Product Images */}
-        <Carousel className="w-full md:col-span-2">
-          <CarouselContent>
-            {product.images.map((img, index) => (
-              <CarouselItem key={index}>
-                <div className="relative aspect-[3/4] w-full h-auto rounded-lg overflow-hidden">
-                  <Image
-                    src={img}
-                    alt={`${product.name} ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    data-ai-hint={product.dataAiHint}
-                    priority={index === 0}
-                  />
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
-          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
-        </Carousel>
+        <div className="md:col-span-3">
+            <Carousel className="w-full">
+              <CarouselContent>
+                {product.images.map((img, index) => (
+                  <CarouselItem key={index}>
+                    <div className="relative aspect-[4/5] w-full h-auto rounded-lg overflow-hidden">
+                      <Image
+                        src={img}
+                        alt={`${product.name} ${index + 1}`}
+                        fill
+                        className="object-cover"
+                        data-ai-hint={product.dataAiHint}
+                        priority={index === 0}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
+              <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 z-10 text-foreground bg-background/50 hover:bg-background/80" />
+            </Carousel>
+        </div>
+
 
         {/* Product Details */}
-        <div className="md:col-span-3 pt-0 md:pt-8">
+        <div className="md:col-span-2 pt-0 md:pt-8">
           <h1 className="text-3xl md:text-4xl font-bold font-headline">
             {product.name}
           </h1>
@@ -814,12 +892,53 @@ export default function ProductDetailClientPage({
             </div>
           </RadioGroup>
           <Separator />
+          
+          {/* Shipping Options */}
+          <div className="space-y-2">
+            <h4 className="font-semibold">Shipping Method</h4>
+             {isFetchingRates ? (
+                <div className="space-y-2">
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            ) : shippingOptions.length > 0 ? (
+                <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
+                    {shippingOptions.map(option => (
+                          <Label key={option.name} htmlFor={`buynow-${option.name}`} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent has-[:checked]:border-primary text-sm">
+                            <div className="flex items-center gap-3">
+                                <RadioGroupItem value={option.name} id={`buynow-${option.name}`} />
+                                <div>
+                                    <p className="font-medium">{option.name}</p>
+                                    <p className="text-xs text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
+                                </div>
+                            </div>
+                            <p className="font-bold">₹{option.rate.toFixed(2)}</p>
+                        </Label>
+                    ))}
+                </RadioGroup>
+            ) : (
+                <div className="text-center text-muted-foreground p-3 border border-dashed rounded-lg text-sm">
+                    <Truck className="mx-auto h-6 w-6 mb-1" />
+                    <p>Enter a valid pincode to see shipping options.</p>
+                </div>
+            )}
+          </div>
+          
+          <Separator />
+          
           <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">Total Amount</p>
-              <p className="text-2xl font-bold">
-                ₹{(discountedPrice * quantity).toFixed(2)}
-              </p>
+            <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal</span>
+                  <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+                </div>
+                 <div className="flex justify-between text-sm">
+                  <span>Shipping</span>
+                  <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
+                </div>
+                 <div className="flex justify-between font-semibold text-lg">
+                  <span>Total</span>
+                  <span>₹{total.toFixed(2)}</span>
+                </div>
             </div>
             <div className="relative h-20 w-20 rounded-md overflow-hidden">
               <Image
@@ -835,15 +954,17 @@ export default function ProductDetailClientPage({
             <Button
               variant="destructive"
               onClick={() => handlePayment("Online")}
-              disabled={!isAddressValid}
+              disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
             >
+              {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
               Pay Online
             </Button>
             <Button
               variant="secondary"
               onClick={() => handlePayment("COD")}
-              disabled={!isAddressValid}
+              disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
             >
+              {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
               Cash on Delivery
             </Button>
           </div>
