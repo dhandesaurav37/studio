@@ -201,16 +201,18 @@ export default function ProductDetailClientPage({
   }, [subtotal, product.category, quantity, toast]);
 
   useEffect(() => {
-    if(!isPurchaseDialogOpen) return;
+    if (!isPurchaseDialogOpen) return;
 
     const deliveryPincode = addressOption === 'new' ? newAddress.pincode : profile.address.pincode;
-    if (deliveryPincode) {
+    
+    if (deliveryPincode && deliveryPincode.length === 6) {
         fetchRates(deliveryPincode);
     } else {
         setShippingOptions([]);
         setSelectedShipping(null);
     }
-  }, [addressOption, newAddress.pincode, profile.address.pincode, fetchRates, isPurchaseDialogOpen]);
+  }, [addressOption, newAddress.pincode, profile.address.pincode, isPurchaseDialogOpen, fetchRates]);
+
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -968,6 +970,3 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
-
-
-    
