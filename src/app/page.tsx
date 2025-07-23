@@ -46,9 +46,14 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
 
       <CardFooter className="absolute bottom-0 left-0 right-0 p-4 bg-transparent">
         <Link href={`/products/${reel.productId}`} className="w-full">
-            <div className="bg-background/80 backdrop-blur-sm p-3 rounded-lg">
-                <p className="font-semibold truncate">{reel.product!.name}</p>
-                <p className="text-sm font-bold text-foreground">₹{reel.product!.price.toFixed(2)}</p>
+            <div className="bg-background/80 backdrop-blur-sm p-2 rounded-lg flex items-center gap-3">
+                <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
+                    <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" data-ai-hint={reel.product!.dataAiHint}/>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                    <p className="font-semibold truncate">{reel.product!.name}</p>
+                    <p className="text-sm font-bold text-foreground">₹{reel.product!.price.toFixed(2)}</p>
+                </div>
             </div>
         </Link>
       </CardFooter>
