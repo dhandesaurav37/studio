@@ -36,6 +36,7 @@ export {
   MapPin,
   Menu,
   MessageCircle,
+  Megaphone,
   Minus,
   Moon,
   MoreHorizontal,
