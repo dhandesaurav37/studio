@@ -483,7 +483,7 @@ export default function ProductDetailClientPage({
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
       <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
         {/* Product Images */}
-        <div className="md:col-span-3">
+        <div className="md:col-span-2">
             <Carousel className="w-full">
               <CarouselContent>
                 {product.images.map((img, index) => (
@@ -508,7 +508,7 @@ export default function ProductDetailClientPage({
 
 
         {/* Product Details */}
-        <div className="md:col-span-2 pt-0 md:pt-8">
+        <div className="md:col-span-3 pt-0 md:pt-8">
           <h1 className="text-3xl md:text-4xl font-bold font-headline">
             {product.name}
           </h1>
@@ -924,31 +924,18 @@ export default function ProductDetailClientPage({
           </div>
           
           <Separator />
-          
-          <div className="flex justify-between items-center">
-            <div className="space-y-1">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span className="font-medium">₹{subtotal.toFixed(2)}</span>
-                </div>
-                 <div className="flex justify-between text-sm">
-                  <span>Shipping</span>
-                  <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
-                </div>
-                 <div className="flex justify-between font-semibold text-lg">
-                  <span>Total</span>
-                  <span>₹{total.toFixed(2)}</span>
-                </div>
-            </div>
-            <div className="relative h-20 w-20 rounded-md overflow-hidden">
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                className="object-cover"
-                data-ai-hint={product.dataAiHint}
-              />
-            </div>
+          <div className="flex justify-between items-center text-sm">
+            <span>Subtotal</span>
+            <span className="font-medium">₹{subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <span>Shipping</span>
+            <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
+          </div>
+          <Separator />
+          <div className="flex justify-between font-bold">
+            <span>Total Amount</span>
+            <span>₹{total.toFixed(2)}</span>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <Button
