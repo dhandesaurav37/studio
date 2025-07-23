@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/carousel";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
 
 
 interface ProductDetailClientPageProps {
@@ -456,9 +457,16 @@ export default function ProductDetailClientPage({
             {product.name}
           </h1>
           <div className="flex items-baseline gap-4 mt-4">
-            <p className={cn("text-3xl font-bold", hasOffer && "text-destructive")}>₹{discountedPrice.toFixed(2)}</p>
+            <p className="text-3xl font-bold">₹{discountedPrice.toFixed(2)}</p>
             {hasOffer && (
-                <p className="text-xl font-medium text-muted-foreground line-through">₹{product.price.toFixed(2)}</p>
+                <>
+                    <p className="text-xl font-medium text-muted-foreground line-through">₹{product.price.toFixed(2)}</p>
+                    {hasOffer.discountType === 'percentage' && (
+                         <Badge variant="destructive" className="text-base">
+                            {hasOffer.discountValue}% OFF
+                         </Badge>
+                    )}
+                </>
             )}
           </div>
           <p className="text-muted-foreground mt-6 leading-relaxed">
