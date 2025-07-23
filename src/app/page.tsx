@@ -32,37 +32,17 @@ const heroImages = [
 ];
 
 const ReelCard = ({ reel }: { reel: Reel }) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
     <Card className="overflow-hidden relative group aspect-[9/16] border-2 border-transparent hover:border-primary transition-colors duration-300">
       <video
-        ref={videoRef}
         src={reel.videoUrl}
         loop
         muted
+        autoPlay
+        playsInline
         className="absolute inset-0 w-full h-full object-cover"
-        onClick={handlePlayPause}
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-      
-      {!isPlaying && (
-        <div className="absolute inset-0 flex items-center justify-center" onClick={handlePlayPause}>
-            <PlayCircle className="h-16 w-16 text-white/80 drop-shadow-lg" />
-        </div>
-      )}
 
       <CardFooter className="absolute bottom-0 left-0 right-0 p-4 bg-transparent">
         <Link href={`/products/${reel.productId}`} className="w-full">
@@ -71,11 +51,11 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
                     <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{reel.product!.name}</p>
-                    <div className="flex justify-between items-center">
-                        <p className="text-sm text-muted-foreground">Shop now</p>
-                        <p className="text-sm font-bold text-foreground ml-2">₹{reel.product!.price.toFixed(2)}</p>
-                    </div>
+                  <div className="flex justify-between items-start">
+                      <p className="font-semibold truncate flex-1">{reel.product!.name}</p>
+                      <p className="text-sm font-bold text-foreground ml-2 whitespace-nowrap">₹{reel.product!.price.toFixed(2)}</p>
+                  </div>
+                  <p className="text-sm text-muted-foreground">Shop now</p>
                 </div>
             </div>
         </Link>
@@ -228,9 +208,9 @@ export default function HomePage() {
 
       {/* Offers Marquee */}
       {offers.length > 0 && (
-        <div className="bg-primary text-primary-foreground py-1 overflow-hidden">
+        <div className="bg-primary text-primary-foreground py-2 overflow-hidden">
             <div className="marquee whitespace-nowrap">
-                <div className="flex items-center text-xs font-semibold tracking-wider">
+                <div className="flex items-center text-sm font-semibold tracking-wider">
                 {offers.map(offer => (
                     <React.Fragment key={offer.id}>
                         <Sparkles className="h-4 w-4 mx-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
@@ -373,7 +353,7 @@ export default function HomePage() {
                     {reels.map((reel) => (
                         <CarouselItem
                         key={reel.id}
-                        className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                        className="basis-full sm:basis-1/2 md:basis-1/3"
                         >
                         <div className="p-1">
                             <ReelCard reel={reel} />
