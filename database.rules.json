@@ -7,6 +7,10 @@
     "orders": {
       ".read": "auth != null",
       ".write": "auth != null"
+    },
+    "offers": {
+      ".read": true,
+      ".write": "auth != null"
     }
   }
 }
