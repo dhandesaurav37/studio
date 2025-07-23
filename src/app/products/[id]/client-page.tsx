@@ -52,6 +52,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface ProductDetailClientPageProps {
@@ -70,14 +71,16 @@ const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
 
 export default function ProductDetailClientPage({
-  product,
+  product: initialProduct,
   similarProducts,
   relatedProducts,
 }: ProductDetailClientPageProps) {
   const {
+    getProductById,
+    // ... other properties from useStore
     cart,
-    addToCart,
     wishlist,
+    addToCart,
     addToWishlist,
     removeFromWishlist,
     profile,
@@ -87,6 +90,8 @@ export default function ProductDetailClientPage({
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
+  
+  const [product, setProduct] = useState(initialProduct);
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -105,6 +110,19 @@ export default function ProductDetailClientPage({
   });
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  
+  useEffect(() => {
+    // If the initial product is a placeholder, try to find the real one from the store
+    if (initialProduct.name === "Loading..." && allProducts.length > 0) {
+      const realProduct = getProductById(initialProduct.id);
+      if (realProduct) {
+        setProduct(realProduct);
+      }
+    } else {
+        setProduct(initialProduct);
+    }
+  }, [initialProduct, getProductById, allProducts]);
+
 
   const discountedPrice = calculateDiscountedPrice(product);
   const hasOffer = getApplicableOffer(product);
@@ -418,6 +436,37 @@ export default function ProductDetailClientPage({
       <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
     </Carousel>
   );
+  
+  if (product.name === "Loading...") {
+    return (
+        <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
+            <div className="grid md:grid-cols-5 gap-8 lg:gap-12">
+                 <div className="md:col-span-2">
+                    <Skeleton className="aspect-[4/5] w-full rounded-lg" />
+                 </div>
+                 <div className="md:col-span-3 pt-0 md:pt-8 space-y-6">
+                    <Skeleton className="h-10 w-3/4" />
+                    <Skeleton className="h-8 w-1/4" />
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-6 w-1/5" />
+                    <div className="flex gap-2">
+                        <Skeleton className="h-10 w-16" />
+                        <Skeleton className="h-10 w-16" />
+                        <Skeleton className="h-10 w-16" />
+                    </div>
+                    <div className="flex gap-4">
+                        <Skeleton className="h-12 w-32" />
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-12 w-full" />
+                    </div>
+                 </div>
+            </div>
+        </div>
+    )
+  }
 
   return (
     <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -874,3 +923,4 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
+
