@@ -28,3 +28,5 @@ const AdminDashboardClientPage = dynamic(() => import('./client-page'), {
 export default function AdminDashboardPage() {
   return <AdminDashboardClientPage />;
 }
+
+    
