@@ -9,5 +9,13 @@
   "storage": {
     "rules": "storage.rules"
   },
-  "apphosting": {}
+  "apphosting": {
+    "backends": [
+      {
+        "id": "the-white-wolf-20614",
+        "region": "us-central1",
+        "project": "the-white-wolf-20614"
+      }
+    ]
+  }
 }
