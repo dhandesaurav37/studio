@@ -1,12 +1,12 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useStore } from "@/hooks/use-store";
-import { Edit, Loader2, MapPin, Truck } from "lucide-react";
+import { Edit, Loader2, MapPin } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,20 +19,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "../products/[id]/actions";
 import { getAddressFromCoordinates } from "../actions/geocoding";
-import { getShippingRates } from "../actions/shipping";
-import { Skeleton } from "@/components/ui/skeleton";
 
 
 declare global {
   interface Window {
     Razorpay: any;
   }
-}
-
-interface ShippingOption {
-    name: string;
-    rate: number;
-    estimated_delivery_days: string;
 }
 
 export default function CheckoutPage() {
@@ -47,9 +39,6 @@ export default function CheckoutPage() {
     name: "", street: "", city: "", state: "", pincode: "", mobile: "",
   });
 
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
-  const [isFetchingRates, setIsFetchingRates] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   useEffect(() => {
@@ -72,51 +61,8 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const discount = cart.reduce((acc, item) => acc + (item.product.price - calculateDiscountedPrice(item.product)) * item.quantity, 0);
   const discountedSubtotal = subtotal - discount;
-  const total = discountedSubtotal + (selectedShipping?.rate || 0);
-
-  const fetchRates = useCallback(async (pincode: string) => {
-      if(pincode.length !== 6) {
-          setShippingOptions([]);
-          setSelectedShipping(null);
-          return;
-      };
-
-      setIsFetchingRates(true);
-      setSelectedShipping(null);
-      
-      const cartWeight = cart.reduce((acc, item) => acc + (item.product.name.includes("Jacket") ? 2 : 0.5) * item.quantity, 0);
-
-      const result = await getShippingRates({
-          delivery_postcode: pincode,
-          weight: cartWeight > 0 ? cartWeight : 0.5,
-          subtotal: discountedSubtotal,
-          cod: '0'
-      });
-
-      if (result.success && result.options) {
-          setShippingOptions(result.options);
-          if (result.options.length > 0) {
-            setSelectedShipping(result.options[0]);
-          }
-      } else {
-          setShippingOptions([]);
-          toast({
-              title: "Shipping Not Available",
-              description: result.message || "Could not find shipping options for this pincode.",
-              variant: "destructive"
-          });
-      }
-      setIsFetchingRates(false);
-  }, [discountedSubtotal, cart, toast]);
-
-
-  useEffect(() => {
-    const deliveryPincode = addressOption === 'new' ? newAddress.pincode : profile.address.pincode;
-    if (deliveryPincode) {
-        fetchRates(deliveryPincode);
-    }
-  }, [addressOption, newAddress.pincode, profile.address.pincode, fetchRates]);
-
+  const shippingCost = cart.length > 0 ? 150 : 0;
+  const total = discountedSubtotal + shippingCost;
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -221,12 +167,8 @@ export default function CheckoutPage() {
   }
 
   const handlePayment = async (method: "Online" | "COD") => {
-    if (!isAddressValid || !user || !selectedShipping) {
-      if(!selectedShipping) {
-        toast({ title: "No shipping method", description: "Please select a shipping method.", variant: "destructive" });
-      } else {
-        toast({ title: "Invalid Address", description: "Please provide a valid shipping address.", variant: "destructive" });
-      }
+    if (!isAddressValid || !user) {
+      toast({ title: "Invalid Address", description: "Please provide a valid shipping address.", variant: "destructive" });
       return;
     }
 
@@ -358,39 +300,6 @@ export default function CheckoutPage() {
               </RadioGroup>
             </CardContent>
           </Card>
-          <Card>
-            <CardHeader>
-                <CardTitle>Shipping Method</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {isFetchingRates ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                    </div>
-                ) : shippingOptions.length > 0 ? (
-                    <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
-                        {shippingOptions.map(option => (
-                             <Label key={option.name} htmlFor={option.name} className="flex items-center justify-between rounded-lg border p-4 cursor-pointer hover:bg-accent has-[:checked]:border-primary">
-                                <div className="flex items-center gap-3">
-                                    <RadioGroupItem value={option.name} id={option.name} />
-                                    <div>
-                                        <p className="font-semibold">{option.name}</p>
-                                        <p className="text-sm text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
-                                    </div>
-                                </div>
-                                <p className="font-bold">₹{option.rate.toFixed(2)}</p>
-                            </Label>
-                        ))}
-                    </RadioGroup>
-                ) : (
-                    <div className="text-center text-muted-foreground p-4 border border-dashed rounded-lg">
-                        <Truck className="mx-auto h-8 w-8 mb-2" />
-                        <p>Enter a valid pincode to see shipping options.</p>
-                    </div>
-                )}
-            </CardContent>
-          </Card>
         </div>
         <div className="space-y-6 md:sticky md:top-24">
           <Card>
@@ -425,7 +334,7 @@ export default function CheckoutPage() {
               )}
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
+                <span>₹{shippingCost.toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold text-lg">
@@ -439,11 +348,11 @@ export default function CheckoutPage() {
               <CardTitle>Payment Method</CardTitle>
             </CardHeader>
             <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid || !selectedShipping || isPlacingOrder}>
+                <Button variant="destructive" onClick={() => handlePayment("Online")} disabled={!isAddressValid || isPlacingOrder}>
                     {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                     Pay Online
                 </Button>
-                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid || !selectedShipping || isPlacingOrder}>
+                <Button variant="secondary" onClick={() => handlePayment("COD")} disabled={!isAddressValid || isPlacingOrder}>
                     {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                     Cash on Delivery
                 </Button>
@@ -455,4 +364,3 @@ export default function CheckoutPage() {
   );
 }
 
-    

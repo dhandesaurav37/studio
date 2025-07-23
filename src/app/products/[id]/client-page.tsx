@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -26,7 +25,6 @@ import {
   MapPin,
   Loader2,
   Ruler,
-  Truck,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useState, useEffect, useMemo, useCallback } from "react";
@@ -42,7 +40,6 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "./actions";
 import { getAddressFromCoordinates } from "@/app/actions/geocoding";
-import { getShippingRates } from "@/app/actions/shipping";
 import {
   Carousel,
   CarouselContent,
@@ -53,7 +50,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 
@@ -68,13 +64,6 @@ declare global {
     Razorpay: any;
   }
 }
-
-interface ShippingOption {
-    name: string;
-    rate: number;
-    estimated_delivery_days: string;
-}
-
 
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
@@ -114,15 +103,13 @@ export default function ProductDetailClientPage({
     mobile: "",
   });
 
-  const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
-  const [selectedShipping, setSelectedShipping] = useState<ShippingOption | null>(null);
-  const [isFetchingRates, setIsFetchingRates] = useState(false);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const discountedPrice = calculateDiscountedPrice(product);
   const hasOffer = getApplicableOffer(product);
   const subtotal = discountedPrice * quantity;
-  const total = subtotal + (selectedShipping?.rate || 0);
+  const shippingCost = 150;
+  const total = subtotal + shippingCost;
   
   const complementaryProducts = useMemo(() => {
     const isTop = topCategories.includes(product.category);
@@ -165,54 +152,6 @@ export default function ProductDetailClientPage({
     });
     return () => unsubscribe();
   }, []);
-
-  const fetchRates = useCallback(async (pincode: string) => {
-      if(pincode.length !== 6) {
-          setShippingOptions([]);
-          setSelectedShipping(null);
-          return;
-      };
-
-      setIsFetchingRates(true);
-      setShippingOptions([]);
-      setSelectedShipping(null);
-      
-      const productWeight = (product.category.includes("Jacket") ? 2 : 0.5) * quantity;
-
-      const result = await getShippingRates({
-          delivery_postcode: pincode,
-          weight: productWeight > 0 ? productWeight : 0.5,
-          subtotal: subtotal,
-          cod: '0'
-      });
-
-      if (result.success && result.options && result.options.length > 0) {
-          setShippingOptions(result.options);
-          setSelectedShipping(result.options[0]);
-      } else {
-          setShippingOptions([]);
-          toast({
-              title: "Shipping Not Available",
-              description: result.message || "Could not find shipping options for this pincode.",
-              variant: "destructive"
-          });
-      }
-      setIsFetchingRates(false);
-  }, [subtotal, product.category, quantity, toast]);
-
-  useEffect(() => {
-    if (!isPurchaseDialogOpen) return;
-
-    const deliveryPincode = addressOption === 'new' ? newAddress.pincode : profile.address.pincode;
-    
-    if (deliveryPincode && deliveryPincode.length === 6) {
-        fetchRates(deliveryPincode);
-    } else {
-        setShippingOptions([]);
-        setSelectedShipping(null);
-    }
-  }, [addressOption, newAddress.pincode, profile.address.pincode, isPurchaseDialogOpen, fetchRates]);
-
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -378,13 +317,9 @@ export default function ProductDetailClientPage({
   };
 
   const handlePayment = async (method: "Online" | "COD") => {
-    if (!isAddressValid || !selectedShipping) {
-      if(!selectedShipping) {
-        toast({ title: "No shipping method", description: "Please select a shipping method.", variant: "destructive" });
-      } else {
+    if (!isAddressValid) {
         toast({ title: "Invalid Address", description: "Please provide a valid shipping address.", variant: "destructive" });
-      }
-      return;
+        return;
     }
     
     setIsPlacingOrder(true);
@@ -898,45 +833,13 @@ export default function ProductDetailClientPage({
                 </div>
               </RadioGroup>
               <Separator />
-              
-              {/* Shipping Options */}
-              <div className="space-y-2">
-                <h4 className="font-semibold">Shipping Method</h4>
-                 {isFetchingRates ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-10 w-full" />
-                    </div>
-                ) : shippingOptions.length > 0 ? (
-                    <RadioGroup value={selectedShipping?.name} onValueChange={(name) => setSelectedShipping(shippingOptions.find(opt => opt.name === name) || null)}>
-                        {shippingOptions.map(option => (
-                              <Label key={option.name} htmlFor={`buynow-${option.name}`} className="flex items-center justify-between rounded-lg border p-3 cursor-pointer hover:bg-accent has-[:checked]:border-primary text-sm">
-                                <div className="flex items-center gap-3">
-                                    <RadioGroupItem value={option.name} id={`buynow-${option.name}`} />
-                                    <div>
-                                        <p className="font-medium">{option.name}</p>
-                                        <p className="text-xs text-muted-foreground">Est. Delivery: {option.estimated_delivery_days}</p>
-                                    </div>
-                                </div>
-                                <p className="font-bold">₹{option.rate.toFixed(2)}</p>
-                            </Label>
-                        ))}
-                    </RadioGroup>
-                ) : (
-                    <div className="text-center text-muted-foreground p-3 border border-dashed rounded-lg text-sm">
-                        <Truck className="mx-auto h-6 w-6 mb-1" />
-                        <p>Enter a valid pincode to see shipping options.</p>
-                    </div>
-                )}
-              </div>
-              
-              <Separator />
               <div className="flex justify-between items-center text-sm">
                 <span>Subtotal</span>
                 <span className="font-medium">₹{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-sm">
                 <span>Shipping</span>
-                <span className="font-medium">{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
+                <span className="font-medium">₹{shippingCost.toFixed(2)}</span>
               </div>
               <Separator />
               <div className="flex justify-between font-bold">
@@ -950,7 +853,7 @@ export default function ProductDetailClientPage({
                 <Button
                   variant="destructive"
                   onClick={() => handlePayment("Online")}
-                  disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
+                  disabled={!isAddressValid || isPlacingOrder}
                 >
                   {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                   Pay Online
@@ -958,7 +861,7 @@ export default function ProductDetailClientPage({
                 <Button
                   variant="secondary"
                   onClick={() => handlePayment("COD")}
-                  disabled={!isAddressValid || !selectedShipping || isPlacingOrder}
+                  disabled={!isAddressValid || isPlacingOrder}
                 >
                   {isPlacingOrder ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
                   Cash on Delivery
@@ -970,3 +873,4 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
+
