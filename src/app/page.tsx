@@ -70,12 +70,12 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
                 <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
                     <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" />
                 </div>
-                <div className="flex-1 flex justify-between items-center min-w-0">
-                  <div className="flex-1 min-w-0">
-                      <p className="font-semibold truncate">{reel.product!.name}</p>
-                      <p className="text-sm text-muted-foreground">Shop now</p>
-                  </div>
-                  <p className="text-sm font-bold text-foreground ml-2">₹{reel.product!.price.toFixed(2)}</p>
+                <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate">{reel.product!.name}</p>
+                    <div className="flex justify-between items-center">
+                        <p className="text-sm text-muted-foreground">Shop now</p>
+                        <p className="text-sm font-bold text-foreground ml-2">₹{reel.product!.price.toFixed(2)}</p>
+                    </div>
                 </div>
             </div>
         </Link>
@@ -228,9 +228,9 @@ export default function HomePage() {
 
       {/* Offers Marquee */}
       {offers.length > 0 && (
-        <div className="bg-primary text-primary-foreground py-2 overflow-hidden">
+        <div className="bg-primary text-primary-foreground py-1 overflow-hidden">
             <div className="marquee whitespace-nowrap">
-                <div className="flex items-center text-sm font-semibold tracking-wider">
+                <div className="flex items-center text-xs font-semibold tracking-wider">
                 {offers.map(offer => (
                     <React.Fragment key={offer.id}>
                         <Sparkles className="h-4 w-4 mx-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
@@ -365,7 +365,7 @@ export default function HomePage() {
                 <Carousel
                     opts={{
                     align: "start",
-                    loop: reels.length > 5,
+                    loop: reels.length > 4,
                     }}
                     className="w-full"
                 >
@@ -373,7 +373,7 @@ export default function HomePage() {
                     {reels.map((reel) => (
                         <CarouselItem
                         key={reel.id}
-                        className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                        className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                         >
                         <div className="p-1">
                             <ReelCard reel={reel} />
