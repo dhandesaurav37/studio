@@ -1,12 +1,8 @@
 
-"use client";
-
 import { useStore } from "@/hooks/use-store";
-import { notFound, useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
-import { useEffect, useState, useMemo } from "react";
 import { Product, initialProducts } from "@/lib/data";
-import { Skeleton } from "@/components/ui/skeleton";
 
 // This function is required for static export with dynamic routes.
 // It tells Next.js which pages to generate at build time.
@@ -20,63 +16,25 @@ export async function generateStaticParams() {
   }));
 }
 
-export default function ProductDetailPage() {
-  const params = useParams();
-  const { getProductById, products } = useStore();
+export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { products } = useStore();
   
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   
   // Use a combined products list (from store and initial data) to find the product.
   // This ensures the page works both during build and on the client.
-  const allProducts = useMemo(() => {
+  const allProducts = (() => {
       const productMap = new Map<string, Product>();
       initialProducts.forEach(p => productMap.set(p.id, p));
       products.forEach(p => productMap.set(p.id, p));
       return Array.from(productMap.values());
-  }, [products]);
+  })();
 
-  const product = useMemo(() => {
+  const product = (() => {
     if (!id) return undefined;
-    if (products.length > 0) {
-      return getProductById(id);
-    }
-    // Fallback for initial render or if store is not populated yet
-    return initialProducts.find(p => p.id === id);
-  }, [id, getProductById, products]);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (products.length > 0) {
-      setIsLoading(false);
-    }
-  }, [products]);
-
-
-  if (isLoading && !product) {
-    return (
-        <div className="py-8 md:py-12 px-4 sm:px-6 lg:px-8">
-            <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-                <Skeleton className="aspect-[3/4] w-full rounded-lg" />
-                <div className="space-y-6">
-                    <Skeleton className="h-10 w-3/4" />
-                    <Skeleton className="h-8 w-1/4" />
-                    <Skeleton className="h-20 w-full" />
-                    <Skeleton className="h-6 w-1/4 mb-4" />
-                    <div className="flex flex-wrap gap-2">
-                        <Skeleton className="h-10 w-16" />
-                        <Skeleton className="h-10 w-16" />
-                        <Skeleton className="h-10 w-16" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-  }
+    // Prioritize store products if available, otherwise fallback to initial data
+    return products.find(p => p.id === id) || initialProducts.find(p => p.id === id);
+  })();
 
   if (!product) {
     notFound();
