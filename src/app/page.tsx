@@ -70,9 +70,12 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
                 <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
                     <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" />
                 </div>
-                <div className="flex-1 min-w-0">
-                    <p className="font-semibold truncate">{reel.product!.name}</p>
-                    <p className="text-sm text-muted-foreground">₹{reel.product!.price.toFixed(2)}</p>
+                <div className="flex-1 flex justify-between items-center min-w-0">
+                  <div className="flex-1 min-w-0">
+                      <p className="font-semibold truncate">{reel.product!.name}</p>
+                      <p className="text-sm text-muted-foreground">Shop now</p>
+                  </div>
+                  <p className="text-sm font-bold text-foreground ml-2">₹{reel.product!.price.toFixed(2)}</p>
                 </div>
             </div>
         </Link>
