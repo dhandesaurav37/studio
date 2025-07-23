@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -777,7 +778,7 @@ export default function ProductDetailClientPage({
         open={isPurchaseDialogOpen}
         onOpenChange={setIsPurchaseDialogOpen}
       >
-        <DialogContent className="sm:max-w-2xl max-h-[90vh]">
+        <DialogContent className="sm:max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="font-headline text-2xl">
               Confirm Purchase
@@ -940,7 +941,10 @@ export default function ProductDetailClientPage({
                 <span>Total Amount</span>
                 <span>₹{total.toFixed(2)}</span>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+            </div>
+          </ScrollArea>
+           <DialogFooter className="mt-4">
+              <div className="grid grid-cols-2 gap-4 w-full">
                 <Button
                   variant="destructive"
                   onClick={() => handlePayment("Online")}
@@ -958,8 +962,7 @@ export default function ProductDetailClientPage({
                   Cash on Delivery
                 </Button>
               </div>
-            </div>
-          </ScrollArea>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
