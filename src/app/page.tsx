@@ -3,8 +3,8 @@
 
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { Product } from "@/lib/data";
-import { Archive, Shirt, Sparkles, Truck } from "lucide-react";
+import { Product, Reel } from "@/lib/data";
+import { Archive, PlayCircle, Shirt, Sparkles, Truck, VideoIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,9 +14,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import Autoplay from "embla-carousel-autoplay";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useStore } from "@/hooks/use-store";
 import { ref, onValue } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
@@ -31,18 +31,71 @@ const heroImages = [
   { src: "https://firebasestorage.googleapis.com/v0/b/the-white-wolf-20614.firebasestorage.app/o/Homepage6.png.jpg?alt=media&token=d708f6bb-3105-4a8e-a3db-51d9c23119ad", hint: "fashion shoot" },
 ];
 
+const ReelCard = ({ reel }: { reel: Reel }) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const handlePlayPause = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+      } else {
+        videoRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  return (
+    <Card className="overflow-hidden relative group aspect-[9/16] border-2 border-transparent hover:border-primary transition-colors duration-300">
+      <video
+        ref={videoRef}
+        src={reel.videoUrl}
+        loop
+        muted
+        className="absolute inset-0 w-full h-full object-cover"
+        onClick={handlePlayPause}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+      
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center" onClick={handlePlayPause}>
+            <PlayCircle className="h-16 w-16 text-white/80 drop-shadow-lg" />
+        </div>
+      )}
+
+      <CardFooter className="absolute bottom-0 left-0 right-0 p-4 bg-transparent">
+        <Link href={`/products/${reel.productId}`} className="w-full">
+            <div className="bg-background/80 backdrop-blur-sm p-3 rounded-lg flex items-center gap-4">
+                <div className="relative h-16 w-16 rounded-md overflow-hidden flex-shrink-0">
+                    <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" />
+                </div>
+                <div className="flex-1">
+                    <p className="font-semibold truncate">{reel.product!.name}</p>
+                    <p className="text-sm text-muted-foreground">₹{reel.product!.price.toFixed(2)}</p>
+                </div>
+            </div>
+        </Link>
+      </CardFooter>
+    </Card>
+  );
+};
+
+
 export default function HomePage() {
-  const { products } = useStore();
+  const { products, getProductById } = useStore();
   const [offers, setOffers] = useState<Offer[]>([]);
+  const [reels, setReels] = useState<Reel[]>([]);
+
   const newArrivals = products.slice(0, 4);
   const oversizeTees = products.filter(p => p.category === "Oversized T-shirts");
   const premiumCollection = products.filter(p => p.price > 4000);
 
   const allCategories = [...new Set(products.map((p) => p.category))];
 
-   useEffect(() => {
+  useEffect(() => {
     const offersRef = ref(rtdb, 'offers');
-    const unsubscribe = onValue(offersRef, (snapshot) => {
+    const unsubscribeOffers = onValue(offersRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
             const offersData: Offer[] = Object.keys(data)
@@ -52,8 +105,25 @@ export default function HomePage() {
         }
     });
 
-    return () => unsubscribe();
-  }, []);
+    const reelsRef = ref(rtdb, 'reels');
+    const unsubscribeReels = onValue(reelsRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const reelsData: Reel[] = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+        const hydratedReels = reelsData.map(reel => ({
+            ...reel,
+            product: getProductById(reel.productId)
+        })).filter(reel => reel.product); // Ensure product exists
+        setReels(hydratedReels as (Reel & { product: Product })[]);
+      }
+    });
+
+    return () => {
+        unsubscribeOffers();
+        unsubscribeReels();
+    };
+  }, [getProductById]);
+
 
   const categoryImages = useMemo(() => {
     const images: { [key: string]: { src: string; hint: string } } = {};
@@ -276,9 +346,48 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+      
+      {/* Watch and Shop Section */}
+      {reels.length > 0 && (
+        <section className="py-16 md:py-20 bg-card w-full">
+            <div className="container mx-auto">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold font-headline">
+                    Watch and Shop
+                    </h2>
+                    <p className="text-muted-foreground mt-2 max-w-xl mx-auto">
+                    See our products in action. Click to shop the look.
+                    </p>
+                </div>
+                <Carousel
+                    opts={{
+                    align: "start",
+                    loop: reels.length > 5,
+                    }}
+                    className="w-full"
+                >
+                    <CarouselContent>
+                    {reels.map((reel) => (
+                        <CarouselItem
+                        key={reel.id}
+                        className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5"
+                        >
+                        <div className="p-1">
+                            <ReelCard reel={reel} />
+                        </div>
+                        </CarouselItem>
+                    ))}
+                    </CarouselContent>
+                    <CarouselPrevious className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                    <CarouselNext className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/50 hover:bg-background/80" />
+                </Carousel>
+            </div>
+        </section>
+      )}
+
 
       {/* Shop by Category Section */}
-      <section className="py-16 md:py-20 bg-card w-full">
+      <section className="py-16 md:py-20 bg-background w-full">
         <div className="container mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold font-headline">

@@ -14,6 +14,15 @@ export interface Product {
   dataAiHint: string;
 }
 
+export interface Reel {
+  id: string;
+  title: string;
+  videoUrl: string;
+  productId: string;
+  product?: Product;
+}
+
+
 // This data is now only for initial seeding or as a reference.
 // The primary data source is Firebase Realtime Database.
 export const initialProducts: Product[] = [
