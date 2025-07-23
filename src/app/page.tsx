@@ -46,17 +46,9 @@ const ReelCard = ({ reel }: { reel: Reel }) => {
 
       <CardFooter className="absolute bottom-0 left-0 right-0 p-4 bg-transparent">
         <Link href={`/products/${reel.productId}`} className="w-full">
-            <div className="bg-background/80 backdrop-blur-sm p-3 rounded-lg flex items-center gap-3">
-                <div className="relative h-14 w-14 rounded-md overflow-hidden flex-shrink-0">
-                    <Image src={reel.product!.images[0]} alt={reel.product!.name} fill className="object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start">
-                      <p className="font-semibold truncate flex-1">{reel.product!.name}</p>
-                      <p className="text-sm font-bold text-foreground ml-2 whitespace-nowrap">₹{reel.product!.price.toFixed(2)}</p>
-                  </div>
-                  <p className="text-sm text-muted-foreground">Shop now</p>
-                </div>
+            <div className="bg-background/80 backdrop-blur-sm p-3 rounded-lg">
+                <p className="font-semibold truncate">{reel.product!.name}</p>
+                <p className="text-sm font-bold text-foreground">₹{reel.product!.price.toFixed(2)}</p>
             </div>
         </Link>
       </CardFooter>
@@ -345,7 +337,7 @@ export default function HomePage() {
                 <Carousel
                     opts={{
                     align: "start",
-                    loop: reels.length > 4,
+                    loop: reels.length > 3,
                     }}
                     className="w-full"
                 >
@@ -353,7 +345,7 @@ export default function HomePage() {
                     {reels.map((reel) => (
                         <CarouselItem
                         key={reel.id}
-                        className="basis-full sm:basis-1/2 md:basis-1/3"
+                        className="basis-full sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
                         >
                         <div className="p-1">
                             <ReelCard reel={reel} />
