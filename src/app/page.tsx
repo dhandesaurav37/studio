@@ -157,18 +157,18 @@ export default function HomePage() {
       {offers.length > 0 && (
         <div className="bg-primary text-primary-foreground py-3 overflow-hidden">
             <div className="marquee whitespace-nowrap">
-                <span className="flex items-center text-md font-semibold tracking-wider mx-4">
+                <div className="flex items-center text-md font-semibold tracking-wider">
                 {offers.map(offer => (
                     <React.Fragment key={offer.id}>
-                        <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
+                        <Sparkles className="h-4 w-4 mx-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
                     </React.Fragment>
                 ))}
                  {offers.map(offer => (
                     <React.Fragment key={`${offer.id}-clone`}>
-                        <Sparkles className="h-4 w-4 mr-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
+                        <Sparkles className="h-4 w-4 mx-2 flex-shrink-0" /> {offer.name} <span className="mx-4">|</span>
                     </React.Fragment>
                 ))}
-                </span>
+                </div>
             </div>
         </div>
       )}

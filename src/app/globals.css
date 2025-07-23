@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -59,7 +60,7 @@
 }
 
 @layer utilities {
-  .marquee {
+  .marquee > div {
     animation: marquee 30s linear infinite;
   }
 
