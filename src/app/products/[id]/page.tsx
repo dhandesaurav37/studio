@@ -4,17 +4,22 @@ import { notFound } from "next/navigation";
 import ProductDetailClientPage from "./client-page";
 import { Product, initialProducts } from "@/lib/data";
 
-export const dynamicParams = true; 
+export const dynamicParams = false; 
 
 // This function is required for static export with dynamic routes.
 // It tells Next.js which pages to generate at build time.
-// NOTE: This uses the `initialProducts` list as a fallback for build-time generation.
-// The live data will still be fetched from Firebase on the client side.
+// It combines initial static data with data from the store to be comprehensive.
 export async function generateStaticParams() {
-  // In a real-world scenario with a proper backend, you would fetch all product IDs here.
-  // For now, we'll use the initialProducts from our data file.
-  return initialProducts.map((product) => ({
-    id: product.id,
+  const { products } = useStore.getState();
+  const allProductsMap = new Map<string, Product>();
+
+  initialProducts.forEach(p => allProductsMap.set(p.id, p));
+  products.forEach(p => allProductsMap.set(p.id, p));
+
+  const allIds = Array.from(allProductsMap.keys());
+
+  return allIds.map((id) => ({
+    id: id,
   }));
 }
 
@@ -32,11 +37,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
       return Array.from(productMap.values());
   })();
 
-  const product = (() => {
-    if (!id) return undefined;
-    // Prioritize store products if available, otherwise fallback to initial data
-    return products.find(p => p.id === id) || initialProducts.find(p => p.id === id);
-  })();
+  const product = allProducts.find(p => p.id === id);
 
   if (!product) {
     notFound();
