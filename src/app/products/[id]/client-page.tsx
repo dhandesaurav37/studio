@@ -66,20 +66,6 @@ declare global {
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
 
-const categoryImages: { [key: string]: { src: string; hint: string } } = {
-    "T-Shirts": { src: "https://placehold.co/600x400.png", hint: "t-shirts" },
-    "Shirts": { src: "https://placehold.co/600x400.png", hint: "dress shirts" },
-    "Jeans": { src: "https://placehold.co/600x400.png", hint: "denim jeans" },
-    "Sweater": { src: "https://placehold.co/600x400.png", hint: "knit sweater" },
-    "Jackets": { src: "https://placehold.co/600x400.png", hint: "stylish jacket" },
-    "Oversized T-shirts": { src: "https://placehold.co/600x400.png", hint: "oversized t-shirt" },
-    "Track Pants": { src: "https://placehold.co/600x400.png", hint: "track pants" },
-    "Belts": { src: "https://placehold.co/600x400.png", hint: "leather belt" },
-    "Bags": { src: "https://placehold.co/600x400.png", hint: "canvas bag" },
-    "Wallets": { src: "https://placehold.co/600x400.png", hint: "leather wallet" },
-    "Shoes": { src: "https://placehold.co/600x400.png", hint: "leather shoes" },
-};
-
 export default function ProductDetailClientPage({
   product,
   similarProducts,
@@ -129,6 +115,25 @@ export default function ProductDetailClientPage({
   }, [product.category, allProducts]);
 
   const allCategories = [...new Set(allProducts.map((p) => p.category))];
+
+   const categoryImages = useMemo(() => {
+    const images: { [key: string]: { src: string; hint: string } } = {};
+    allCategories.forEach((category) => {
+      const productForCategory = allProducts.find((p) => p.category === category);
+      if (productForCategory && productForCategory.images.length > 0) {
+        images[category] = {
+          src: productForCategory.images[0],
+          hint: productForCategory.dataAiHint,
+        };
+      } else {
+        images[category] = {
+          src: "https://placehold.co/600x400.png",
+          hint: category.toLowerCase(),
+        };
+      }
+    });
+    return images;
+  }, [allCategories, allProducts]);
 
 
   useEffect(() => {
