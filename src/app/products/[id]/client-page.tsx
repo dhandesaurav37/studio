@@ -79,7 +79,6 @@ export default function ProductDetailClientPage({
     addToWishlist,
     removeFromWishlist,
     profile,
-    addNotification,
     products: allProducts,
     calculateDiscountedPrice,
     getApplicableOffer,
@@ -298,18 +297,7 @@ export default function ProductDetailClientPage({
       
       try {
         await set(newOrderRef, newAdminOrder);
-
-        addNotification({
-            id: Date.now(),
-            type: 'admin',
-            icon: 'Package',
-            title: `New Order Received`,
-            description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${product.name} has been placed.`,
-            time: 'Just now',
-            read: false,
-            orderId: finalOrderId,
-        });
-
+        
         setIsPurchaseDialogOpen(false);
         toast({
             title: "Order Placed!",

@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { updateOrderStatus: updateStoreOrderStatus, addNotification, getProductById } = useStore();
+  const { updateOrderStatus: updateStoreOrderStatus, getProductById } = useStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -81,40 +81,6 @@ export default function AdminOrdersPage() {
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     try {
         await updateStoreOrderStatus(orderId, newStatus);
-        
-        let notificationTitle = "";
-        let notificationDescription = "";
-        let notificationIcon = "Bell";
-
-        switch(newStatus) {
-          case "Shipped":
-            notificationTitle = "Order Shipped";
-            notificationDescription = `Your order #${orderId.slice(-6).toUpperCase()} is on its way.`;
-            notificationIcon = "Truck";
-            break;
-          case "Delivered":
-            notificationTitle = "Order Delivered";
-            notificationDescription = `Your order #${orderId.slice(-6).toUpperCase()} has been delivered. Enjoy!`;
-            notificationIcon = "CheckCircle";
-            break;
-          case "Cancelled":
-            notificationTitle = "Order Cancelled";
-            notificationDescription = `Your order #${orderId.slice(-6).toUpperCase()} has been cancelled.`;
-            notificationIcon = "XCircleIcon";
-            break;
-          default:
-            return; // Don't notify for "Pending" or returns
-        }
-
-        addNotification({
-            id: Date.now(),
-            type: 'user',
-            icon: notificationIcon,
-            title: notificationTitle,
-            description: notificationDescription,
-            time: 'Just now',
-            read: false,
-        });
         
         toast({
           title: "Order Updated",

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { useStore, UserOrder } from "@/hooks/use-store";
+import { useStore } from "@/hooks/use-store";
 import { Edit, Loader2, MapPin, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -36,7 +36,7 @@ interface ShippingOption {
 }
 
 export default function CheckoutPage() {
-  const { cart, profile, addNotification, clearCart, calculateDiscountedPrice } = useStore();
+  const { cart, profile, clearCart, calculateDiscountedPrice } = useStore();
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
@@ -191,8 +191,6 @@ export default function CheckoutPage() {
         phone: profile.mobile
       };
 
-    const productNames = cart.map(item => item.product.name).join(', ');
-
     const placeOrder = async (orderId?: string) => {
         const ordersRef = ref(rtdb, 'orders');
         const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
@@ -217,17 +215,6 @@ export default function CheckoutPage() {
         try {
             await set(newOrderRef, newAdminOrder);
         
-            addNotification({
-                id: Date.now(),
-                type: 'admin',
-                icon: 'Package',
-                title: `New Order Received`,
-                description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${productNames} has been placed.`,
-                time: 'Just now',
-                read: false,
-                orderId: finalOrderId,
-            });
-
             clearCart();
             toast({
                 title: "Order Placed!",

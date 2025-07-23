@@ -97,7 +97,6 @@ export function AppHeader() {
             <DropdownMenuItem asChild><Link href="/profile">Profile</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/orders">Orders</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/wishlist">Wishlist</Link></DropdownMenuItem>
-            <DropdownMenuItem asChild><Link href="/notifications">Notifications</Link></DropdownMenuItem>
             <DropdownMenuItem asChild><Link href="/settings">Settings</Link></DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>Log Out</DropdownMenuItem>
@@ -134,7 +133,6 @@ export function AppHeader() {
           <Link href="/profile" className="block py-2 font-medium text-foreground hover:text-destructive">Profile</Link>
           <Link href="/orders" className="block py-2 font-medium text-foreground hover:text-destructive">Orders</Link>
           <Link href="/wishlist" className="block py-2 font-medium text-foreground hover:text-destructive">Wishlist</Link>
-          <Link href="/notifications" className="block py-2 font-medium text-foreground hover:text-destructive">Notifications</Link>
           <Link href="/settings" className="block py-2 font-medium text-foreground hover:text-destructive">Settings</Link>
           <hr className="my-4" />
           <Button variant="ghost" onClick={handleLogout} className="w-full justify-start px-0">Log Out</Button>

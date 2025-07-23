@@ -29,17 +29,6 @@ export interface UserProfile {
   };
 }
 
-export interface Notification {
-  id: number;
-  type: 'user' | 'admin';
-  icon: string;
-  title: string;
-  description: string;
-  time: string;
-  read: boolean;
-  orderId?: string;
-}
-
 export interface OrderItem {
     productId: string;
     quantity: number;
@@ -74,19 +63,6 @@ const initialProfile: UserProfile = {
   },
 };
 
-const initialNotifications: Notification[] = [
-  {
-    id: 1,
-    type: 'user',
-    icon: 'Tag',
-    title: "Summer Sale is LIVE!",
-    description: "Get up to 50% off on selected items. Don't miss out!",
-    time: "2 hours ago",
-    read: false,
-  },
-];
-
-
 interface StoreState {
   products: Product[];
   productMap: Map<string, Product>;
@@ -96,7 +72,6 @@ interface StoreState {
   cart: CartItem[];
   wishlist: WishlistItem[];
   profile: UserProfile;
-  notifications: Notification[];
   orders: UserOrder[];
   averageRating: number;
   totalRatings: number;
@@ -110,10 +85,6 @@ interface StoreState {
   addToWishlist: (item: WishlistItem) => void;
   removeFromWishlist: (productId: string) => void;
   setProfile: (profile: UserProfile) => void;
-  addNotification: (notification: Notification) => void;
-  markAsRead: (notificationId: number) => void;
-  markAllAsRead: (type: 'user' | 'admin') => void;
-  addOrder: (order: UserOrder) => void;
   updateOrderStatus: (orderId: string, status: OrderStatus, deliveryDate?: string) => Promise<void>;
   submitRating: (newRating: number) => void;
 }
@@ -135,7 +106,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [orders, setOrdersState] = useState<UserOrder[]>([]);
   const [averageRating, setAverageRating] = useState(4.7);
   const [totalRatings, setTotalRatings] = useState(256);
@@ -185,7 +155,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
-    setNotifications(safelyParseJSON(localStorage.getItem('notifications'), initialNotifications));
     setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
     setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
 
@@ -239,10 +208,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (isMounted) localStorage.setItem('profile', JSON.stringify(profile));
   }, [profile, isMounted]);
-
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('notifications', JSON.stringify(notifications));
-  }, [notifications, isMounted]);
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating));
@@ -328,29 +293,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const setProfile = (newProfile: UserProfile) => {
     setProfileState(newProfile);
   }
-
-  const addNotification = (notification: Notification) => {
-    setNotifications(prev => [notification, ...prev]);
-  };
-
-  const markAsRead = (notificationId: number) => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === notificationId ? { ...n, read: true } : n))
-    );
-  };
-
-  const markAllAsRead = (type: 'user' | 'admin') => {
-    setNotifications(prev =>
-      prev.map(n => (n.type === type ? { ...n, read: true } : n))
-    );
-  }
-  
-  const addOrder = (order: UserOrder) => {
-    // This function will now be handled by the Realtime Database listener.
-    // The component placing the order should write directly to RTDB.
-    // The local state will update automatically.
-    // We can keep this function for optimistic updates if needed, but for now it's not necessary.
-  };
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
     try {
@@ -387,7 +329,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     cart,
     wishlist,
     profile,
-    notifications,
     orders,
     averageRating,
     totalRatings,
@@ -401,10 +342,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     addToWishlist,
     removeFromWishlist,
     setProfile,
-    addNotification,
-    markAsRead,
-    markAllAsRead,
-    addOrder,
     updateOrderStatus,
     submitRating,
   };
@@ -419,5 +356,3 @@ export const useStore = () => {
   }
   return context;
 };
-
-    

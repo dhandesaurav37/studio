@@ -29,7 +29,7 @@ import { differenceInDays, parseISO } from 'date-fns';
 
 export default function OrdersPage() {
   const [openOrderId, setOpenOrderId] = useState<string | null>(null);
-  const { orders, getProductById, updateOrderStatus, addNotification, addToCart } = useStore();
+  const { orders, getProductById, updateOrderStatus, addToCart } = useStore();
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,42 +43,20 @@ export default function OrdersPage() {
       try {
         await updateOrderStatus(orderId, status);
 
-        let adminNotification: any;
         let userToast: any;
 
         if (actionType === 'cancel') {
-            adminNotification = {
-                id: Date.now(),
-                type: 'admin',
-                icon: 'XCircle',
-                title: 'Order Cancelled by User',
-                description: `User has cancelled order #${orderId.slice(-6).toUpperCase()}.`,
-                time: 'Just now',
-                read: false,
-                orderId: orderId,
-            };
             userToast = {
                 title: "Order Cancelled",
                 description: "Your order has been successfully cancelled.",
             };
         } else { // return
-             adminNotification = {
-                id: Date.now(),
-                type: 'admin',
-                icon: 'Undo2',
-                title: 'Return Requested',
-                description: `User has requested a return for order #${orderId.slice(-6).toUpperCase()}.`,
-                time: 'Just now',
-                read: false,
-                orderId: orderId,
-            };
             userToast = {
                 title: "Return Requested",
                 description: "Your return request has been submitted.",
             };
         }
-
-        addNotification(adminNotification);
+        
         toast(userToast);
 
       } catch (error) {

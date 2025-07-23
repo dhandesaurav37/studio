@@ -34,7 +34,7 @@ export default function AdminReturnOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [allOrders, setAllOrders] = useState<AdminOrder[]>([]);
-  const { updateOrderStatus: updateStoreOrderStatus, addNotification, getProductById } = useStore();
+  const { updateOrderStatus: updateStoreOrderStatus, getProductById } = useStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -74,44 +74,22 @@ export default function AdminReturnOrdersPage() {
   const handleReturnAction = async (orderId: string, action: "accept-request" | "reject-request" | "confirm-collection") => {
     let newStatus: OrderStatus | null = null;
     let toastTitle = "";
-    let userNotificationTitle = "";
-    let userNotificationDescription = "";
-    let userNotificationIcon = "";
 
     if (action === "accept-request") {
         newStatus = 'Return Request Accepted';
         toastTitle = 'Return Request Accepted';
-        userNotificationTitle = 'Return Request Accepted';
-        userNotificationDescription = `Your return request for order #${orderId.slice(-6).toUpperCase()} has been accepted. A pickup will be scheduled soon.`;
-        userNotificationIcon = 'CheckCircle';
     } else if (action === "reject-request") {
         newStatus = 'Return Rejected';
         toastTitle = 'Return Request Rejected';
-        userNotificationTitle = 'Return Request Rejected';
-        userNotificationDescription = `Your return request for order #${orderId.slice(-6).toUpperCase()} has been rejected.`;
-        userNotificationIcon = 'XCircle';
     } else if (action === "confirm-collection") {
         newStatus = 'Order Returned Successfully';
         toastTitle = 'Return Collected';
-        userNotificationTitle = 'Return Completed';
-        userNotificationDescription = `The returned item(s) for order #${orderId.slice(-6).toUpperCase()} have been collected and your return is complete.`;
-        userNotificationIcon = 'PackageCheck';
     }
 
     if (!newStatus) return;
 
     try {
         await updateStoreOrderStatus(orderId, newStatus);
-
-        addNotification({
-            id: Date.now(),
-            type: 'user',
-            icon: userNotificationIcon,
-            title: userNotificationTitle,
-            description: userNotificationDescription,
-            time: 'Just now',
-            read: false,
-        });
         
         toast({
           title: toastTitle,
