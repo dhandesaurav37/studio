@@ -36,7 +36,7 @@ export default function CartPage() {
   );
 
   const discountedSubtotal = subtotal - discount;
-  const shipping = cart.length > 0 ? 150 : 0;
+  const shipping = cart.length > 0 ? 100 : 0;
   const total = discountedSubtotal + shipping;
 
   return (

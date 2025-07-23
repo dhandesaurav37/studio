@@ -127,7 +127,7 @@ export default function ProductDetailClientPage({
   const discountedPrice = calculateDiscountedPrice(product);
   const hasOffer = getApplicableOffer(product);
   const subtotal = discountedPrice * quantity;
-  const shippingCost = 150;
+  const shippingCost = 100;
   const total = subtotal + shippingCost;
   
   const complementaryProducts = useMemo(() => {

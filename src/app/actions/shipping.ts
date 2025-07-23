@@ -6,5 +6,5 @@
 
 export async function getShippingRates() {
     // A fixed rate is being used.
-    return { success: true, options: [{ name: 'Standard Shipping', rate: 150, estimated_delivery_days: '5-7' }] };
+    return { success: true, options: [{ name: 'Standard Shipping', rate: 100, estimated_delivery_days: '5-7' }] };
 }

@@ -61,7 +61,7 @@ export default function CheckoutPage() {
   const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
   const discount = cart.reduce((acc, item) => acc + (item.product.price - calculateDiscountedPrice(item.product)) * item.quantity, 0);
   const discountedSubtotal = subtotal - discount;
-  const shippingCost = cart.length > 0 ? 150 : 0;
+  const shippingCost = cart.length > 0 ? 100 : 0;
   const total = discountedSubtotal + shippingCost;
 
   const handleNewAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
