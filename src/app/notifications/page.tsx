@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
 export default function NotificationsPage() {
-  const { notifications, markAsRead, markAllAsRead, addNotification } = useStore();
+  const { notifications, markAsRead, markAllAsRead, addNotification, updateOrderStatus: updateStoreOrderStatus } = useStore();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
@@ -36,10 +36,10 @@ export default function NotificationsPage() {
     const orderId = notification.orderId;
     if (!orderId) return;
 
-    let newStatus: OrderStatus;
-    let userNotificationTitle: string;
-    let userNotificationDescription: string;
-    let userNotificationIcon: string;
+    let newStatus: OrderStatus | null = null;
+    let userNotificationTitle: string = "";
+    let userNotificationDescription: string = "";
+    let userNotificationIcon: string = "";
     const orderShortId = orderId.slice(-6).toUpperCase();
 
     if (notification.title.includes('Return Requested')) {
@@ -48,17 +48,18 @@ export default function NotificationsPage() {
         userNotificationTitle = `Return ${action === 'accept' ? 'Accepted' : 'Rejected'}`;
         userNotificationDescription = `Your return request for order #${orderShortId} has been ${action === 'accept' ? 'accepted. A pickup will be scheduled soon' : 'rejected'}.`;
         userNotificationIcon = action === 'accept' ? 'CheckCircle' : 'XCircleIcon';
-    } else {
+    } else if (notification.title.includes('New Order Received')) {
         // Handling a new order
         newStatus = action === 'accept' ? 'Shipped' : 'Cancelled';
         userNotificationTitle = `Order ${action === 'accept' ? 'Shipped' : 'Cancelled'}`;
         userNotificationDescription = `Your order #${orderShortId} has been ${action === 'accept' ? 'shipped' : 'cancelled'}.`;
         userNotificationIcon = action === 'accept' ? 'Truck' : 'XCircleIcon';
     }
+
+    if (!newStatus) return;
     
     try {
-        const orderRef = ref(rtdb, `orders/${orderId}`);
-        await update(orderRef, { status: newStatus });
+        await updateStoreOrderStatus(orderId, newStatus);
         
         // Add a notification for the user
         addNotification({
@@ -143,11 +144,11 @@ export default function NotificationsPage() {
                   <p className="text-xs text-muted-foreground mt-2">
                     {notification.time}
                   </p>
-                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('Order') && (
+                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('New Order Received') && (
                      <div className="flex gap-2 mt-4">
                         <Button size="sm" onClick={() => handleOrderAction(notification, 'accept')}>
                             <CheckCircle className="mr-2 h-4 w-4" />
-                            Accept
+                            Accept & Ship
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => handleOrderAction(notification, 'reject')}>
                             <XCircleIcon className="mr-2 h-4 w-4" />
@@ -155,7 +156,7 @@ export default function NotificationsPage() {
                         </Button>
                      </div>
                   )}
-                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('Return') && (
+                  {notification.type === 'admin' && !notification.read && notification.orderId && notification.title.includes('Return Requested') && (
                      <div className="flex gap-2 mt-4">
                         <Button size="sm" onClick={() => handleOrderAction(notification, 'accept')}>
                             <CheckCircle className="mr-2 h-4 w-4" />
@@ -185,5 +186,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-
-    

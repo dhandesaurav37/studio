@@ -41,7 +41,7 @@ export default function AdminOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { updateOrderStatus: updateUserOrderStatus, addNotification, getProductById } = useStore();
+  const { updateOrderStatus: updateStoreOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -79,20 +79,9 @@ export default function AdminOrdersPage() {
   };
   
   const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
-    const orderRef = ref(rtdb, `orders/${orderId}`);
-    const deliveryDate = newStatus === 'Delivered' ? new Date().toISOString() : null;
-
     try {
-        await update(orderRef, { status: newStatus, deliveryDate });
+        await updateStoreOrderStatus(orderId, newStatus);
         
-        // This will trigger the onValue listener to update the local state
-        // setOrders(orders.map(order => 
-        //   order.id === orderId ? { ...order, status: newStatus, deliveryDate: deliveryDate || order.deliveryDate } : order
-        // ));
-
-        // Update global user state and send notification
-        updateUserOrderStatus(orderId, newStatus, deliveryDate || undefined);
-
         let notificationTitle = "";
         let notificationDescription = "";
         let notificationIcon = "Bell";

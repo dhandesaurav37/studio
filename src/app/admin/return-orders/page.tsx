@@ -34,7 +34,7 @@ export default function AdminReturnOrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [allOrders, setAllOrders] = useState<AdminOrder[]>([]);
-  const { updateOrderStatus, addNotification, getProductById } = useStore();
+  const { updateOrderStatus: updateStoreOrderStatus, addNotification, getProductById } = useStore();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -93,18 +93,15 @@ export default function AdminReturnOrdersPage() {
     } else if (action === "confirm-collection") {
         newStatus = 'Order Returned Successfully';
         toastTitle = 'Return Collected';
-        userNotificationTitle = 'Return Collected';
-        userNotificationDescription = `The returned item(s) for order #${orderId.slice(-6).toUpperCase()} have been collected.`;
+        userNotificationTitle = 'Return Completed';
+        userNotificationDescription = `The returned item(s) for order #${orderId.slice(-6).toUpperCase()} have been collected and your return is complete.`;
         userNotificationIcon = 'PackageCheck';
     }
 
     if (!newStatus) return;
 
     try {
-        const orderRef = ref(rtdb, `orders/${orderId}`);
-        await update(orderRef, { status: newStatus });
-        
-        updateOrderStatus(orderId, newStatus);
+        await updateStoreOrderStatus(orderId, newStatus);
 
         addNotification({
             id: Date.now(),

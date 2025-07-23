@@ -303,7 +303,7 @@ export default function ProductDetailClientPage({
             id: Date.now(),
             type: 'admin',
             icon: 'Package',
-            title: `New ${method} Order Received`,
+            title: `New Order Received`,
             description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${product.name} has been placed.`,
             time: 'Just now',
             read: false,
@@ -864,5 +864,3 @@ export default function ProductDetailClientPage({
     </div>
   );
 }
-
-    

@@ -175,6 +175,8 @@ export default function CheckoutPage() {
     if (!isAddressValid || !user || !selectedShipping) {
       if(!selectedShipping) {
         toast({ title: "No shipping method", description: "Please select a shipping method.", variant: "destructive" });
+      } else {
+        toast({ title: "Invalid Address", description: "Please provide a valid shipping address.", variant: "destructive" });
       }
       return;
     }
@@ -219,7 +221,7 @@ export default function CheckoutPage() {
                 id: Date.now(),
                 type: 'admin',
                 icon: 'Package',
-                title: `New ${method} Order Received`,
+                title: `New Order Received`,
                 description: `Order #${finalOrderId.slice(-6).toUpperCase()} for ${productNames} has been placed.`,
                 time: 'Just now',
                 read: false,
