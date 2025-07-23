@@ -55,7 +55,7 @@ export interface Offer {
     isActive: boolean;
 }
 
-const BLANK_OFFER: Omit<Offer, 'id'> = {
+const BLANK_OFFER: Omit<Offer, 'id'> & { id?: string } = {
     name: '',
     discountType: 'percentage',
     discountValue: 0,
@@ -129,39 +129,40 @@ export default function AdsAndOffersPage() {
     };
     
     const handleSaveOffer = async () => {
-        if (!currentOffer.name || !currentOffer.discountValue || currentOffer.targetIds?.length === 0) {
+        // Ensure isActive is set, defaulting to true for new offers
+        const offerToSave = {
+            ...currentOffer,
+            isActive: currentOffer.isActive === undefined ? true : currentOffer.isActive,
+        };
+
+        if (!offerToSave.name || !offerToSave.discountValue || offerToSave.targetIds?.length === 0) {
             toast({ title: "Error", description: "Please fill all required fields.", variant: "destructive" });
             return;
         }
         
         setIsSaving(true);
         try {
-            if (currentOffer.id) { // Update existing
-                const offerRef = ref(rtdb, `offers/${currentOffer.id}`);
+            if (offerToSave.id) { // Update existing
+                const offerRef = ref(rtdb, `offers/${offerToSave.id}`);
+                const { id, ...dataToUpdate } = offerToSave;
                 await update(offerRef, {
-                    name: currentOffer.name,
-                    discountType: currentOffer.discountType,
-                    discountValue: Number(currentOffer.discountValue),
-                    appliesTo: currentOffer.appliesTo,
-                    targetIds: currentOffer.targetIds,
-                    isActive: currentOffer.isActive,
+                    ...dataToUpdate,
+                    discountValue: Number(dataToUpdate.discountValue)
                 });
                 toast({ title: "Success", description: "Offer updated successfully."});
             } else { // Create new
                 const offersRef = ref(rtdb, 'offers');
                 const newOfferRef = push(offersRef);
+                const { id, ...dataToCreate } = offerToSave;
                 await set(newOfferRef, {
-                    name: currentOffer.name,
-                    discountType: currentOffer.discountType,
-                    discountValue: Number(currentOffer.discountValue),
-                    appliesTo: currentOffer.appliesTo,
-                    targetIds: currentOffer.targetIds,
-                    isActive: currentOffer.isActive,
+                    ...dataToCreate,
+                    discountValue: Number(dataToCreate.discountValue)
                 });
                 toast({ title: "Success", description: "Offer created successfully."});
             }
             setIsDialogOpen(false);
         } catch (error) {
+            console.error("Failed to save offer:", error);
             toast({ title: "Error", description: "Failed to save offer.", variant: "destructive" });
         } finally {
             setIsSaving(false);
