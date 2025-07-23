@@ -8,6 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -45,7 +56,7 @@ import { useState, useMemo, useEffect } from "react";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { uploadImage } from "@/services/storage";
-import { ref, push, set, update, onValue } from "firebase/database";
+import { ref, push, set, update, onValue, remove } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 import type { AdminOrder } from "@/lib/admin-data";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -82,7 +93,10 @@ export default function AdminDashboardPage() {
   const [productImages, setProductImages] = useState<File[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newProductCategory, setNewProductCategory] = useState('');
-  
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const allCategoriesForFilter = useMemo(() => [...new Set(products.map((p) => p.category))], [products]);
 
   useEffect(() => {
@@ -122,6 +136,35 @@ export default function AdminDashboardPage() {
     setEditedProductData({ ...product });
     setIsEditDialogOpen(true);
   };
+  
+  const handleDeleteClick = (product: Product) => {
+    setProductToDelete(product);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    setIsDeleting(true);
+    try {
+      const productRef = ref(rtdb, `products/${productToDelete.id}`);
+      await remove(productRef);
+      toast({
+        title: "Product Deleted",
+        description: `"${productToDelete.name}" has been removed from the store.`
+      });
+      setIsDeleteDialogOpen(false);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete product. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  }
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -495,7 +538,9 @@ export default function AdminDashboardPage() {
                           <DropdownMenuItem onSelect={() => handleEditClick(product)}>
                             <Edit className="mr-2 h-4 w-4"/>Edit
                           </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive"><Trash2 className="mr-2 h-4 w-4"/>Delete</DropdownMenuItem>
+                          <DropdownMenuItem onSelect={() => handleDeleteClick(product)} className="text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4"/>Delete
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -581,6 +626,25 @@ export default function AdminDashboardPage() {
           )}
         </DialogContent>
       </Dialog>
+      
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the product
+              "{productToDelete?.name}" from your store.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setProductToDelete(null)} disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+              {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
     </div>
   );
