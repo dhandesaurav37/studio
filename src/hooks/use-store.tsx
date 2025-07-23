@@ -5,6 +5,7 @@ import { createContext, useContext, useState, useEffect, ReactNode, useCallback,
 import { Product } from '@/lib/data';
 import { rtdb } from '@/lib/firebase';
 import { ref, onValue, update } from 'firebase/database';
+import type { Offer } from '@/app/admin/ads-and-offers/page';
 
 
 export interface CartItem {
@@ -133,6 +134,7 @@ interface StoreState {
   productMap: Map<string, Product>;
   shopProducts: Product[];
   premiumProducts: Product[];
+  activeOffers: Offer[];
   cart: CartItem[];
   wishlist: WishlistItem[];
   profile: UserProfile;
@@ -141,6 +143,8 @@ interface StoreState {
   averageRating: number;
   totalRatings: number;
   getProductById: (id: string) => Product | undefined;
+  getApplicableOffer: (product: Product) => Offer | undefined;
+  calculateDiscountedPrice: (product: Product) => number;
   addToCart: (item: CartItem) => void;
   removeFromCart: (productId: string) => void;
   updateCartItemQuantity: (productId: string, quantity: number) => void;
@@ -169,6 +173,7 @@ const safelyParseJSON = (value: string | null, fallback: any) => {
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [activeOffers, setActiveOffers] = useState<Offer[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const [profile, setProfileState] = useState<UserProfile>(initialProfile);
@@ -182,7 +187,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setIsMounted(true);
     // Fetch products from Realtime Database
     const productsRef = ref(rtdb, 'products');
-    const unsubscribe = onValue(productsRef, (snapshot) => {
+    const unsubscribeProducts = onValue(productsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         const productsData: Product[] = Object.keys(data).map(key => ({
@@ -194,7 +199,23 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         setProducts([]);
       }
     }, (error) => {
-      console.error("Realtime Database snapshot error:", error);
+      console.error("Product DB error:", error);
+    });
+
+    // Fetch active offers
+    const offersRef = ref(rtdb, 'offers');
+    const unsubscribeOffers = onValue(offersRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            const offersData: Offer[] = Object.keys(data)
+                .map(key => ({ id: key, ...data[key] }))
+                .filter(offer => offer.isActive);
+            setActiveOffers(offersData);
+        } else {
+            setActiveOffers([]);
+        }
+    }, (error) => {
+        console.error("Offers DB error:", error);
     });
 
     // Load other state from localStorage
@@ -207,7 +228,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
 
 
-    return () => unsubscribe();
+    return () => {
+      unsubscribeProducts();
+      unsubscribeOffers();
+    };
   }, []);
 
   const shopProducts = useMemo(() => products.filter(p => p.price <= 4000), [products]);
@@ -246,6 +270,32 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const getProductById = useCallback((id: string) => {
     return productMap.get(id);
   }, [productMap]);
+
+  const getApplicableOffer = useCallback((product: Product): Offer | undefined => {
+      for (const offer of activeOffers) {
+          if (offer.appliesTo === 'products' && offer.targetIds.includes(product.id)) {
+              return offer;
+          }
+          if (offer.appliesTo === 'categories' && offer.targetIds.includes(product.category)) {
+              return offer;
+          }
+      }
+      return undefined;
+  }, [activeOffers]);
+
+  const calculateDiscountedPrice = useCallback((product: Product): number => {
+      const offer = getApplicableOffer(product);
+      if (!offer) {
+          return product.price;
+      }
+      if (offer.discountType === 'percentage') {
+          return product.price * (1 - offer.discountValue / 100);
+      }
+      if (offer.discountType === 'fixed') {
+          return Math.max(0, product.price - offer.discountValue);
+      }
+      return product.price;
+  }, [getApplicableOffer]);
 
   const addToCart = (newItem: CartItem) => {
     setCart((prevCart) => {
@@ -345,6 +395,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     productMap,
     shopProducts,
     premiumProducts,
+    activeOffers,
     cart,
     wishlist,
     profile,
@@ -353,6 +404,8 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     averageRating,
     totalRatings,
     getProductById,
+    getApplicableOffer,
+    calculateDiscountedPrice,
     addToCart,
     removeFromCart,
     updateCartItemQuantity,

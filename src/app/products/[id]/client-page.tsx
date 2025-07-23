@@ -81,6 +81,8 @@ export default function ProductDetailClientPage({
     addNotification,
     addOrder,
     products: allProducts,
+    calculateDiscountedPrice,
+    getApplicableOffer,
   } = useStore();
   const { toast } = useToast();
   const router = useRouter();
@@ -100,6 +102,9 @@ export default function ProductDetailClientPage({
     pincode: "",
     mobile: "",
   });
+
+  const discountedPrice = calculateDiscountedPrice(product);
+  const hasOffer = getApplicableOffer(product);
   
   const complementaryProducts = useMemo(() => {
     const isTop = topCategories.includes(product.category);
@@ -270,12 +275,14 @@ export default function ProductDetailClientPage({
       const newOrderRef = orderId ? ref(rtdb, `orders/${orderId}`) : push(ordersRef);
       const finalOrderId = newOrderRef.key!;
       
+      const total = discountedPrice * quantity;
+      
       const newUserOrder: UserOrder = {
         id: finalOrderId,
         date: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric'}),
         deliveryDate: null,
         status: "Pending",
-        total: product.price * quantity,
+        total: total,
         items: [{ productId: product.id, quantity, size: selectedSize }]
       }
       
@@ -289,7 +296,7 @@ export default function ProductDetailClientPage({
         shippingAddress: shippingAddress,
         paymentMethod: method,
         status: "Pending" as const,
-        total: product.price * quantity,
+        total: total,
         items: [{ 
             productId: product.id,
             quantity: quantity, 
@@ -325,13 +332,14 @@ export default function ProductDetailClientPage({
   };
 
   const handlePayment = async (method: "Online" | "COD") => {
+    const total = discountedPrice * quantity;
     if (method === "COD") {
        placeOrder(method);
     } else { // Handle Online Payment
       const newOrderRef = push(ref(rtdb, 'orders'));
       const tempOrderId = newOrderRef.key!;
       try {
-        const order = await createRazorpayOrder(product.price * quantity, tempOrderId);
+        const order = await createRazorpayOrder(total, tempOrderId);
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -464,7 +472,12 @@ export default function ProductDetailClientPage({
               {product.rating.toFixed(1)} ({product.reviews} reviews)
             </span>
           </div>
-          <p className="text-3xl font-bold mt-4">₹{product.price.toFixed(2)}</p>
+          <div className="flex items-baseline gap-4 mt-4">
+            <p className={cn("text-3xl font-bold", hasOffer && "text-destructive")}>₹{discountedPrice.toFixed(2)}</p>
+            {hasOffer && (
+                <p className="text-xl font-medium text-muted-foreground line-through">₹{product.price.toFixed(2)}</p>
+            )}
+          </div>
           <p className="text-muted-foreground mt-6 leading-relaxed">
             {product.description}
           </p>
@@ -836,7 +849,7 @@ export default function ProductDetailClientPage({
             <div>
               <p className="text-sm text-muted-foreground">Total Amount</p>
               <p className="text-2xl font-bold">
-                ₹{(product.price * quantity).toFixed(2)}
+                ₹{(discountedPrice * quantity).toFixed(2)}
               </p>
             </div>
             <div className="relative h-20 w-20 rounded-md overflow-hidden">

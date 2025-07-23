@@ -36,7 +36,7 @@ interface ShippingOption {
 }
 
 export default function CheckoutPage() {
-  const { cart, profile, addOrder, addNotification, clearCart } = useStore();
+  const { cart, profile, addOrder, addNotification, clearCart, calculateDiscountedPrice } = useStore();
   const router = useRouter();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
@@ -69,8 +69,10 @@ export default function CheckoutPage() {
   }, [cart, isClient, router]);
   
   const subtotal = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-  const total = subtotal + (selectedShipping?.rate || 0);
-  
+  const discount = cart.reduce((acc, item) => acc + (item.product.price - calculateDiscountedPrice(item.product)) * item.quantity, 0);
+  const discountedSubtotal = subtotal - discount;
+  const total = discountedSubtotal + (selectedShipping?.rate || 0);
+
   const fetchRates = useCallback(async (pincode: string) => {
       if(pincode.length !== 6) {
           setShippingOptions([]);
@@ -86,8 +88,7 @@ export default function CheckoutPage() {
       const result = await getShippingRates({
           delivery_postcode: pincode,
           weight: cartWeight > 0 ? cartWeight : 0.5,
-          cod: '0',
-          subtotal: subtotal
+          subtotal: discountedSubtotal
       });
 
       if (result.success && result.options) {
@@ -101,7 +102,7 @@ export default function CheckoutPage() {
           });
       }
       setIsFetchingRates(false);
-  }, [subtotal, cart, toast]);
+  }, [discountedSubtotal, cart, toast]);
 
 
   useEffect(() => {
@@ -416,7 +417,7 @@ export default function CheckoutPage() {
                         <p className="text-muted-foreground">Qty: {item.quantity}</p>
                       </div>
                    </div>
-                   <p>₹{(item.product.price * item.quantity).toFixed(2)}</p>
+                   <p>₹{(calculateDiscountedPrice(item.product) * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
               <Separator />
@@ -424,6 +425,12 @@ export default function CheckoutPage() {
                 <span>Subtotal</span>
                 <span>₹{subtotal.toFixed(2)}</span>
               </div>
+              {discount > 0 && (
+                  <div className="flex justify-between text-destructive">
+                    <span>Discount</span>
+                    <span>- ₹{discount.toFixed(2)}</span>
+                  </div>
+              )}
               <div className="flex justify-between">
                 <span>Shipping</span>
                 <span>{selectedShipping ? `₹${selectedShipping.rate.toFixed(2)}` : '---'}</span>
