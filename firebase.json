@@ -19,10 +19,7 @@
     "rewrites": [
       {
         "source": "**",
-        "function": {
-          "functionId": "server",
-          "region": "us-central1"
-        }
+        "function": "server"
       }
     ]
   },
