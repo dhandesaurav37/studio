@@ -1,7 +1,39 @@
-# Settings to manage and configure a Firebase App Hosting backend.
-# https://firebase.google.com/docs/app-hosting/configure
-backend:
-  framework: next
+# Settings for Backend (on Cloud Run).
 runConfig:
-  cpu: 1
-  memoryMiB: 512
+  minInstances: 0
+
+# The service account your backend runs as.
+# The value is a reference to a service account in the same project.
+# It is recommended to use a dedicated service account.
+# For more details, see:
+# https://cloud.google.com/appengine/docs/standard/build-cfg/app-yaml#service_account
+serviceAccount: firebase-service-account
+
+# Environment variables and secrets.
+env:
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: "AIzaSyBHWM9NuZYCnL1X2nwQ3175E0ClmvKWkeY"
+
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: "the-white-wolf-20614.firebaseapp.com"
+
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: "the-white-wolf-20614"
+
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: "the-white-wolf-20614.firebasestorage.app"
+
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "192185211403"
+
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:192185211403:web:46192d0307911c7a9fc50e"
+
+  - variable: NEXT_PUBLIC_FIREBASE_DATABASE_URL
+    value: "https://the-white-wolf-20614-default-rtdb.firebaseio.com"
+
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    value: "AIzaSyCK-KzUotlYnliqiyBQ18OP5mnQ1i1UWdg"
+
+  - variable: NEXT_PUBLIC_RAZORPAY_KEY_ID
+    value: "rzp_test_7BxhMYogmM3nm3"
