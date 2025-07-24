@@ -13,7 +13,6 @@
     "typecheck": "tsc --noEmit",
     "postinstall": "patch-package"
   },
-  "main": "server.js",
   "engines": {
     "node": "20"
   },
