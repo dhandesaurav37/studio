@@ -1,0 +1,20 @@
+# Settings for Firebase App Hosting
+# https://firebase.google.com/docs/app-hosting/configure
+backend:
+  framework: next
+env:
+  - variable: NEXT_PUBLIC_RAZORPAY_KEY_ID
+    secret: RAZORPAY_KEY_ID
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: RAZORPAY_KEY_SECRET
+    secret: RAZORPAY_KEY_SECRET
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    secret: GOOGLE_MAPS_API_KEY
+    availability:
+      - BUILD
+      - RUNTIME
