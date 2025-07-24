@@ -16,14 +16,18 @@
       "**/.*",
       "**/node_modules/**"
     ],
-    "frameworksBackend": {
-      "region": "us-central1"
-    }
+    "rewrites": [
+      {
+        "source": "**",
+        "function": "server"
+      }
+    ]
   },
   "functions": [
     {
       "source": ".",
       "codebase": "default",
+      "runtime": "nodejs22",
       "ignore": [
         "node_modules",
         ".git",
