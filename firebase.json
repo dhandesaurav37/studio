@@ -29,13 +29,14 @@
       "codebase": "default",
       "runtime": "nodejs22",
       "ignore": [
+        ".next/cache",
         "node_modules",
         ".git",
         "firebase-debug.log",
         "firebase-debug.*.log"
       ],
       "predeploy": [
-        "npm --prefix \"$RESOURCE_DIR\" ci"
+        "npm ci"
       ]
     }
   ]
