@@ -59,6 +59,7 @@ import { ref, push, set, update, onValue, remove } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 import type { AdminOrder } from "@/lib/admin-data";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const staticCategories = [
   "Shirts",
@@ -555,7 +556,7 @@ export default function AdminDashboardClientPage() {
       </div>
 
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="sm:max-w-[625px] grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90vh]">
           {selectedProduct && editedProductData && (
              <>
               <DialogHeader>
@@ -564,60 +565,62 @@ export default function AdminDashboardClientPage() {
                   Make changes to "{selectedProduct.name}". Click save when you're done.
                 </DialogDescription>
               </DialogHeader>
-              <div className="space-y-6 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-name">Product Name</Label>
-                    <Input id="edit-name" value={editedProductData.name || ''} onChange={handleEditInputChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-brand">Brand Name</Label>
-                    <Input id="edit-brand" value={editedProductData.brand || ''} onChange={handleEditInputChange} />
-                  </div>
-                </div>
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <ScrollArea className="pr-6 -mr-6">
+                <div className="space-y-6 py-4 pr-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <Label htmlFor="edit-price">Price (₹)</Label>
-                        <Input id="edit-price" type="number" value={editedProductData.price || 0} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                      <Label htmlFor="edit-name">Product Name</Label>
+                      <Input id="edit-name" value={editedProductData.name || ''} onChange={handleEditInputChange} />
                     </div>
-                     <div className="space-y-2">
-                        <Label htmlFor="edit-category">Category</Label>
-                        <Select value={editedProductData.category} onValueChange={handleEditSelectChange}>
-                          <SelectTrigger id="edit-category">
-                            <SelectValue placeholder="Select a category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
-                          </SelectContent>
-                        </Select>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-brand">Brand Name</Label>
+                      <Input id="edit-brand" value={editedProductData.brand || ''} onChange={handleEditInputChange} />
                     </div>
-                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-description">Description</Label>
-                  <Textarea id="edit-description" value={editedProductData.description || ''} onChange={handleEditInputChange} />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-color">Colors (comma-separated)</Label>
-                    <Input id="edit-color" value={editedProductData.color || ''} onChange={handleEditInputChange} />
                   </div>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                          <Label htmlFor="edit-price">Price (₹)</Label>
+                          <Input id="edit-price" type="number" value={editedProductData.price || 0} onChange={(e) => setEditedProductData(prev => ({ ...prev, price: Number(e.target.value) }))} />
+                      </div>
+                       <div className="space-y-2">
+                          <Label htmlFor="edit-category">Category</Label>
+                          <Select value={editedProductData.category} onValueChange={handleEditSelectChange}>
+                            <SelectTrigger id="edit-category">
+                              <SelectValue placeholder="Select a category" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {staticCategories.map(cat => <SelectItem key={cat} value={cat}>{cat}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                      </div>
+                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
-                    <Input id="edit-text-sizes" defaultValue={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
+                    <Label htmlFor="edit-description">Description</Label>
+                    <Textarea id="edit-description" value={editedProductData.description || ''} onChange={handleEditInputChange} />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-color">Colors (comma-separated)</Label>
+                      <Input id="edit-color" value={editedProductData.color || ''} onChange={handleEditInputChange} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-text-sizes">Text-based Sizes (comma-separated)</Label>
+                      <Input id="edit-text-sizes" defaultValue={editedProductData.sizes?.filter(s => isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
+                      <Input id="edit-numeric-sizes" defaultValue={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="edit-new-arrival" defaultChecked={products.slice(0, 4).some(p => p.id === selectedProduct.id)} />
+                    <Label htmlFor="edit-new-arrival">Mark as New Arrival</Label>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="edit-numeric-sizes">Numeric Sizes (comma-separated)</Label>
-                    <Input id="edit-numeric-sizes" defaultValue={editedProductData.sizes?.filter(s => !isNaN(parseInt(s))).join(', ')} onChange={handleEditSizesChange}/>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch id="edit-new-arrival" defaultChecked={products.slice(0, 4).some(p => p.id === selectedProduct.id)} />
-                  <Label htmlFor="edit-new-arrival">Mark as New Arrival</Label>
-                </div>
-              </div>
-              <DialogFooter>
+              </ScrollArea>
+              <DialogFooter className="mt-4">
                 <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} disabled={isSaving}>Cancel</Button>
                 <Button type="submit" onClick={handleSaveChanges} disabled={isSaving}>
                   {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
