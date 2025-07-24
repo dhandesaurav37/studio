@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged, User } from "firebase/auth";
+import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordResetEmail } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -93,6 +93,33 @@ export default function LoginPageClient() {
     }
   };
 
+  const handleForgotPassword = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your inbox for a link to reset your password.",
+      });
+    } catch (error: any) {
+       toast({
+        title: "Error",
+        description: "Could not send password reset email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+        setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-18rem)] py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-sm">
@@ -117,7 +144,18 @@ export default function LoginPageClient() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password">Password</Label>
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                <Button
+                  type="button"
+                  variant="link"
+                  className="ml-auto inline-block h-auto p-0 text-sm"
+                  onClick={handleForgotPassword}
+                  disabled={isLoading}
+                >
+                  Forgot password?
+                </Button>
+              </div>
               <Input
                 id="password"
                 type="password"
