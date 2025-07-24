@@ -27,6 +27,18 @@ declare global {
   }
 }
 
+const triggerEmailAPI = async (payload: any) => {
+    try {
+        await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+    } catch (error) {
+        console.error("Failed to trigger email API:", error);
+    }
+}
+
 export default function CheckoutPage() {
   const { cart, profile, clearCart, calculateDiscountedPrice } = useStore();
   const router = useRouter();
@@ -151,6 +163,18 @@ export default function CheckoutPage() {
       
       try {
           await set(ref(rtdb, `orders/${orderId}`), newAdminOrder);
+          
+          if (profile.emailNotifications) {
+              triggerEmailAPI({
+                to: user!.email,
+                subject: 'Your White Wolf Order is Confirmed!',
+                templateName: 'orderConfirmation',
+                props: {
+                    order: { ...newAdminOrder, customerName: profile.name }
+                },
+              });
+          }
+
           clearCart();
           toast({
               title: "Order Placed!",
@@ -363,4 +387,3 @@ export default function CheckoutPage() {
     </div>
   );
 }
-

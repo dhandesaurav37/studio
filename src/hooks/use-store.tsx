@@ -107,6 +107,21 @@ const safelyParseJSON = (value: string | null, fallback: any) => {
   }
 };
 
+const triggerEmailAPI = async (payload: any) => {
+    try {
+        if (!payload.props.to) { // Quick check to not send emails to logged-out users
+            return;
+        }
+        await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+    } catch (error) {
+        console.error("Failed to trigger email API:", error);
+    }
+}
+
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [products, setProducts] = useState<Product[]>([]);
   const [activeOffers, setActiveOffers] = useState<Offer[]>([]);
@@ -311,10 +326,41 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         updates.deliveryDate = new Date().toISOString();
       }
       await update(orderRef, updates);
-      // Local state updates via onValue listener
+
+      // Post-update logic (like sending emails)
+      const order = orders.find(o => o.id === orderId);
+      if (order && profile.emailNotifications) {
+          const emailProps = {
+            order: { ...order, customerName: profile.name },
+            to: profile.email
+          };
+
+          if(status === 'Shipped') {
+              triggerEmailAPI({
+                  to: profile.email,
+                  subject: `Your White Wolf Order has Shipped!`,
+                  templateName: 'orderShipped',
+                  props: emailProps,
+              });
+          } else if (status === 'Delivered') {
+              triggerEmailAPI({
+                  to: profile.email,
+                  subject: `Your White Wolf Order has been Delivered!`,
+                  templateName: 'orderDelivered',
+                  props: emailProps,
+              });
+          } else if (status === 'Return Request Accepted' || status === 'Return Rejected' || status === 'Order Returned Successfully') {
+               triggerEmailAPI({
+                  to: profile.email,
+                  subject: `Update on your return request`,
+                  templateName: 'returnStatus',
+                  props: { ...emailProps, statusMessage: status },
+              });
+          }
+      }
+
     } catch (error) {
         console.error("Failed to update order status:", error);
-        // Optionally re-throw or handle error state in UI
         throw error;
     }
   };

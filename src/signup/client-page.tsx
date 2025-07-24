@@ -101,7 +101,9 @@ export default function SignupPageClient() {
         });
         
         // Trigger welcome email in the background
-        triggerEmail(userCredential.user.email!, name);
+        if(userCredential.user.email) {
+            triggerEmail(userCredential.user.email, name);
+        }
       }
       toast({
         title: "Success",

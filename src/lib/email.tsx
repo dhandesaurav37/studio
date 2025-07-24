@@ -110,19 +110,8 @@ export const sendEmail = async ({ to, subject, templateName, props }: EmailTempl
 
   const reactNode = React.createElement(TemplateComponent, props);
   
-  // This is where the actual email sending logic would go.
-  // For now, we will log to the console to simulate sending.
-  console.log('--- SIMULATING EMAIL ---');
-  console.log('To:', to);
-  console.log('From:', FROM_EMAIL);
-  console.log('Subject:', subject);
-  console.log('Template:', templateName);
-  console.log('Props:', props);
-  console.log('--- END SIMULATION ---');
-
   // To enable actual sending with Resend, you would uncomment the following lines
   // and make sure your RESEND_API_KEY is set in your environment variables.
-  /*
   try {
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
@@ -141,5 +130,4 @@ export const sendEmail = async ({ to, subject, templateName, props }: EmailTempl
     console.error("Error in sendEmail function:", error);
     throw error;
   }
-  */
 };
