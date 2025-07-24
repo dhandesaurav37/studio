@@ -267,7 +267,7 @@ export default function HomePage() {
           className="w-full h-full"
           plugins={[
             Autoplay({
-              delay: 10000,
+              delay: 5000,
             }),
           ]}
           opts={{
@@ -520,5 +520,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-    
