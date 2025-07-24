@@ -183,6 +183,9 @@ export default function AdminDashboardClientPage() {
     const formData = new FormData(e.currentTarget);
     const formValues = Object.fromEntries(formData.entries());
 
+    const textSizes = (formValues['text-sizes'] as string).trim();
+    const numericSizes = (formValues['numeric-sizes'] as string).trim();
+
     if (productImages.length === 0) {
         toast({ title: "Error", description: "Please upload at least one product image.", variant: "destructive" });
         setIsSubmitting(false);
@@ -190,6 +193,11 @@ export default function AdminDashboardClientPage() {
     }
      if (!newProductCategory) {
       toast({ title: "Error", description: "Please select or enter a category.", variant: "destructive" });
+      setIsSubmitting(false);
+      return;
+    }
+    if (!textSizes && !numericSizes) {
+      toast({ title: "Error", description: "Please enter at least one text-based or numeric size.", variant: "destructive" });
       setIsSubmitting(false);
       return;
     }
@@ -205,8 +213,8 @@ export default function AdminDashboardClientPage() {
             category: newProductCategory,
             color: formValues['colors'] as string,
             sizes: [
-                ...(formValues['text-sizes'] as string).split(',').map(s => s.trim()).filter(Boolean),
-                ...(formValues['numeric-sizes'] as string).split(',').map(s => s.trim()).filter(Boolean)
+                ...textSizes.split(',').map(s => s.trim()).filter(Boolean),
+                ...numericSizes.split(',').map(s => s.trim()).filter(Boolean)
             ],
             images: imageUrls,
             rating: 0,
@@ -654,5 +662,3 @@ export default function AdminDashboardClientPage() {
     </div>
   );
 }
-
-    

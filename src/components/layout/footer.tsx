@@ -99,12 +99,12 @@ export function Footer() {
                     <DialogTrigger asChild>
                       <button className="text-muted-foreground hover:text-foreground transition-colors text-left">Our Story</button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-2xl">
+                    <DialogContent className="sm:max-w-2xl grid-rows-[auto_minmax(0,1fr)_auto] max-h-[90vh]">
                        <DialogHeader>
                         <DialogTitle className="font-headline text-2xl">The White Wolf: A Story of Strength, Style, and Self-Respect</DialogTitle>
                       </DialogHeader>
-                      <ScrollArea className="h-96 w-full pr-6">
-                        <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-4">
+                      <ScrollArea className="pr-6 -mr-6">
+                        <div className="prose prose-sm dark:prose-invert text-muted-foreground space-y-4 pr-6">
                             <p>In 2020, in the heart of a world that was changing rapidly—where self-expression was beginning to roar louder than ever before—The White Wolf was born. Not just as a clothing brand, but as a bold statement. A symbol of strength, purpose, and individuality for the modern man. We didn't just want to create clothes. We wanted to challenge the way society saw men—and the way men saw themselves.</p>
                             <p className="font-semibold text-foreground">The name "The White Wolf" isn't just a name—it’s a philosophy.</p>
                             <p>The white wolf is rare. It walks alone, yet it never loses its way. It leads not through dominance, but through quiet confidence. It survives harsh winters, adapts, evolves, and emerges stronger each time. That’s what we see in today’s youth—especially young men who are often caught in the crossfire of outdated expectations and new-age realities.</p>

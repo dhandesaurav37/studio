@@ -18,6 +18,7 @@ import { auth } from "@/lib/firebase";
 import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordResetEmail } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -25,6 +26,7 @@ export default function LoginPageClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
 
@@ -32,10 +34,12 @@ export default function LoginPageClient() {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         if (user.email === ADMIN_EMAIL) {
-            router.push("/admin/dashboard");
+            router.replace("/admin/dashboard");
         } else {
-            router.push("/");
+            router.replace("/");
         }
+      } else {
+        setIsAuthLoading(false);
       }
     });
     return () => unsubscribe();
@@ -62,11 +66,7 @@ export default function LoginPageClient() {
         description: "Logged in successfully!",
       });
 
-      if (userCredential.user.email === ADMIN_EMAIL) {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
+      // No need to push, onAuthStateChanged will handle it.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
@@ -119,6 +119,14 @@ export default function LoginPageClient() {
         setIsLoading(false);
     }
   };
+  
+  if(isAuthLoading) {
+    return (
+       <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
+          <Loader2 className="h-8 w-8 animate-spin" />
+       </div>
+    )
+  }
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-18rem)] py-12 px-4 sm:px-6 lg:px-8">
@@ -151,7 +159,7 @@ export default function LoginPageClient() {
                   variant="link"
                   className="ml-auto inline-block h-auto p-0 text-sm"
                   onClick={handleForgotPassword}
-                  disabled={isLoading}
+                  disabled={isLoading || !email}
                 >
                   Forgot password?
                 </Button>
@@ -168,6 +176,7 @@ export default function LoginPageClient() {
           </CardContent>
           <CardFooter className="flex flex-col">
             <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
               {isLoading ? "Signing In..." : "Sign in"}
             </Button>
             <p className="mt-4 text-xs text-center text-muted-foreground">

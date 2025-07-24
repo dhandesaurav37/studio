@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
@@ -29,13 +29,16 @@ export default function SignupPageClient() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/");
+        router.replace("/");
+      } else {
+        setIsAuthLoading(false);
       }
     });
     return () => unsubscribe();
@@ -80,7 +83,7 @@ export default function SignupPageClient() {
         title: "Success",
         description: "Account created successfully!",
       });
-      router.push("/");
+      // No need to push, onAuthStateChanged will handle it.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
@@ -106,6 +109,14 @@ export default function SignupPageClient() {
       setIsLoading(false);
     }
   };
+
+  if (isAuthLoading) {
+    return (
+       <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
+          <Loader2 className="h-8 w-8 animate-spin" />
+       </div>
+    )
+  }
 
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-18rem)] py-12 px-4 sm:px-6 lg:px-8">
@@ -212,6 +223,7 @@ export default function SignupPageClient() {
           </CardContent>
           <CardFooter className="flex flex-col">
             <Button className="w-full" type="submit" disabled={isLoading}>
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
               {isLoading ? "Creating Account..." : "Create Account"}
             </Button>
             <p className="mt-4 text-xs text-center text-muted-foreground">

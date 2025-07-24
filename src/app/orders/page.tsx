@@ -32,14 +32,14 @@ export default function OrdersPage() {
   const { orders, getProductById, updateOrderStatus, addToCart } = useStore();
   const { toast } = useToast();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<{[key: string]: boolean}>({});
 
   const handleToggle = (orderId: string) => {
     setOpenOrderId(openOrderId === orderId ? null : orderId);
   };
   
   const handleOrderAction = async (orderId: string, status: OrderStatus, actionType: 'cancel' | 'return') => {
-      setIsLoading(true);
+      setIsLoading(prev => ({...prev, [orderId]: true}));
       try {
         await updateOrderStatus(orderId, status);
 
@@ -66,7 +66,7 @@ export default function OrdersPage() {
               variant: "destructive",
           });
       } finally {
-          setIsLoading(false);
+          setIsLoading(prev => ({...prev, [orderId]: false}));
       }
   }
 
@@ -123,6 +123,7 @@ export default function OrdersPage() {
         <div className="space-y-6 max-w-4xl mx-auto">
           {hydratedOrders.map((order) => {
             const isReturnable = order.status === 'Delivered' && order.deliveryDate && differenceInDays(new Date(), parseISO(order.deliveryDate)) <= 7;
+            const isActionLoading = isLoading[order.id];
             return (
               <Collapsible
                 key={order.id}
@@ -217,14 +218,14 @@ export default function OrdersPage() {
                       <Button variant="secondary" size="sm" onClick={() => handleReorder(order)}>Reorder</Button>
                        <div className="flex gap-2">
                         {order.status === 'Pending' && (
-                            <Button variant="destructive" size="sm" onClick={() => handleOrderAction(order.id, 'Cancelled', 'cancel')} disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <XCircle className="mr-2 h-4 w-4"/>}
+                            <Button variant="destructive" size="sm" onClick={() => handleOrderAction(order.id, 'Cancelled', 'cancel')} disabled={isActionLoading}>
+                                {isActionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <XCircle className="mr-2 h-4 w-4"/>}
                                 Cancel Order
                             </Button>
                         )}
                          {isReturnable && (
-                            <Button variant="outline" size="sm" onClick={() => handleOrderAction(order.id, 'Return Requested', 'return')} disabled={isLoading}>
-                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Undo2 className="mr-2 h-4 w-4"/>}
+                            <Button variant="outline" size="sm" onClick={() => handleOrderAction(order.id, 'Return Requested', 'return')} disabled={isActionLoading}>
+                                {isActionLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Undo2 className="mr-2 h-4 w-4"/>}
                                 Return Order
                             </Button>
                         )}
