@@ -1,14 +1,5 @@
 
 {
-  "firestore": {
-    "rules": "firestore.rules"
-  },
-  "database": {
-    "rules": "database.rules.json"
-  },
-  "storage": {
-    "rules": "storage.rules"
-  },
   "hosting": {
     "source": ".",
     "ignore": [
@@ -17,9 +8,16 @@
       "**/node_modules/**"
     ],
     "frameworksBackend": {
-      "region": "us-central1",
-      "runtime": "nodejs22",
-      "memory": "512MiB"
+      "region": "us-central1"
     }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "storage": {
+    "rules": "storage.rules"
   }
 }
