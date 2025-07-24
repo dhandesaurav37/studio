@@ -174,7 +174,7 @@ export function AppHeader() {
         <div className="hidden md:flex w-full items-center">
           <Link href="/" className="mr-8 flex items-center gap-2">
             <Image src={LOGO_URL} alt="White Wolf Logo" width={48} height={48} />
-            <span className="text-2xl font-bold font-headline tracking-wider">
+            <span className="text-2xl font-bold font-headline tracking-wider text-foreground">
               White Wolf
             </span>
           </Link>
@@ -207,7 +207,7 @@ export function AppHeader() {
         <div className="flex w-full items-center justify-between md:hidden">
           <Link href="/" className="flex items-center gap-2 text-xl font-bold font-headline">
              <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
-            <span>White Wolf</span>
+            <span className="text-foreground">White Wolf</span>
           </Link>
 
           <div className="flex items-center">
@@ -228,7 +228,7 @@ export function AppHeader() {
                     <SheetTitle>
                       <Link href="/" className="flex items-center gap-2 text-2xl font-bold font-headline">
                          <Image src={LOGO_URL} alt="White Wolf Logo" width={40} height={40} />
-                        <span>White Wolf</span>
+                        <span className="text-foreground">White Wolf</span>
                       </Link>
                     </SheetTitle>
                   </SheetHeader>
