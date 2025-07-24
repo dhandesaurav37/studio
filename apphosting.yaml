@@ -1,3 +1,4 @@
+
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 backend:
@@ -57,4 +58,8 @@ env:
     secret: FIREBASE_DATABASE_URL
     availability:
       - BUILD
+      - RUNTIME
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+    availability:
       - RUNTIME
