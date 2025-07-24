@@ -11,7 +11,8 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "postinstall": "patch-package",
-    "deploy": "firebase deploy --only functions,hosting"
+    "deploy": "firebase deploy --only functions,hosting",
+    "predeploy": "npm ci --prefix \"$RESOURCE_DIR\""
   },
   "main": "server.js",
   "dependencies": {
