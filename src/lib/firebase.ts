@@ -8,9 +8,7 @@ import { getDatabase } from "firebase/database";
 // This configuration object is constructed by checking for environment variables.
 // Firebase App Hosting automatically provides the backend variables (process.env.FIREBASE_CONFIG).
 // For the client-side, NEXT_PUBLIC_ variables from your local environment are used.
-const firebaseConfig = process.env.FIREBASE_CONFIG
-  ? JSON.parse(process.env.FIREBASE_CONFIG)
-  : {
+const firebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
       projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
