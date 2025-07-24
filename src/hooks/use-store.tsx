@@ -27,6 +27,7 @@ export interface UserProfile {
     state: string;
     pincode: string;
   };
+  emailNotifications: boolean;
 }
 
 export interface OrderItem {
@@ -61,6 +62,7 @@ const initialProfile: UserProfile = {
     state: "",
     pincode: "",
   },
+  emailNotifications: true,
 };
 
 interface StoreState {
@@ -94,7 +96,12 @@ const StoreContext = createContext<StoreState | undefined>(undefined);
 const safelyParseJSON = (value: string | null, fallback: any) => {
   if (value === null || value === 'undefined') return fallback;
   try {
-    return JSON.parse(value);
+    const parsed = JSON.parse(value);
+    // Ensure emailNotifications has a default value if missing from localStorage
+    if (typeof parsed === 'object' && parsed !== null && typeof parsed.emailNotifications === 'undefined') {
+        parsed.emailNotifications = true;
+    }
+    return parsed;
   } catch {
     return fallback;
   }

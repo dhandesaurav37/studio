@@ -15,15 +15,31 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useStore } from "@/hooks/use-store";
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
   const [isMounted, setIsMounted] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(true);
   const { theme, setTheme } = useTheme();
+  const { profile, setProfile } = useStore();
+  const { toast } = useToast();
 
+  // Local state to manage edits before saving
+  const [localEmailNotifications, setLocalEmailNotifications] = useState(profile.emailNotifications);
+  
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    // Sync local state when profile from store changes
+    setLocalEmailNotifications(profile.emailNotifications);
+  }, [profile.emailNotifications]);
+
+  const handleSaveChanges = () => {
+    setProfile({ ...profile, emailNotifications: localEmailNotifications });
+    toast({
+        title: "Settings Saved",
+        description: "Your preferences have been updated.",
+    });
+  }
 
   if (!isMounted) {
     return (
@@ -95,8 +111,8 @@ export default function SettingsPage() {
                 </div>
                 <Switch
                   id="email-notifications"
-                  checked={emailNotifications}
-                  onCheckedChange={setEmailNotifications}
+                  checked={localEmailNotifications}
+                  onCheckedChange={setLocalEmailNotifications}
                   aria-label="Toggle email notifications"
                 />
               </div>
@@ -169,7 +185,7 @@ export default function SettingsPage() {
           </Card>
 
           <div className="flex justify-end">
-            <Button>Save Changes</Button>
+            <Button onClick={handleSaveChanges}>Save Changes</Button>
           </div>
         </div>
       </div>
