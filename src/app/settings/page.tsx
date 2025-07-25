@@ -17,15 +17,33 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useStore } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
+import { auth } from "@/lib/firebase";
+import { deleteUser } from "firebase/auth";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 
 export default function SettingsPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { theme, setTheme } = useTheme();
   const { profile, setProfile } = useStore();
   const { toast } = useToast();
+  const router = useRouter();
 
   // Local state to manage edits before saving
   const [localEmailNotifications, setLocalEmailNotifications] = useState(profile.emailNotifications);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
@@ -40,6 +58,36 @@ export default function SettingsPage() {
         description: "Your preferences have been updated.",
     });
   }
+
+  const handleDeleteAccount = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+        toast({ title: "Error", description: "No user is currently logged in.", variant: "destructive" });
+        return;
+    }
+
+    setIsDeleting(true);
+    try {
+        await deleteUser(user);
+        toast({
+            title: "Account Deleted",
+            description: "Your account has been permanently deleted.",
+        });
+        router.push('/'); // Redirect to home page after deletion
+    } catch (error: any) {
+        let errorMessage = "Could not delete your account. Please try again.";
+        if (error.code === 'auth/requires-recent-login') {
+            errorMessage = "This is a sensitive operation. Please log out and log back in before deleting your account.";
+        }
+        toast({
+            title: "Deletion Failed",
+            description: errorMessage,
+            variant: "destructive",
+        });
+    } finally {
+        setIsDeleting(false);
+    }
+  };
 
   if (!isMounted) {
     return (
@@ -181,6 +229,38 @@ export default function SettingsPage() {
                   </Label>
                 </div>
               </RadioGroup>
+            </CardContent>
+          </Card>
+          
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="font-headline text-destructive">Danger Zone</CardTitle>
+              <CardDescription>
+                Once you delete your account, there is no going back. Please be certain.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+               <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                     <Button variant="destructive">Delete Account</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This action cannot be undone. This will permanently delete your
+                        account and remove your data from our servers.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAccount} disabled={isDeleting}>
+                        {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : null}
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
             </CardContent>
           </Card>
 
