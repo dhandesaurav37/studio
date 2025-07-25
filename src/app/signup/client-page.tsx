@@ -14,12 +14,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
+import { cn } from "@/lib/utils";
 
 const triggerEmailAPI = async (payload: any) => {
     try {
@@ -43,6 +44,7 @@ export default function SignupPageClient() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [isGmail, setIsGmail] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const { setProfile } = useStore();
@@ -58,6 +60,12 @@ export default function SignupPageClient() {
     return () => unsubscribe();
   }, [router]);
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setIsGmail(newEmail.toLowerCase().endsWith('@gmail.com'));
+  };
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -72,7 +80,7 @@ export default function SignupPageClient() {
       return;
     }
 
-    if (!email.endsWith("@gmail.com")) {
+    if (!email.toLowerCase().endsWith("@gmail.com")) {
       toast({
         title: "Invalid Email",
         description: "Please use a Gmail account (@gmail.com) to sign up.",
@@ -185,15 +193,23 @@ export default function SignupPageClient() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-              />
+               <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                  value={email}
+                  onChange={handleEmailChange}
+                  disabled={isLoading}
+                  className={cn(isGmail && "pr-10")}
+                />
+                 {isGmail && (
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <Check className="h-5 w-5 text-green-500" />
+                  </div>
+                )}
+              </div>
             </div>
             <div className="grid gap-2">
               <Label htmlFor="mobile">Mobile Number</Label>
