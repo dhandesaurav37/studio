@@ -108,7 +108,8 @@ export default function SignupPage() {
             emailNotifications: true,
         });
         
-        if(user.email) { // Check if email exists before sending
+        // Ensure email exists before trying to send a confirmation
+        if(user.email) {
             fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
