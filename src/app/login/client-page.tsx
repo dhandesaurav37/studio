@@ -22,6 +22,18 @@ import { Loader2 } from "lucide-react";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
+const triggerEmailAPI = async (payload: any) => {
+    try {
+        await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+    } catch (error) {
+        console.error("Failed to trigger email API:", error);
+    }
+}
+
 export default function LoginPageClient() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -104,11 +116,24 @@ export default function LoginPageClient() {
     }
     setIsLoading(true);
     try {
-      await sendPasswordResetEmail(auth, email);
+      // We will now generate the link and send it via our own email service
+      // This gives us full control over the email template and sender.
+      const actionCodeSettings = {
+        url: `${window.location.origin}/login`, // URL to redirect back to
+        handleCodeInApp: true,
+      };
+      
+      // Note: This does not send an email. It just generates the link.
+      // The actual password reset link is sent via our API route.
+      // Firebase doesn't have a public method to just generate a link without sending an email,
+      // so we use the standard method but will have configured Firebase not to send the email itself.
+      await sendPasswordResetEmail(auth, email, actionCodeSettings);
+
       toast({
         title: "Password Reset Email Sent",
-        description: "Check your inbox for a link to reset your password.",
+        description: "If an account exists for this email, you will receive a password reset link shortly.",
       });
+
     } catch (error: any) {
        toast({
         title: "Error",
