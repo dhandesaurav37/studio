@@ -53,7 +53,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { sendEmail } from "@/lib/email";
 
 
 interface ProductDetailClientPageProps {
@@ -321,13 +320,17 @@ export default function ProductDetailClientPage({
         await set(newOrderRef, newAdminOrder);
         
         if (profile.emailNotifications && user.email) {
-              await sendEmail({
-                to: user.email,
-                templateName: 'orderConfirmation',
-                props: {
-                    order: { ...newAdminOrder, customerName: profile.name }
-                },
-              });
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: user.email,
+                    templateName: 'orderConfirmation',
+                    props: {
+                        order: { ...newAdminOrder, customerName: profile.name }
+                    },
+                })
+            });
         }
 
         setIsPurchaseDialogOpen(false);

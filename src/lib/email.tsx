@@ -1,19 +1,16 @@
 
 'use server';
 
-import React from 'react';
 import sgMail from '@sendgrid/mail';
-import { UserOrder } from '@/hooks/use-store';
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
+if (process.env.SENDGRID_API_KEY) {
+  sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+} else {
+  console.warn("SENDGRID_API_KEY is not set. Emails will not be sent.");
+}
 const FROM_EMAIL = 'noreply@thewhitewolf.shop'; 
 
-// This is a helper to render React components to a string, as SendGrid expects HTML.
-// Note: In a real app, you might use a library like `renderToString` from `react-dom/server`,
-// but for simplicity, we'll construct the HTML string directly.
 const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: string, html: string, text: string } => {
-    // Note: A real implementation would use ReactDOMServer.renderToString here.
-    // For this environment, we'll manually construct a simple HTML string.
     let subject = '';
     let body = '';
     let text = '';
@@ -54,23 +51,12 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
             body = `<h1>Return Status Update</h1><p>Hi ${props.order.customerName},</p><p>There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}.</p><p><strong>Status:</strong> ${props.statusMessage}</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
             text = `Return Status Update. Hi ${props.order.customerName}, There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}. Status: ${props.statusMessage}`;
             break;
-        case 'passwordReset':
-             subject = 'Reset your White Wolf password';
-             body = `<h1>Password Reset Request</h1>
-                      <p>Hi,</p>
-                      <p>We received a request to reset your password. You can do so by clicking the link below. If you didn't make this request, you can safely ignore this email.</p>
-                      <p><a href="${props.resetLink}" target="_blank">Reset Your Password</a></p>
-                      <p>Thank you,</p>
-                      <p>The White Wolf Team</p>`;
-             text = `Reset your White Wolf password. Click the following link to reset: ${props.resetLink}`;
-             break;
         default:
              body = '<h1>Notification</h1><p>This is a default notification from White Wolf.</p>';
              text = 'This is a default notification from White Wolf.';
     }
 
-    const fullHtml = `
-      <!DOCTYPE html>
+    const fullHtml = `<!DOCTYPE html>
       <html>
       <head>
         <style>
@@ -97,7 +83,7 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
 };
 
 
-export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'orderCancelled' | 'returnRequested' | 'returnStatus' | 'passwordReset';
+export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'orderCancelled' | 'returnRequested' | 'returnStatus';
 
 export interface EmailTemplateProps {
   to: string;
@@ -106,6 +92,12 @@ export interface EmailTemplateProps {
 }
 
 export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps) => {
+  if (!process.env.SENDGRID_API_KEY) {
+    console.error("SENDGRID_API_KEY is not configured. Cannot send email.");
+    // In a real app, you might want to throw an error or handle this more gracefully.
+    return;
+  }
+  
   const { subject, html, text } = getEmailHtml(templateName, props);
   
   const msg = {
@@ -121,12 +113,12 @@ export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps)
 
   try {
     await sgMail.send(msg);
-    console.log(`Email sent successfully to ${to}`);
   } catch (error) {
     console.error('Error in sendEmail function with SendGrid:', error);
     if ((error as any).response) {
       console.error((error as any).response.body)
     }
+    // We re-throw the error so the calling function can handle it if needed.
     throw error;
   }
 };

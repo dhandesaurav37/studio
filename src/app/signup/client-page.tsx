@@ -21,7 +21,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
-import { sendEmail } from "@/lib/email";
 
 export default function SignupPageClient() {
   const [name, setName] = useState("");
@@ -109,10 +108,14 @@ export default function SignupPageClient() {
         });
         
         if(userCredential.user.email) {
-            await sendEmail({
-              to: userCredential.user.email,
-              templateName: 'welcome',
-              props: { name: name }
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: userCredential.user.email,
+                    templateName: 'welcome',
+                    props: { name: name }
+                })
             });
         }
       }

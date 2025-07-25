@@ -19,7 +19,6 @@ import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordReset
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { sendEmail } from "@/lib/email";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -105,6 +104,8 @@ export default function LoginPageClient() {
     }
     setIsLoading(true);
     try {
+      // Use Firebase's built-in password reset email functionality.
+      // This will use the template we configured in the Firebase Console.
       await sendPasswordResetEmail(auth, email);
 
       toast({

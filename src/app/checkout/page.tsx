@@ -19,7 +19,6 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "../products/[id]/actions";
 import { getAddressFromCoordinates } from "../actions/geocoding";
-import { sendEmail } from "@/lib/email";
 
 declare global {
   interface Window {
@@ -153,12 +152,16 @@ export default function CheckoutPage() {
           await set(ref(rtdb, `orders/${orderId}`), newAdminOrder);
           
           if (profile.emailNotifications && user!.email) {
-              await sendEmail({
-                to: user!.email,
-                templateName: 'orderConfirmation',
-                props: {
-                    order: { ...newAdminOrder, customerName: profile.name }
-                },
+              fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: user!.email,
+                    templateName: 'orderConfirmation',
+                    props: {
+                        order: { ...newAdminOrder, customerName: profile.name }
+                    },
+                })
               });
           }
 

@@ -7,8 +7,6 @@ import { rtdb, auth } from '@/lib/firebase';
 import { ref, onValue, update, get } from 'firebase/database';
 import type { Offer } from '@/app/admin/ads-and-offers/page';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { sendEmail } from '@/lib/email';
-
 
 export interface CartItem {
   product: Product;
@@ -299,59 +297,57 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
-    try {
-      const orderRef = ref(rtdb, `orders/${orderId}`);
-      
-      const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
-      if (status === 'Delivered') {
-          updates.deliveryDate = new Date().toISOString();
-      } else if (deliveryDate !== undefined) {
-          updates.deliveryDate = deliveryDate;
-      }
-      await update(orderRef, updates);
+    const orderRef = ref(rtdb, `orders/${orderId}`);
+    const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
 
-      const updatedSnapshot = await get(orderRef);
-      if (!updatedSnapshot.exists()) {
-          throw new Error("Order not found after update.");
-      }
-      const updatedOrderData = updatedSnapshot.val();
-      
-      const customerEmail = updatedOrderData.customer?.email;
-      const customerName = updatedOrderData.customer?.name || 'Valued Customer';
-      
-      const userProfileSnapshot = await get(ref(rtdb, `profiles/${auth.currentUser?.uid}`));
-      const userProfile = userProfileSnapshot.val();
-      const emailEnabled = userProfile ? userProfile.emailNotifications : profile.emailNotifications;
+    if (status === 'Delivered') {
+      updates.deliveryDate = new Date().toISOString();
+    } else if (deliveryDate !== undefined) {
+      updates.deliveryDate = deliveryDate;
+    }
 
+    await update(orderRef, updates);
 
-      if (emailEnabled && customerEmail) {
-          let templateName: string | null = null;
-          let emailProps: any = { order: { ...updatedOrderData, id: orderId, customerName: customerName } };
+    // After updating, fetch the latest order data to ensure email is sent with correct info
+    const updatedOrderSnapshot = await get(orderRef);
+    if (!updatedOrderSnapshot.exists()) {
+        console.error("Order not found after update.");
+        return;
+    }
+    const updatedOrderData = updatedOrderSnapshot.val();
+    
+    const customerEmail = updatedOrderData.customer?.email;
+    const customerName = updatedOrderData.customer?.name || 'Valued Customer';
+    
+    if (profile.emailNotifications && customerEmail) {
+        let templateName: string | null = null;
+        let emailProps: any = { order: { ...updatedOrderData, id: orderId, customerName: customerName } };
 
-          switch (status) {
-              case 'Shipped': templateName = 'orderShipped'; break;
-              case 'Delivered': templateName = 'orderDelivered'; break;
-              case 'Cancelled': templateName = 'orderCancelled'; break;
-              case 'Return Requested': templateName = 'returnRequested'; break;
-              case 'Return Request Accepted':
-              case 'Return Rejected':
-              case 'Order Returned Successfully':
-                  templateName = 'returnStatus';
-                  emailProps.statusMessage = status;
-                  break;
-          }
+        switch (status) {
+            case 'Shipped': templateName = 'orderShipped'; break;
+            case 'Delivered': templateName = 'orderDelivered'; break;
+            case 'Cancelled': templateName = 'orderCancelled'; break;
+            case 'Return Requested': templateName = 'returnRequested'; break;
+            case 'Return Request Accepted':
+            case 'Return Rejected':
+            case 'Order Returned Successfully':
+                templateName = 'returnStatus';
+                emailProps.statusMessage = status;
+                break;
+        }
 
-          if (templateName) {
-              await sendEmail({
-                  to: customerEmail,
-                  templateName: templateName as any,
-                  props: emailProps,
-              });
-          }
-      }
-    } catch (error) {
-        console.error("Failed to update order status:", error);
-        throw error;
+        if (templateName) {
+            // Use fetch to call the API route
+            fetch('/api/send-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    to: customerEmail,
+                    templateName,
+                    props: emailProps,
+                })
+            }).catch(error => console.error("Failed to trigger email:", error));
+        }
     }
   };
 
