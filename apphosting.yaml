@@ -59,7 +59,7 @@ env:
     availability:
       - BUILD
       - RUNTIME
-  - variable: RESEND_API_KEY
-    secret: RESEND_API_KEY
+  - variable: SENDGRID_API_KEY
+    secret: SENDGRID_API_KEY
     availability:
       - RUNTIME
