@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
@@ -31,16 +31,22 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isGmail, setIsGmail] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { setProfile, user } = useStore();
+  const { setProfile } = useStore();
 
   useEffect(() => {
-    if (user) {
-      router.replace("/");
-    }
-  }, [user, router]);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.replace("/");
+      } else {
+        setIsAuthLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -88,9 +94,8 @@ export default function SignupPage() {
         email,
         password
       );
-      const createdUser = userCredential.user;
-      if (createdUser) {
-        await updateProfile(createdUser, {
+      if (userCredential.user) {
+        await updateProfile(userCredential.user, {
           displayName: name,
         });
 
@@ -102,12 +107,12 @@ export default function SignupPage() {
             emailNotifications: true,
         });
         
-        if(createdUser.email) {
+        if(userCredential.user.email) {
             fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    to: createdUser.email,
+                    to: userCredential.user.email,
                     templateName: 'welcome',
                     props: { name: name }
                 })
@@ -118,6 +123,7 @@ export default function SignupPage() {
         title: "Success",
         description: "Account created successfully!",
       });
+      // No need to push, onAuthStateChanged will handle it.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
@@ -144,11 +150,10 @@ export default function SignupPage() {
     }
   };
 
-  if (user) {
+  if (isAuthLoading) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
-          <p className="ml-4">Redirecting...</p>
        </div>
     )
   }
