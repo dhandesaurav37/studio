@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
@@ -31,22 +31,16 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isGmail, setIsGmail] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { setProfile } = useStore();
+  const { user, setProfile } = useStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        router.replace("/");
-      } else {
-        setIsAuthLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    if (user) {
+      router.replace("/");
+    }
+  }, [user, router]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -101,7 +95,7 @@ export default function SignupPage() {
           displayName: name,
         });
 
-        // This ensures the profile is set in the global state and persisted
+        // Set the profile in the global state, which will persist it
         setProfile({
             name,
             email,
@@ -110,7 +104,6 @@ export default function SignupPage() {
             emailNotifications: true,
         });
         
-        // This fetch call can remain to send a welcome email via your API
         if(currentUser.email) {
             fetch('/api/send-email', {
                 method: 'POST',
@@ -128,7 +121,7 @@ export default function SignupPage() {
         title: "Success",
         description: "Account created successfully! Redirecting...",
       });
-      // The onAuthStateChanged listener will handle redirection.
+      // The useEffect hook will handle redirection.
 
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
@@ -156,10 +149,11 @@ export default function SignupPage() {
     }
   };
 
-  if (isAuthLoading) {
+  if (user) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
+           <p className="ml-2">Redirecting...</p>
        </div>
     )
   }

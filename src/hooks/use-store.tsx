@@ -156,16 +156,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        // When auth state changes, load profile from localStorage
         const storedProfile = safelyParseJSON(localStorage.getItem(`profile_${currentUser.uid}`), initialProfile);
-        // Ensure the profile is synced with auth data
         setProfileState({
           ...storedProfile,
           name: currentUser.displayName || storedProfile.name,
           email: currentUser.email || storedProfile.email
         });
       } else {
-        // On logout, reset to initial profile
         setProfileState(initialProfile);
       }
     });

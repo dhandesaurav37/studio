@@ -15,10 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useStore } from "@/hooks/use-store";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -26,24 +27,19 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    if (user) {
         if (user.email === ADMIN_EMAIL) {
             router.replace("/admin/dashboard");
         } else {
             router.replace("/");
         }
-      } else {
-        setIsAuthLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    }
+  }, [user, router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,19 +59,24 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       toast({
         title: "Success",
-        description: "Logged in successfully!",
+        description: "Logged in successfully! Redirecting...",
       });
-      // The onAuthStateChanged listener will handle redirection.
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
-        case "auth/invalid-credential":
         case "auth/user-not-found":
-        case "auth/wrong-password":
-          errorMessage = "Invalid email or password. Please try again.";
+          errorMessage = "No account found with this email.";
           break;
+        case "auth/wrong-password":
+          errorMessage = "Incorrect password. Please try again.";
+          break;
+        case "auth/invalid-credential":
+           errorMessage = "Invalid email or password. Please try again.";
+           break;
         default:
           errorMessage = "Failed to log in. Please try again later.";
+          console.error(error);
           break;
       }
       toast({
@@ -115,10 +116,11 @@ export default function LoginPage() {
     }
   };
   
-  if (isAuthLoading) {
+  if (user) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
+          <p className="ml-2">Redirecting...</p>
        </div>
     )
   }
@@ -186,3 +188,4 @@ export default function LoginPage() {
     </div>
   );
 }
+
