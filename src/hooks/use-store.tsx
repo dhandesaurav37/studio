@@ -4,7 +4,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { Product } from '@/lib/data';
 import { rtdb, auth } from '@/lib/firebase';
-import { ref, onValue, update } from 'firebase/database';
+import { ref, onValue, update, get } from 'firebase/database';
 import type { Offer } from '@/app/admin/ads-and-offers/page';
 import { onAuthStateChanged, User } from 'firebase/auth';
 
@@ -317,71 +317,67 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
-    const fullOrderRef = ref(rtdb, `orders/${orderId}`);
-    
-    onValue(fullOrderRef, async (snapshot) => {
-        const orderData = snapshot.val();
-        if (!orderData) {
-            console.error("Order not found for status update.");
-            return;
+      try {
+        const orderRef = ref(rtdb, `orders/${orderId}`);
+        
+        // 1. Prepare and apply the update to Firebase
+        const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
+        if (status === 'Delivered') {
+            updates.deliveryDate = new Date().toISOString();
+        } else if (deliveryDate !== undefined) {
+            updates.deliveryDate = deliveryDate;
         }
+        await update(orderRef, updates);
 
-        try {
-            const orderRef = ref(rtdb, `orders/${orderId}`);
-            const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
-            
-            // Set delivery date only when status changes to 'Delivered'
-            if (status === 'Delivered' && !orderData.deliveryDate) { 
-                updates.deliveryDate = new Date().toISOString();
-            } else if (deliveryDate !== undefined) {
-                updates.deliveryDate = deliveryDate;
+        // 2. Fetch the newly updated order data
+        const updatedSnapshot = await get(orderRef);
+        if (!updatedSnapshot.exists()) {
+            throw new Error("Order not found after update.");
+        }
+        const updatedOrderData = updatedSnapshot.val();
+
+        // 3. Send email with the correct, updated data
+        const customerEmail = updatedOrderData.customer?.email;
+        const customerName = updatedOrderData.customer?.name || 'Valued Customer';
+        const emailEnabled = profile.emailNotifications; // Check user's preference
+
+        if (emailEnabled && customerEmail) {
+            let templateName: string | null = null;
+            let emailProps: any = { order: { ...updatedOrderData, id: orderId, customerName: customerName } };
+
+            switch (status) {
+                case 'Shipped':
+                    templateName = 'orderShipped';
+                    break;
+                case 'Delivered':
+                    templateName = 'orderDelivered';
+                    break;
+                case 'Cancelled':
+                    templateName = 'orderCancelled';
+                    break;
+                case 'Return Requested':
+                    templateName = 'returnRequested';
+                    break;
+                case 'Return Request Accepted':
+                case 'Return Rejected':
+                case 'Order Returned Successfully':
+                    templateName = 'returnStatus';
+                    emailProps.statusMessage = status; // Pass the specific status message
+                    break;
             }
 
-            await update(orderRef, updates);
-
-            // Send email notifications
-            const customerEmail = orderData.customer?.email;
-            const customerName = orderData.customer?.name || 'Valued Customer';
-            const emailEnabled = profile.emailNotifications; // Check user's preference
-
-            if (emailEnabled && customerEmail) {
-                let templateName: string | null = null;
-                let emailProps: any = { order: { ...orderData, id: orderId, customerName: customerName } };
-
-                switch (status) {
-                    case 'Shipped':
-                        templateName = 'orderShipped';
-                        break;
-                    case 'Delivered':
-                        templateName = 'orderDelivered';
-                        break;
-                    case 'Cancelled':
-                        templateName = 'orderCancelled';
-                        break;
-                    case 'Return Requested':
-                        templateName = 'returnRequested';
-                        break;
-                    case 'Return Request Accepted':
-                    case 'Return Rejected':
-                    case 'Order Returned Successfully':
-                        templateName = 'returnStatus';
-                        emailProps.statusMessage = status;
-                        break;
-                }
-                
-                if (templateName) {
-                    await triggerEmailAPI({
-                        to: customerEmail,
-                        templateName: templateName,
-                        props: emailProps,
-                    });
-                }
+            if (templateName) {
+                await triggerEmailAPI({
+                    to: customerEmail,
+                    templateName: templateName,
+                    props: emailProps,
+                });
             }
-        } catch (error) {
-            console.error("Failed to update order status:", error);
-            throw error; // Re-throw the error to be caught by the calling component
         }
-    }, { onlyOnce: true }); // Important: ensures the listener only fires once
+    } catch (error) {
+        console.error("Failed to update order status:", error);
+        throw error; // Re-throw the error to be caught by the calling component
+    }
   };
 
 

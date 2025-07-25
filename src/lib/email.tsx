@@ -40,14 +40,14 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
             text = `Your Order Has Arrived! Hi ${props.order.customerName}, Your order #${props.order.id.slice(-6).toUpperCase()} has been delivered. We hope you love your new gear!`;
             break;
         case 'orderCancelled':
-            subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has been cancelled.`;
+            subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has been cancelled`;
             body = `<h1>Order Cancelled</h1><p>Hi ${props.order.customerName},</p><p>Your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled. If you have any questions, please contact our support team.</p>`;
             text = `Order Cancelled. Hi ${props.order.customerName}, your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled.`;
             break;
         case 'returnRequested':
             subject = `We've received your return request for Order #${props.order.id.slice(-6).toUpperCase()}`;
-            body = `<h1>Return Request Received</h1><p>Hi ${props.order.customerName},</p><p>We've received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly and get back to you with the next steps.</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
-            text = `Return Request Received. Hi ${props.order.customerName}, We've received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly and get back to you with the next steps.`;
+            body = `<h1>Return Request Received</h1><p>Hi ${props.order.customerName},</p><p>We have received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly and get back to you with the next steps.</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
+            text = `Return Request Received. Hi ${props.order.customerName}, We have received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly.`;
             break;
         case 'returnStatus':
             subject = `Update on your return for Order #${props.order.id.slice(-6).toUpperCase()}`;
