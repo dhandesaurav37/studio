@@ -57,3 +57,4 @@ env:
     secret: SENDGRID_API_KEY
     availability:
       - RUNTIME
+
