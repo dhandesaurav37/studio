@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { auth } from "@/lib/firebase";
-import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordResetEmail } from "firebase/auth";
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
@@ -62,7 +62,6 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in successfully!",
       });
-
       // The useEffect hook will handle redirection.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
@@ -98,12 +97,10 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await sendPasswordResetEmail(auth, email);
-
       toast({
         title: "Password Reset Email Sent",
         description: "If an account exists for this email, you will receive a password reset link shortly.",
       });
-
     } catch (error: any) {
        toast({
         title: "Error",

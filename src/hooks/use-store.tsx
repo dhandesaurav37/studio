@@ -97,6 +97,7 @@ const safelyParseJSON = (value: string | null, fallback: any) => {
   if (value === null || value === 'undefined') return fallback;
   try {
     const parsed = JSON.parse(value);
+    // Ensure emailNotifications has a default value if missing
     if (typeof parsed === 'object' && parsed !== null && typeof parsed.emailNotifications === 'undefined') {
         parsed.emailNotifications = true;
     }
@@ -155,12 +156,16 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
-        setProfileState(safelyParseJSON(localStorage.getItem(`profile_${currentUser.uid}`), {
-            ...initialProfile,
-            name: currentUser.displayName || "",
-            email: currentUser.email || ""
-        }));
+        // When auth state changes, load profile from localStorage
+        const storedProfile = safelyParseJSON(localStorage.getItem(`profile_${currentUser.uid}`), initialProfile);
+        // Ensure the profile is synced with auth data
+        setProfileState({
+          ...storedProfile,
+          name: currentUser.displayName || storedProfile.name,
+          email: currentUser.email || storedProfile.email
+        });
       } else {
+        // On logout, reset to initial profile
         setProfileState(initialProfile);
       }
     });
