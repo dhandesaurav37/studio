@@ -19,6 +19,7 @@ import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { useStore } from "@/hooks/use-store";
 
 export default function SignupPageClient() {
   const [name, setName] = useState("");
@@ -32,6 +33,7 @@ export default function SignupPageClient() {
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
+  const { setProfile } = useStore();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -43,6 +45,26 @@ export default function SignupPageClient() {
     });
     return () => unsubscribe();
   }, [router]);
+
+  const triggerWelcomeEmail = async (to: string, userName: string) => {
+    try {
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to,
+          templateName: 'welcome',
+          props: { name: userName }
+        }),
+      });
+    } catch (error) {
+      console.error("Failed to trigger welcome email:", error);
+      // We don't show a toast here because the user experience (signup) was successful.
+      // This is a background task failure that should be monitored separately.
+    }
+  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +100,20 @@ export default function SignupPageClient() {
         await updateProfile(userCredential.user, {
           displayName: name,
         });
+
+        // Update local profile state
+        setProfile({
+            name,
+            email,
+            mobile,
+            address: { street: "", city: "", state: "", pincode: ""},
+            emailNotifications: true,
+        });
+        
+        // Trigger welcome email in the background
+        if(userCredential.user.email) {
+            triggerWelcomeEmail(userCredential.user.email, name);
+        }
       }
       toast({
         title: "Success",
