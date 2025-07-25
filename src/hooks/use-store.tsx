@@ -77,6 +77,7 @@ interface StoreState {
   averageRating: number;
   totalRatings: number;
   user: User | null;
+  authIsLoading: boolean;
   getProductById: (id: string) => Product | undefined;
   getApplicableOffer: (product: Product) => Offer | undefined;
   calculateDiscountedPrice: (product: Product) => number;
@@ -97,7 +98,6 @@ const safelyParseJSON = (value: string | null, fallback: any) => {
   if (value === null || value === 'undefined') return fallback;
   try {
     const parsed = JSON.parse(value);
-    // Ensure emailNotifications has a default value if missing
     if (typeof parsed === 'object' && parsed !== null && typeof parsed.emailNotifications === 'undefined') {
         parsed.emailNotifications = true;
     }
@@ -116,8 +116,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const [orders, setOrdersState] = useState<UserOrder[]>([]);
   const [averageRating, setAverageRating] = useState(4.7);
   const [totalRatings, setTotalRatings] = useState(256);
-  const [isMounted, setIsMounted] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+  const [authIsLoading, setAuthIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -134,9 +135,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setProducts([]);
       }
-    }, (error) => {
-      console.error("Product DB error:", error);
-    });
+    }, (error) => console.error("Product DB error:", error));
 
     const offersRef = ref(rtdb, 'offers');
     const unsubscribeOffers = onValue(offersRef, (snapshot) => {
@@ -149,9 +148,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         } else {
             setActiveOffers([]);
         }
-    }, (error) => {
-        console.error("Offers DB error:", error);
-    });
+    }, (error) => console.error("Offers DB error:", error));
 
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -165,13 +162,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setProfileState(initialProfile);
       }
+      setAuthIsLoading(false);
     });
     
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
     setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
-
 
     return () => {
       unsubscribeAuth();
@@ -199,9 +196,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         } else {
             setOrdersState([]);
         }
-    }, (error) => {
-        console.error("Orders DB error:", error);
-    });
+    }, (error) => console.error("Orders DB error:", error));
 
     return () => unsubscribeOrders();
   }, [user]);
@@ -210,56 +205,27 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const premiumProducts = useMemo(() => products.filter(p => p.price > 4000), [products]);
   const productMap = useMemo(() => new Map(products.map(p => [p.id, p])), [products]);
 
-
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('cart', JSON.stringify(cart));
-  }, [cart, isMounted]);
-
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('wishlist', JSON.stringify(wishlist));
-  }, [wishlist, isMounted]);
-
-  useEffect(() => {
-    if (isMounted && user) {
-        localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profile));
-    }
-  }, [profile, user, isMounted]);
-
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating));
-  }, [averageRating, isMounted]);
-
-  useEffect(() => {
-    if (isMounted) localStorage.setItem('totalRatings', JSON.stringify(totalRatings));
-  }, [totalRatings, isMounted]);
+  useEffect(() => { if (isMounted) localStorage.setItem('cart', JSON.stringify(cart)); }, [cart, isMounted]);
+  useEffect(() => { if (isMounted) localStorage.setItem('wishlist', JSON.stringify(wishlist)); }, [wishlist, isMounted]);
+  useEffect(() => { if (isMounted && user) localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profile)); }, [profile, user, isMounted]);
+  useEffect(() => { if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating)); }, [averageRating, isMounted]);
+  useEffect(() => { if (isMounted) localStorage.setItem('totalRatings', JSON.stringify(totalRatings)); }, [totalRatings, isMounted]);
   
-  const getProductById = useCallback((id: string) => {
-    return productMap.get(id);
-  }, [productMap]);
+  const getProductById = useCallback((id: string) => productMap.get(id), [productMap]);
 
   const getApplicableOffer = useCallback((product: Product): Offer | undefined => {
       for (const offer of activeOffers) {
-          if (offer.appliesTo === 'products' && offer.targetIds.includes(product.id)) {
-              return offer;
-          }
-          if (offer.appliesTo === 'categories' && offer.targetIds.includes(product.category)) {
-              return offer;
-          }
+          if (offer.appliesTo === 'products' && offer.targetIds.includes(product.id)) return offer;
+          if (offer.appliesTo === 'categories' && offer.targetIds.includes(product.category)) return offer;
       }
       return undefined;
   }, [activeOffers]);
 
   const calculateDiscountedPrice = useCallback((product: Product): number => {
       const offer = getApplicableOffer(product);
-      if (!offer) {
-          return product.price;
-      }
-      if (offer.discountType === 'percentage') {
-          return product.price * (1 - offer.discountValue / 100);
-      }
-      if (offer.discountType === 'fixed') {
-          return Math.max(0, product.price - offer.discountValue);
-      }
+      if (!offer) return product.price;
+      if (offer.discountType === 'percentage') return product.price * (1 - offer.discountValue / 100);
+      if (offer.discountType === 'fixed') return Math.max(0, product.price - offer.discountValue);
       return product.price;
   }, [getApplicableOffer]);
 
@@ -289,9 +255,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
-  const clearCart = () => {
-    setCart([]);
-  };
+  const clearCart = () => setCart([]);
 
   const addToWishlist = (newItem: WishlistItem) => {
     setWishlist((prevWishlist) => {
@@ -306,9 +270,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     setWishlist((prevWishlist) => prevWishlist.filter((item) => item.id !== productId));
   };
   
-  const setProfile = (newProfile: UserProfile) => {
-    setProfileState(newProfile);
-  }
+  const setProfile = (newProfile: UserProfile) => setProfileState(newProfile);
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
     const orderRef = ref(rtdb, `orders/${orderId}`);
@@ -322,7 +284,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     await update(orderRef, updates);
 
-    // After updating, fetch the latest order data to ensure email is sent with correct info
     const updatedOrderSnapshot = await get(orderRef);
     if (!updatedOrderSnapshot.exists()) {
         console.error("Order not found after update.");
@@ -351,7 +312,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         }
 
         if (templateName) {
-            // Use fetch to call the API route
             fetch('/api/send-email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -365,7 +325,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-
   const submitRating = (newRating: number) => {
     const newTotalRatings = totalRatings + 1;
     const newAverageRating = (averageRating * totalRatings + newRating) / newTotalRatings;
@@ -374,30 +333,11 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const value = {
-    products,
-    productMap,
-    shopProducts,
-    premiumProducts,
-    activeOffers,
-    cart,
-    wishlist,
-    profile,
-    orders,
-    averageRating,
-    totalRatings,
-    user,
-    getProductById,
-    getApplicableOffer,
-    calculateDiscountedPrice,
-    addToCart,
-    removeFromCart,
-    updateCartItemQuantity,
-    clearCart,
-    addToWishlist,
-    removeFromWishlist,
-    setProfile,
-    updateOrderStatus,
-    submitRating,
+    products, productMap, shopProducts, premiumProducts, activeOffers,
+    cart, wishlist, profile, orders, averageRating, totalRatings, user, authIsLoading,
+    getProductById, getApplicableOffer, calculateDiscountedPrice,
+    addToCart, removeFromCart, updateCartItemQuantity, clearCart,
+    addToWishlist, removeFromWishlist, setProfile, updateOrderStatus, submitRating,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
