@@ -100,11 +100,15 @@ export default function LoginPage() {
     }
     setIsLoading(true);
     try {
+      // Use Firebase's built-in password reset email functionality.
+      // This will use the template we configured in the Firebase Console.
       await sendPasswordResetEmail(auth, email);
+
       toast({
         title: "Password Reset Email Sent",
         description: "If an account exists for this email, you will receive a password reset link shortly.",
       });
+
     } catch (error: any) {
        toast({
         title: "Error",
