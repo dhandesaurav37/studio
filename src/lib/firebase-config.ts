@@ -1,4 +1,3 @@
-
 // This file is responsible for consolidating and exporting the Firebase configuration.
 // It reads environment variables provided by the server environment (like Firebase App Hosting)
 // and makes them available to the rest of the application.
