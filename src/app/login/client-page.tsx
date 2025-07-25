@@ -104,8 +104,6 @@ export default function LoginPageClient() {
     }
     setIsLoading(true);
     try {
-      // Use Firebase's built-in password reset email functionality.
-      // This will use the template we configured in the Firebase Console.
       await sendPasswordResetEmail(auth, email);
 
       toast({
