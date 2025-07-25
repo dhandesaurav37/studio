@@ -303,7 +303,7 @@ export default function ProductDetailClientPage({
         phone: newAddress.mobile
       } : {
         name: profile.name,
-        address: `${profile.address.street}, ${profile.address.city}, ${profile.address.state} ${profile.address.pincode}`,
+        address: `${profile.address.street}, ${profile.address.city}, ${profile.address.state}, ${profile.address.pincode}`,
         phone: profile.mobile
       };
 
@@ -336,7 +336,6 @@ export default function ProductDetailClientPage({
         if (profile.emailNotifications) {
               triggerEmailAPI({
                 to: user.email,
-                subject: 'Your White Wolf Order is Confirmed!',
                 templateName: 'orderConfirmation',
                 props: {
                     order: { ...newAdminOrder, customerName: profile.name }
