@@ -116,18 +116,7 @@ export default function LoginPageClient() {
     }
     setIsLoading(true);
     try {
-      // We will now generate the link and send it via our own email service
-      // This gives us full control over the email template and sender.
-      const actionCodeSettings = {
-        url: `${window.location.origin}/login`, // URL to redirect back to
-        handleCodeInApp: true,
-      };
-      
-      // Note: This does not send an email. It just generates the link.
-      // The actual password reset link is sent via our API route.
-      // Firebase doesn't have a public method to just generate a link without sending an email,
-      // so we use the standard method but will have configured Firebase not to send the email itself.
-      await sendPasswordResetEmail(auth, email, actionCodeSettings);
+      await sendPasswordResetEmail(auth, email);
 
       toast({
         title: "Password Reset Email Sent",
