@@ -99,3 +99,4 @@ env:
 *   **`env`**: Manages environment variables. You can set plain text variables (like `MY_ENV_VARIABLE`) or securely reference secrets stored in Google Secret Manager (like `MY_API_KEY`). These can be made available during the build process (`BUILD`) or when the app is running (`RUNTIME`).
 
 Remember, these advanced settings are not required for your initial deployment but are very useful as your application grows.
+
