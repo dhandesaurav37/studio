@@ -39,10 +39,20 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
             body = `<h1>Your Order Has Arrived!</h1><p>Hi ${props.order.customerName},</p><p>Your order has been delivered. We hope you love your new gear!</p><p>Thanks for shopping with us. <a href="https://thewhitewolf.shop/faq">Leave a review</a></p>`;
             text = `Your Order Has Arrived! Hi ${props.order.customerName}, Your order has been delivered. We hope you love your new gear!`;
             break;
+        case 'orderCancelled':
+            subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has been cancelled.`;
+            body = `<h1>Order Cancelled</h1><p>Hi ${props.order.customerName},</p><p>Your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled. If you have any questions, please contact our support team.</p>`;
+            text = `Order Cancelled. Hi ${props.order.customerName}, your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled.`;
+            break;
         case 'returnStatus':
             subject = `Update on your return request`;
             body = `<h1>Return Status Update</h1><p>Hi ${props.order.customerName},</p><p>There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}.</p><p><strong>Status:</strong> ${props.statusMessage}</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
             text = `Return Status Update. Hi ${props.order.customerName}, There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}. Status: ${props.statusMessage}`;
+            break;
+        case 'passwordReset':
+            subject = `Reset your White Wolf password`;
+            body = `<h1>Password Reset</h1><p>Hi ${props.name},</p><p>We received a request to reset your password. If you didn't make this request, you can ignore this email.</p><p>To reset your password, please contact our support team.</p>`;
+            text = `Password Reset. Hi ${props.name}, we received a request to reset your password. If you didn't make this request, you can ignore this email. To reset your password, please contact our support team.`;
             break;
         default:
              body = '<h1>Notification</h1><p>This is a default notification from White Wolf.</p>';
@@ -77,7 +87,7 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
 };
 
 
-export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'returnStatus';
+export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'orderCancelled' | 'returnStatus' | 'passwordReset';
 
 export interface EmailTemplateProps {
   to: string;

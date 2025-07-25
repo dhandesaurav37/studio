@@ -344,7 +344,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             const customerEmail = orderData.customer?.email;
             const customerName = orderData.customer?.name || 'Valued Customer';
 
-            if (orderData.customer?.emailNotifications !== false && customerEmail) {
+            if (profile.emailNotifications && customerEmail) {
                 const emailProps = {
                     order: { ...orderData, id: orderId, customerName: customerName },
                 };
@@ -354,6 +354,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
                 if(status === 'Shipped') templateName = 'orderShipped';
                 else if (status === 'Delivered') templateName = 'orderDelivered';
+                else if (status === 'Cancelled') templateName = 'orderCancelled';
                 else if (['Return Request Accepted', 'Return Rejected', 'Order Returned Successfully'].includes(status)) {
                     templateName = 'returnStatus';
                     statusMessage = status;
