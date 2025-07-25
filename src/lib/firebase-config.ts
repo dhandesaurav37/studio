@@ -3,9 +3,9 @@
 export const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID",
-  databaseURL: "YOUR_DATABASE_URL",
+  projectId: "the-white-wolf-20614",
+  storageBucket: "the-white-wolf-20614.appspot.com",
+  messagingSenderId: "333852899453",
+  appId: "1:333852899453:web:96823336456015574f8de",
+  databaseURL: "https://the-white-wolf-20614-default-rtdb.firebaseio.com",
 };
