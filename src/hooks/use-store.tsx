@@ -98,6 +98,7 @@ const safelyParseJSON = (value: string | null, fallback: any) => {
   if (value === null || value === 'undefined') return fallback;
   try {
     const parsed = JSON.parse(value);
+    // Add default for emailNotifications if it's missing from old stored profiles
     if (typeof parsed === 'object' && parsed !== null && typeof parsed.emailNotifications === 'undefined') {
         parsed.emailNotifications = true;
     }
@@ -153,6 +154,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
+        // Load profile from localStorage immediately on auth change
         const storedProfile = safelyParseJSON(localStorage.getItem(`profile_${currentUser.uid}`), initialProfile);
         setProfileState({
           ...storedProfile,
@@ -160,11 +162,13 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
           email: currentUser.email || storedProfile.email
         });
       } else {
+        // Clear profile on logout
         setProfileState(initialProfile);
       }
       setAuthIsLoading(false);
     });
     
+    // Load non-user-specific data from localStorage on initial mount
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
     setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
@@ -177,6 +181,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  // Effect to manage user-specific orders
   useEffect(() => {
     if (!user) {
         setOrdersState([]); // Clear orders on logout
@@ -205,6 +210,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   const premiumProducts = useMemo(() => products.filter(p => p.price > 4000), [products]);
   const productMap = useMemo(() => new Map(products.map(p => [p.id, p])), [products]);
 
+  // Effects to persist data to localStorage
   useEffect(() => { if (isMounted) localStorage.setItem('cart', JSON.stringify(cart)); }, [cart, isMounted]);
   useEffect(() => { if (isMounted) localStorage.setItem('wishlist', JSON.stringify(wishlist)); }, [wishlist, isMounted]);
   useEffect(() => { if (isMounted && user) localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profile)); }, [profile, user, isMounted]);
@@ -284,6 +290,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
     await update(orderRef, updates);
 
+    // After updating, get the latest order data to send in the email
     const updatedOrderSnapshot = await get(orderRef);
     if (!updatedOrderSnapshot.exists()) {
         console.error("Order not found after update.");
@@ -294,6 +301,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const customerEmail = updatedOrderData.customer?.email;
     const customerName = updatedOrderData.customer?.name || 'Valued Customer';
     
+    // Check for email notification preference from the most recent profile state
     if (profile.emailNotifications && customerEmail) {
         let templateName: string | null = null;
         let emailProps: any = { order: { ...updatedOrderData, id: orderId, customerName: customerName } };
@@ -307,7 +315,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             case 'Return Rejected':
             case 'Order Returned Successfully':
                 templateName = 'returnStatus';
-                emailProps.statusMessage = status;
+                emailProps.statusMessage = status; // Pass the specific status message
                 break;
         }
 

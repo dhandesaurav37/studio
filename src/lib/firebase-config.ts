@@ -1,3 +1,4 @@
+
 // This file is responsible for consolidating and exporting the Firebase configuration.
 
 export const firebaseConfig = {
