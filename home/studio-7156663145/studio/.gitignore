@@ -1,0 +1,12 @@
+# Environment variables
+# Ignore the .env file to keep secrets out of version control.
+.env
+
+# Node modules
+node_modules
+
+# Next.js build output
+.next
+
+# Production build folder
+build
