@@ -30,22 +30,27 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
             text = `Order Confirmed! Hi ${props.order.customerName}, Thanks for your order. Order ID: #${props.order.id.slice(-6).toUpperCase()}. Total: ₹${props.order.total.toFixed(2)}.`;
             break;
         case 'orderShipped':
-            subject = `Your White Wolf Order has Shipped!`;
-            body = `<h1>Your Order is on its Way!</h1><p>Hi ${props.order.customerName}, good news! Your order has been shipped.</p><p>You can view your order status here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
-            text = `Your Order is on its Way! Hi ${props.order.customerName}, good news! Your order has been shipped.`;
+            subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has Shipped!`;
+            body = `<h1>Your Order is on its Way!</h1><p>Hi ${props.order.customerName}, good news! Your order #${props.order.id.slice(-6).toUpperCase()} has been shipped.</p><p>You can view your order status here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
+            text = `Your Order is on its Way! Hi ${props.order.customerName}, good news! Your order #${props.order.id.slice(-6).toUpperCase()} has been shipped.`;
             break;
         case 'orderDelivered':
-            subject = `Your White Wolf Order has been Delivered!`;
-            body = `<h1>Your Order Has Arrived!</h1><p>Hi ${props.order.customerName},</p><p>Your order has been delivered. We hope you love your new gear!</p><p>Thanks for shopping with us. <a href="https://thewhitewolf.shop/faq">Leave a review</a></p>`;
-            text = `Your Order Has Arrived! Hi ${props.order.customerName}, Your order has been delivered. We hope you love your new gear!`;
+            subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has been Delivered!`;
+            body = `<h1>Your Order Has Arrived!</h1><p>Hi ${props.order.customerName},</p><p>Your order #${props.order.id.slice(-6).toUpperCase()} has been delivered. We hope you love your new gear!</p><p>Thanks for shopping with us. <a href="https://thewhitewolf.shop/faq">Leave a review</a></p>`;
+            text = `Your Order Has Arrived! Hi ${props.order.customerName}, Your order #${props.order.id.slice(-6).toUpperCase()} has been delivered. We hope you love your new gear!`;
             break;
         case 'orderCancelled':
             subject = `Your White Wolf Order #${props.order.id.slice(-6).toUpperCase()} has been cancelled.`;
             body = `<h1>Order Cancelled</h1><p>Hi ${props.order.customerName},</p><p>Your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled. If you have any questions, please contact our support team.</p>`;
             text = `Order Cancelled. Hi ${props.order.customerName}, your order #${props.order.id.slice(-6).toUpperCase()} has been successfully cancelled.`;
             break;
+        case 'returnRequested':
+            subject = `We've received your return request for Order #${props.order.id.slice(-6).toUpperCase()}`;
+            body = `<h1>Return Request Received</h1><p>Hi ${props.order.customerName},</p><p>We've received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly and get back to you with the next steps.</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
+            text = `Return Request Received. Hi ${props.order.customerName}, We've received your return request for order #${props.order.id.slice(-6).toUpperCase()}. We will review it shortly and get back to you with the next steps.`;
+            break;
         case 'returnStatus':
-            subject = `Update on your return request`;
+            subject = `Update on your return for Order #${props.order.id.slice(-6).toUpperCase()}`;
             body = `<h1>Return Status Update</h1><p>Hi ${props.order.customerName},</p><p>There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}.</p><p><strong>Status:</strong> ${props.statusMessage}</p><p>You can view your order details here: <a href="https://thewhitewolf.shop/orders">My Orders</a></p>`;
             text = `Return Status Update. Hi ${props.order.customerName}, There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}. Status: ${props.statusMessage}`;
             break;
@@ -59,7 +64,7 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
              text = 'This is a default notification from White Wolf.';
     }
 
-    const fullHtml = `
+    const fullHtml = \`
       <!DOCTYPE html>
       <html>
       <head>
@@ -74,20 +79,20 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
       <body>
         <div class="container">
           <div class="header">White Wolf</div>
-          <div class="content">${body}</div>
+          <div class="content">\${body}</div>
           <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} White Wolf Co. All Rights Reserved.</p>
+            <p>&copy; \${new Date().getFullYear()} White Wolf Co. All Rights Reserved.</p>
           </div>
         </div>
       </body>
       </html>
-    `;
+    \`;
     
     return { subject, html: fullHtml, text };
 };
 
 
-export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'orderCancelled' | 'returnStatus' | 'passwordReset';
+export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped' | 'orderDelivered' | 'orderCancelled' | 'returnRequested' | 'returnStatus' | 'passwordReset';
 
 export interface EmailTemplateProps {
   to: string;
@@ -112,7 +117,7 @@ export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps)
 
   try {
     await sgMail.send(msg);
-    console.log(`Email sent successfully to ${to}`);
+    console.log(\`Email sent successfully to \${to}\`);
   } catch (error) {
     console.error('Error in sendEmail function with SendGrid:', error);
     // It's important to check for more specific error details if available

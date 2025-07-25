@@ -317,63 +317,71 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
-    // This function will now be called by both client components (for user actions)
-    // and admin components.
-    
-    // Find the full order object from the database to get customer email
     const fullOrderRef = ref(rtdb, `orders/${orderId}`);
+    
     onValue(fullOrderRef, async (snapshot) => {
         const orderData = snapshot.val();
         if (!orderData) {
-            console.error("Order not found for status update email.");
+            console.error("Order not found for status update.");
             return;
         }
 
         try {
             const orderRef = ref(rtdb, `orders/${orderId}`);
             const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
-            if (deliveryDate !== undefined) {
-                updates.deliveryDate = deliveryDate;
-            } else if (status === 'Delivered' && !orderData.deliveryDate) { 
+            
+            // Set delivery date only when status changes to 'Delivered'
+            if (status === 'Delivered' && !orderData.deliveryDate) { 
                 updates.deliveryDate = new Date().toISOString();
+            } else if (deliveryDate !== undefined) {
+                updates.deliveryDate = deliveryDate;
             }
 
             await update(orderRef, updates);
 
-            // Post-update logic (like sending emails)
+            // Send email notifications
             const customerEmail = orderData.customer?.email;
             const customerName = orderData.customer?.name || 'Valued Customer';
+            const emailEnabled = profile.emailNotifications; // Check user's preference
 
-            if (profile.emailNotifications && customerEmail) {
-                const emailProps = {
-                    order: { ...orderData, id: orderId, customerName: customerName },
-                };
-
+            if (emailEnabled && customerEmail) {
                 let templateName: string | null = null;
-                let statusMessage: string | null = null;
+                let emailProps: any = { order: { ...orderData, id: orderId, customerName: customerName } };
 
-                if(status === 'Shipped') templateName = 'orderShipped';
-                else if (status === 'Delivered') templateName = 'orderDelivered';
-                else if (status === 'Cancelled') templateName = 'orderCancelled';
-                else if (['Return Request Accepted', 'Return Rejected', 'Order Returned Successfully'].includes(status)) {
-                    templateName = 'returnStatus';
-                    statusMessage = status;
+                switch (status) {
+                    case 'Shipped':
+                        templateName = 'orderShipped';
+                        break;
+                    case 'Delivered':
+                        templateName = 'orderDelivered';
+                        break;
+                    case 'Cancelled':
+                        templateName = 'orderCancelled';
+                        break;
+                    case 'Return Requested':
+                        templateName = 'returnRequested';
+                        break;
+                    case 'Return Request Accepted':
+                    case 'Return Rejected':
+                    case 'Order Returned Successfully':
+                        templateName = 'returnStatus';
+                        emailProps.statusMessage = status;
+                        break;
                 }
                 
                 if (templateName) {
                     await triggerEmailAPI({
                         to: customerEmail,
                         templateName: templateName,
-                        props: { ...emailProps, statusMessage },
+                        props: emailProps,
                     });
                 }
             }
-
         } catch (error) {
             console.error("Failed to update order status:", error);
-            throw error;
+            throw error; // Re-throw the error to be caught by the calling component
         }
-    }, { onlyOnce: true });
+    }, { onlyOnce: true }); // Important: ensures the listener only fires once
   };
 
 
