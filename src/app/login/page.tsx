@@ -19,6 +19,7 @@ import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordReset
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useStore } from "@/hooks/use-store";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
 
@@ -26,24 +27,20 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useStore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
+    if (user) {
         if (user.email === ADMIN_EMAIL) {
             router.replace("/admin/dashboard");
         } else {
             router.replace("/");
         }
-      } else {
-        setIsAuthLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+    }
+  }, [user, router]);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,7 +63,7 @@ export default function LoginPage() {
         description: "Logged in successfully!",
       });
 
-      // No need to push, onAuthStateChanged will handle it.
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
@@ -100,8 +97,6 @@ export default function LoginPage() {
     }
     setIsLoading(true);
     try {
-      // Use Firebase's built-in password reset email functionality.
-      // This will use the template we configured in the Firebase Console.
       await sendPasswordResetEmail(auth, email);
 
       toast({
@@ -120,7 +115,7 @@ export default function LoginPage() {
     }
   };
   
-  if(isAuthLoading) {
+  if (user) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
