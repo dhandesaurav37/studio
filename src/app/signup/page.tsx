@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Eye, EyeOff, Loader2, Check } from "lucide-react";
 import { auth } from "@/lib/firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
@@ -31,16 +31,22 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isGmail, setIsGmail] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
-  const { setProfile, user } = useStore();
+  const { setProfile } = useStore();
 
   useEffect(() => {
-    if (user) {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
         router.replace("/");
-    }
-  }, [user, router]);
+      } else {
+        setIsAuthLoading(false);
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newEmail = e.target.value;
@@ -61,7 +67,7 @@ export default function SignupPage() {
       setIsLoading(false);
       return;
     }
-    
+
     if (!email.toLowerCase().endsWith("@gmail.com")) {
       toast({
         title: "Invalid Email",
@@ -88,13 +94,14 @@ export default function SignupPage() {
         email,
         password
       );
-      
+
       const currentUser = userCredential.user;
       if (currentUser) {
         await updateProfile(currentUser, {
           displayName: name,
         });
 
+        // This ensures the profile is set in the global state and persisted
         setProfile({
             name,
             email,
@@ -103,6 +110,7 @@ export default function SignupPage() {
             emailNotifications: true,
         });
         
+        // This fetch call can remain to send a welcome email via your API
         if(currentUser.email) {
             fetch('/api/send-email', {
                 method: 'POST',
@@ -115,11 +123,13 @@ export default function SignupPage() {
             });
         }
       }
+      
       toast({
         title: "Success",
         description: "Account created successfully! Redirecting...",
       });
-      // The useEffect hook will handle redirection.
+      // The onAuthStateChanged listener will handle redirection.
+
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
@@ -146,7 +156,7 @@ export default function SignupPage() {
     }
   };
 
-  if (user) {
+  if (isAuthLoading) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
