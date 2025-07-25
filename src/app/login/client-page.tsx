@@ -19,20 +19,9 @@ import { signInWithEmailAndPassword, onAuthStateChanged, User, sendPasswordReset
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { sendEmail } from "@/lib/email";
 
 const ADMIN_EMAIL = "dhandesaurav37@gmail.com";
-
-const triggerEmailAPI = async (payload: any) => {
-    try {
-        await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-    } catch (error) {
-        console.error("Failed to trigger email API:", error);
-    }
-}
 
 export default function LoginPageClient() {
   const [email, setEmail] = useState("");

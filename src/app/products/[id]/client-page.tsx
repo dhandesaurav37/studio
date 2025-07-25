@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Product } from "@/lib/data";
@@ -52,6 +53,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
+import { sendEmail } from "@/lib/email";
 
 
 interface ProductDetailClientPageProps {
@@ -66,18 +68,6 @@ declare global {
   }
 }
 
-const triggerEmailAPI = async (payload: any) => {
-    try {
-        await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-    } catch (error) {
-        console.error("Failed to trigger email API:", error);
-    }
-}
-
 const topCategories = ["T-Shirts", "Shirts", "Sweater", "Jackets", "Oversized T-shirts"];
 const bottomCategories = ["Jeans", "Trousers", "Track Pants"];
 
@@ -88,7 +78,6 @@ export default function ProductDetailClientPage({
 }: ProductDetailClientPageProps) {
   const {
     getProductById,
-    // ... other properties from useStore
     cart,
     wishlist,
     addToCart,
@@ -123,7 +112,6 @@ export default function ProductDetailClientPage({
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   
   useEffect(() => {
-    // If the initial product is a placeholder, try to find the real one from the store
     if (initialProduct.name === "Loading..." && allProducts.length > 0) {
       const realProduct = getProductById(initialProduct.id);
       if (realProduct) {
@@ -332,8 +320,8 @@ export default function ProductDetailClientPage({
       try {
         await set(newOrderRef, newAdminOrder);
         
-        if (profile.emailNotifications) {
-              await triggerEmailAPI({
+        if (profile.emailNotifications && user.email) {
+              await sendEmail({
                 to: user.email,
                 templateName: 'orderConfirmation',
                 props: {

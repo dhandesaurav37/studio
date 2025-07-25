@@ -21,18 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
 import { cn } from "@/lib/utils";
-
-const triggerEmailAPI = async (payload: any) => {
-    try {
-        await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-    } catch (error) {
-        console.error("Failed to trigger email API:", error);
-    }
-}
+import { sendEmail } from "@/lib/email";
 
 export default function SignupPageClient() {
   const [name, setName] = useState("");
@@ -111,7 +100,6 @@ export default function SignupPageClient() {
           displayName: name,
         });
 
-        // Update local profile state
         setProfile({
             name,
             email,
@@ -120,9 +108,8 @@ export default function SignupPageClient() {
             emailNotifications: true,
         });
         
-        // Trigger welcome email in the background
         if(userCredential.user.email) {
-            await triggerEmailAPI({
+            await sendEmail({
               to: userCredential.user.email,
               templateName: 'welcome',
               props: { name: name }

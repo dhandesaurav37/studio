@@ -6,7 +6,7 @@ import sgMail from '@sendgrid/mail';
 import { UserOrder } from '@/hooks/use-store';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY!);
-const FROM_EMAIL = 'contact@thewhitewolf.shop'; 
+const FROM_EMAIL = 'noreply@thewhitewolf.shop'; 
 
 // This is a helper to render React components to a string, as SendGrid expects HTML.
 // Note: In a real app, you might use a library like `renderToString` from `react-dom/server`,
@@ -55,10 +55,15 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
             text = `Return Status Update. Hi ${props.order.customerName}, There's an update on your return request for order #${props.order.id.slice(-6).toUpperCase()}. Status: ${props.statusMessage}`;
             break;
         case 'passwordReset':
-            subject = `Reset your White Wolf password`;
-            body = `<h1>Password Reset</h1><p>Hi ${props.name},</p><p>We received a request to reset your password. If you didn't make this request, you can ignore this email.</p><p>To reset your password, please contact our support team.</p>`;
-            text = `Password Reset. Hi ${props.name}, we received a request to reset your password. If you didn't make this request, you can ignore this email. To reset your password, please contact our support team.`;
-            break;
+             subject = 'Reset your White Wolf password';
+             body = `<h1>Password Reset Request</h1>
+                      <p>Hi,</p>
+                      <p>We received a request to reset your password. You can do so by clicking the link below. If you didn't make this request, you can safely ignore this email.</p>
+                      <p><a href="${props.resetLink}" target="_blank">Reset Your Password</a></p>
+                      <p>Thank you,</p>
+                      <p>The White Wolf Team</p>`;
+             text = `Reset your White Wolf password. Click the following link to reset: ${props.resetLink}`;
+             break;
         default:
              body = '<h1>Notification</h1><p>This is a default notification from White Wolf.</p>';
              text = 'This is a default notification from White Wolf.';
@@ -96,7 +101,6 @@ export type EmailTemplateName = 'welcome' | 'orderConfirmation' | 'orderShipped'
 
 export interface EmailTemplateProps {
   to: string;
-  subject?: string; // Subject will now be generated from the template
   templateName: EmailTemplateName;
   props: any;
 }
@@ -120,7 +124,6 @@ export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps)
     console.log(`Email sent successfully to ${to}`);
   } catch (error) {
     console.error('Error in sendEmail function with SendGrid:', error);
-    // It's important to check for more specific error details if available
     if ((error as any).response) {
       console.error((error as any).response.body)
     }

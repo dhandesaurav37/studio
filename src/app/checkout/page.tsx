@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -18,24 +19,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { createRazorpayOrder } from "../products/[id]/actions";
 import { getAddressFromCoordinates } from "../actions/geocoding";
-
+import { sendEmail } from "@/lib/email";
 
 declare global {
   interface Window {
     Razorpay: any;
   }
-}
-
-const triggerEmailAPI = async (payload: any) => {
-    try {
-        await fetch('/api/send-email', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-    } catch (error) {
-        console.error("Failed to trigger email API:", error);
-    }
 }
 
 export default function CheckoutPage() {
@@ -163,8 +152,8 @@ export default function CheckoutPage() {
       try {
           await set(ref(rtdb, `orders/${orderId}`), newAdminOrder);
           
-          if (profile.emailNotifications) {
-              await triggerEmailAPI({
+          if (profile.emailNotifications && user!.email) {
+              await sendEmail({
                 to: user!.email,
                 templateName: 'orderConfirmation',
                 props: {
