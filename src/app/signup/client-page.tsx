@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -65,6 +66,16 @@ export default function SignupPageClient() {
       toast({
         title: "Error",
         description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!email.endsWith("@gmail.com")) {
+      toast({
+        title: "Invalid Email",
+        description: "Please use a Gmail account (@gmail.com) to sign up.",
         variant: "destructive",
       });
       setIsLoading(false);
