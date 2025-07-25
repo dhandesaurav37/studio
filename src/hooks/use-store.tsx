@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
@@ -316,49 +317,62 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }
   
   const updateOrderStatus = async (orderId: string, status: OrderStatus, deliveryDate?: string) => {
-    try {
-      const orderRef = ref(rtdb, `orders/${orderId}`);
-      const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
-      if (deliveryDate !== undefined) {
-        updates.deliveryDate = deliveryDate;
-      } else if (status === 'Delivered') { // Automatically set delivery date if not provided
-        updates.deliveryDate = new Date().toISOString();
-      }
-      await update(orderRef, updates);
+    // This function will now be called by both client components (for user actions)
+    // and admin components.
+    
+    // Find the full order object from the database to get customer email
+    const fullOrderRef = ref(rtdb, `orders/${orderId}`);
+    onValue(fullOrderRef, async (snapshot) => {
+        const orderData = snapshot.val();
+        if (!orderData) {
+            console.error("Order not found for status update email.");
+            return;
+        }
 
-      // Post-update logic (like sending emails)
-      const order = orders.find(o => o.id === orderId);
-      if (order && profile.emailNotifications && profile.email) {
-          const emailProps = {
-            order: { ...order, customerName: profile.name },
-            to: profile.email
-          };
+        try {
+            const orderRef = ref(rtdb, `orders/${orderId}`);
+            const updates: { status: OrderStatus; deliveryDate?: string | null } = { status };
+            if (deliveryDate !== undefined) {
+                updates.deliveryDate = deliveryDate;
+            } else if (status === 'Delivered' && !orderData.deliveryDate) { 
+                updates.deliveryDate = new Date().toISOString();
+            }
 
-          if(status === 'Shipped') {
-              await triggerEmailAPI({
-                  to: profile.email,
-                  templateName: 'orderShipped',
-                  props: emailProps,
-              });
-          } else if (status === 'Delivered') {
-              await triggerEmailAPI({
-                  to: profile.email,
-                  templateName: 'orderDelivered',
-                  props: emailProps,
-              });
-          } else if (status === 'Return Request Accepted' || status === 'Return Rejected' || status === 'Order Returned Successfully') {
-               await triggerEmailAPI({
-                  to: profile.email,
-                  templateName: 'returnStatus',
-                  props: { ...emailProps, statusMessage: status },
-              });
-          }
-      }
+            await update(orderRef, updates);
 
-    } catch (error) {
-        console.error("Failed to update order status:", error);
-        throw error;
-    }
+            // Post-update logic (like sending emails)
+            const customerEmail = orderData.customer?.email;
+            const customerName = orderData.customer?.name || 'Valued Customer';
+
+            if (orderData.customer?.emailNotifications !== false && customerEmail) {
+                const emailProps = {
+                    order: { ...orderData, id: orderId, customerName: customerName },
+                };
+
+                let templateName: string | null = null;
+                let statusMessage: string | null = null;
+
+                if(status === 'Shipped') templateName = 'orderShipped';
+                else if (status === 'Delivered') templateName = 'orderDelivered';
+                else if (['Return Request Accepted', 'Return Rejected', 'Order Returned Successfully'].includes(status)) {
+                    templateName = 'returnStatus';
+                    statusMessage = status;
+                }
+                
+                if (templateName) {
+                    await triggerEmailAPI({
+                        to: customerEmail,
+                        templateName: templateName,
+                        props: { ...emailProps, statusMessage },
+                    });
+                }
+            }
+
+        } catch (error) {
+            console.error("Failed to update order status:", error);
+            throw error;
+        }
+    }, { onlyOnce: true });
   };
 
 
