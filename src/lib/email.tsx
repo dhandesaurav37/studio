@@ -1,4 +1,3 @@
-
 'use server';
 
 import React from 'react';
@@ -91,7 +90,10 @@ export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps)
   
   const msg = {
     to: to,
-    from: FROM_EMAIL,
+    from: {
+      name: 'White Wolf',
+      email: FROM_EMAIL
+    },
     subject: subject,
     text: text,
     html: html,

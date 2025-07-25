@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -165,7 +164,7 @@ export default function CheckoutPage() {
           await set(ref(rtdb, `orders/${orderId}`), newAdminOrder);
           
           if (profile.emailNotifications) {
-              triggerEmailAPI({
+              await triggerEmailAPI({
                 to: user!.email,
                 templateName: 'orderConfirmation',
                 props: {

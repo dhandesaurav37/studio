@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -20,6 +19,18 @@ import { createUserWithEmailAndPassword, updateProfile, onAuthStateChanged } fro
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
+
+const triggerEmailAPI = async (payload: any) => {
+    try {
+        await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        });
+    } catch (error) {
+        console.error("Failed to trigger email API:", error);
+    }
+}
 
 export default function SignupPageClient() {
   const [name, setName] = useState("");
@@ -45,26 +56,6 @@ export default function SignupPageClient() {
     });
     return () => unsubscribe();
   }, [router]);
-
-  const triggerWelcomeEmail = async (to: string, userName: string) => {
-    try {
-      await fetch('/api/send-email', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          to,
-          templateName: 'welcome',
-          props: { name: userName }
-        }),
-      });
-    } catch (error) {
-      console.error("Failed to trigger welcome email:", error);
-      // We don't show a toast here because the user experience (signup) was successful.
-      // This is a background task failure that should be monitored separately.
-    }
-  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,7 +103,11 @@ export default function SignupPageClient() {
         
         // Trigger welcome email in the background
         if(userCredential.user.email) {
-            triggerWelcomeEmail(userCredential.user.email, name);
+            await triggerEmailAPI({
+              to: userCredential.user.email,
+              templateName: 'welcome',
+              props: { name: name }
+            });
         }
       }
       toast({

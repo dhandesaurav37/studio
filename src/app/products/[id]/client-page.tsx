@@ -1,4 +1,3 @@
-
 "use client";
 
 import { Product } from "@/lib/data";
@@ -334,7 +333,7 @@ export default function ProductDetailClientPage({
         await set(newOrderRef, newAdminOrder);
         
         if (profile.emailNotifications) {
-              triggerEmailAPI({
+              await triggerEmailAPI({
                 to: user.email,
                 templateName: 'orderConfirmation',
                 props: {

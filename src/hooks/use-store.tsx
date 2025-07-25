@@ -1,4 +1,3 @@
-
 "use client";
 
 import { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
@@ -336,19 +335,19 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
           };
 
           if(status === 'Shipped') {
-              triggerEmailAPI({
+              await triggerEmailAPI({
                   to: profile.email,
                   templateName: 'orderShipped',
                   props: emailProps,
               });
           } else if (status === 'Delivered') {
-              triggerEmailAPI({
+              await triggerEmailAPI({
                   to: profile.email,
                   templateName: 'orderDelivered',
                   props: emailProps,
               });
           } else if (status === 'Return Request Accepted' || status === 'Return Rejected' || status === 'Order Returned Successfully') {
-               triggerEmailAPI({
+               await triggerEmailAPI({
                   to: profile.email,
                   templateName: 'returnStatus',
                   props: { ...emailProps, statusMessage: status },
