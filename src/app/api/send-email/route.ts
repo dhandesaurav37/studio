@@ -7,7 +7,7 @@ export async function POST(request: Request) {
     const body: EmailTemplateProps = await request.json();
 
     // In a real application, you would add more robust validation here.
-    if (!body.to || !body.subject || !body.templateName) {
+    if (!body.to || !body.templateName) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
