@@ -61,19 +61,22 @@ export default function LoginPage() {
         title: "Success",
         description: "Logged in successfully!",
       });
-      // The useEffect will handle redirection.
+      // The useEffect hook will handle redirection.
     } catch (error: any) {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
         case "auth/invalid-credential":
-        case "auth/wrong-password":
           errorMessage = "Invalid email or password. Please try again.";
           break;
         case "auth/user-not-found":
           errorMessage = "No account found with this email.";
           break;
+        case "auth/wrong-password":
+          errorMessage = "Invalid email or password. Please try again.";
+          break;
         default:
           errorMessage = "Failed to log in. Please try again later.";
+          console.error(error);
           break;
       }
       toast({
@@ -113,7 +116,7 @@ export default function LoginPage() {
     }
   };
   
-  if (authIsLoading || user) {
+  if (authIsLoading || (!authIsLoading && user)) {
     return (
        <div className="flex items-center justify-center min-h-[calc(100vh-18rem)]">
           <Loader2 className="h-8 w-8 animate-spin" />
