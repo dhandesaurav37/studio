@@ -362,6 +362,9 @@ export default function ProductDetailClientPage({
       const tempOrderId = newOrderRef.key!;
       try {
         const order = await createRazorpayOrder(total, tempOrderId);
+        if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+          throw new Error("Razorpay Key ID is not configured.");
+        }
         const options = {
             key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
             amount: order.amount,
@@ -398,7 +401,7 @@ export default function ProductDetailClientPage({
     } catch(error) {
         toast({
             title: "Error",
-            description: "Could not connect to payment gateway. Please try again later.",
+            description: error instanceof Error ? error.message : "Could not connect to payment gateway. Please try again later.",
             variant: "destructive",
         })
         setIsPlacingOrder(false);

@@ -1,11 +1,11 @@
 // This file is responsible for consolidating and exporting the Firebase configuration.
 
 export const firebaseConfig = {
-  projectId: "the-white-wolf-aqcme",
-  appId: "1:611241366861:web:049b65921a8335fff7d304",
-  storageBucket: "the-white-wolf-aqcme.appspot.com",
-  apiKey: "AIzaSyBq8chENNUG4OccAKJm4ZVaLNK2o3_CvO8",
-  authDomain: "the-white-wolf-aqcme.firebaseapp.com",
-  messagingSenderId: "611241366861",
-  databaseURL: "https://the-white-wolf-aqcme-default-rtdb.firebaseio.com",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
 };
