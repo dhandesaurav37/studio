@@ -120,9 +120,6 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setIsMounted(true);
-    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
     
     const productsRef = ref(rtdb, 'products');
     const unsubscribeProducts = onValue(productsRef, (snapshot) => {
@@ -155,9 +152,21 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         console.error("Offers DB error:", error);
     });
 
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (currentUser) {
+        setProfileState(safelyParseJSON(localStorage.getItem(`profile_${currentUser.uid}`), {
+            ...initialProfile,
+            name: currentUser.displayName || "",
+            email: currentUser.email || ""
+        }));
+      } else {
+        setProfileState(initialProfile);
+      }
+    });
+    
     setCart(safelyParseJSON(localStorage.getItem('cart'), []));
     setWishlist(safelyParseJSON(localStorage.getItem('wishlist'), []));
-    setProfileState(safelyParseJSON(localStorage.getItem('profile'), initialProfile));
     setAverageRating(safelyParseJSON(localStorage.getItem('averageRating'), 4.7));
     setTotalRatings(safelyParseJSON(localStorage.getItem('totalRatings'), 256));
 
@@ -209,8 +218,10 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
   }, [wishlist, isMounted]);
 
   useEffect(() => {
-    if (isMounted) localStorage.setItem('profile', JSON.stringify(profile));
-  }, [profile, isMounted]);
+    if (isMounted && user) {
+        localStorage.setItem(`profile_${user.uid}`, JSON.stringify(profile));
+    }
+  }, [profile, user, isMounted]);
 
   useEffect(() => {
     if (isMounted) localStorage.setItem('averageRating', JSON.stringify(averageRating));
