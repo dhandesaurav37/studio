@@ -1,3 +1,4 @@
+
 "use client";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Product } from "@/lib/data";
