@@ -61,6 +61,16 @@ export default function SignupPage() {
       setIsLoading(false);
       return;
     }
+    
+    if (password.length < 6) {
+       toast({
+        title: "Weak Password",
+        description: "Password should be at least 6 characters.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
 
     if (!email.toLowerCase().endsWith("@gmail.com")) {
       toast({
@@ -128,7 +138,7 @@ export default function SignupPage() {
           errorMessage = "The email address is not valid.";
           break;
         case "auth/weak-password":
-          errorMessage = "The password is too weak.";
+          errorMessage = "The password is too weak. It should be at least 6 characters long.";
           break;
         default:
           errorMessage = "Failed to create an account. Please try again later.";
@@ -200,7 +210,7 @@ export default function SignupPage() {
               <Input
                 id="mobile"
                 type="tel"
-                placeholder="+1 234 567 890"
+                placeholder="Enter your mobile number"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
                 disabled={isLoading}
