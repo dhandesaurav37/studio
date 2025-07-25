@@ -32,7 +32,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useStore, OrderStatus } from "@/hooks/use-store";
 import { useToast } from "@/hooks/use-toast";
 import { format } from 'date-fns';
-import { ref, onValue, update } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 import { rtdb } from "@/lib/firebase";
 import { Skeleton } from "@/components/ui/skeleton";
 
