@@ -76,6 +76,7 @@ interface StoreState {
   orders: UserOrder[];
   averageRating: number;
   totalRatings: number;
+  user: User | null;
   getProductById: (id: string) => Product | undefined;
   getApplicableOffer: (product: Product) => Offer | undefined;
   calculateDiscountedPrice: (product: Product) => number;
@@ -371,6 +372,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     orders,
     averageRating,
     totalRatings,
+    user,
     getProductById,
     getApplicableOffer,
     calculateDiscountedPrice,
