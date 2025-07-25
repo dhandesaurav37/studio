@@ -64,7 +64,7 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
              text = 'This is a default notification from White Wolf.';
     }
 
-    const fullHtml = \`
+    const fullHtml = `
       <!DOCTYPE html>
       <html>
       <head>
@@ -79,14 +79,14 @@ const getEmailHtml = (templateName: EmailTemplateName, props: any): { subject: s
       <body>
         <div class="container">
           <div class="header">White Wolf</div>
-          <div class="content">\${body}</div>
+          <div class="content">${body}</div>
           <div class="footer">
-            <p>&copy; \${new Date().getFullYear()} White Wolf Co. All Rights Reserved.</p>
+            <p>&copy; ${new Date().getFullYear()} White Wolf Co. All Rights Reserved.</p>
           </div>
         </div>
       </body>
       </html>
-    \`;
+    `;
     
     return { subject, html: fullHtml, text };
 };
@@ -117,7 +117,7 @@ export const sendEmail = async ({ to, templateName, props }: EmailTemplateProps)
 
   try {
     await sgMail.send(msg);
-    console.log(\`Email sent successfully to \${to}\`);
+    console.log(`Email sent successfully to ${to}`);
   } catch (error) {
     console.error('Error in sendEmail function with SendGrid:', error);
     // It's important to check for more specific error details if available
