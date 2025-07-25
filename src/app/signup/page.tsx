@@ -14,13 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import { Eye, EyeOff, Loader2, Check } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { auth } from "@/lib/firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useStore } from "@/hooks/use-store";
-import { cn } from "@/lib/utils";
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -31,7 +30,6 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isGmail, setIsGmail] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
   const { setProfile, user, authIsLoading } = useStore();
@@ -41,12 +39,6 @@ export default function SignupPage() {
       router.replace("/");
     }
   }, [user, authIsLoading, router]);
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    setIsGmail(newEmail.toLowerCase().endsWith('@gmail.com'));
-  };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,16 +64,6 @@ export default function SignupPage() {
       return;
     }
 
-    if (!email.toLowerCase().endsWith("@gmail.com")) {
-      toast({
-        title: "Invalid Email",
-        description: "Please use a Gmail account (@gmail.com) to sign up.",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-
     if (password !== confirmPassword) {
       toast({
         title: "Error",
@@ -100,29 +82,28 @@ export default function SignupPage() {
       );
       
       const currentUser = userCredential.user;
-      if (currentUser) {
-        await updateProfile(currentUser, { displayName: name });
+      await updateProfile(currentUser, { displayName: name });
 
-        setProfile({
-            name,
-            email,
-            mobile,
-            address: { street: "", city: "", state: "", pincode: ""},
-            emailNotifications: true,
-        });
-        
-        if(currentUser.email) {
-            fetch('/api/send-email', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    to: currentUser.email,
-                    templateName: 'welcome',
-                    props: { name: name }
-                })
-            });
-        }
+      setProfile({
+          name,
+          email,
+          mobile,
+          address: { street: "", city: "", state: "", pincode: ""},
+          emailNotifications: true,
+      });
+      
+      if(currentUser.email) {
+          fetch('/api/send-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  to: currentUser.email,
+                  templateName: 'welcome',
+                  props: { name: name }
+              })
+          });
       }
+
       toast({
         title: "Success",
         description: "Account created successfully!",
@@ -194,15 +175,9 @@ export default function SignupPage() {
                   placeholder="m@example.com"
                   required
                   value={email}
-                  onChange={handleEmailChange}
+                  onChange={(e) => setEmail(e.target.value)}
                   disabled={isLoading}
-                  className={cn(isGmail && "pr-10")}
                 />
-                 {isGmail && (
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                    <Check className="h-5 w-5 text-green-500" />
-                  </div>
-                )}
               </div>
             </div>
             <div className="grid gap-2">

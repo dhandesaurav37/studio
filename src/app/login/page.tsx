@@ -66,14 +66,15 @@ export default function LoginPage() {
       let errorMessage = "An unknown error occurred.";
       switch (error.code) {
         case "auth/invalid-credential":
+        case "auth/wrong-password":
           errorMessage = "Invalid email or password. Please try again.";
           break;
         case "auth/user-not-found":
           errorMessage = "No account found with this email.";
           break;
-        case "auth/wrong-password":
-          errorMessage = "Invalid email or password. Please try again.";
-          break;
+        case "auth/invalid-email":
+            errorMessage = "Please enter a valid email address.";
+            break;
         default:
           errorMessage = "Failed to log in. Please try again later.";
           console.error(error);
@@ -108,7 +109,7 @@ export default function LoginPage() {
     } catch (error: any) {
        toast({
         title: "Error",
-        description: "Could not send password reset email. Please try again.",
+        description: "Could not send password reset email. Please check the email address and try again.",
         variant: "destructive",
       });
     } finally {
